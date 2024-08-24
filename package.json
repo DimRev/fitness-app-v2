@@ -1,0 +1,18 @@
+{
+  "name": "fitness-app-v2",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently --names \"server,client\" --prefix \"{name}| \" --prefix-colors \"green,blue\" \"pnpm run dev:server\" \"pnpm run dev:client\"",
+    "dev:client": "cd Fitness-v2-client && npm run dev",
+    "dev:server": "cd Fitness-v2-server && go run ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
