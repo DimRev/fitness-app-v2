@@ -2,39 +2,24 @@ package main
 
 import (
 	"log"
-	"os"
 
-	"github.com/DimRev/Fitness-v2-server/internal/handlers"
-	"github.com/joho/godotenv"
+	"github.com/DimRev/Fitness-v2-server/internal/config"
+	"github.com/DimRev/Fitness-v2-server/internal/routes"
 	"github.com/labstack/echo"
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
+	if err := config.New(); err != nil {
+		log.Fatal(err)
 	}
 
 	e := echo.New()
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		log.Fatalf("PORT environment variable not set")
-	}
-
-	v1 := e.Group("/api/v1")
-	{
-		authRoutes := v1.Group("/auth")
-		{
-			authRoutes.POST("/login", handlers.Login)
-			authRoutes.POST("/register", handlers.Register)
-			authRoutes.POST("/logout", handlers.Logout)
-		}
-	}
+	routes.V1ApiRoutes(e)
 
 	e.GET("/", func(c echo.Context) error {
 		return c.String(200, "Hello, World!")
 	})
 
-	e.Logger.Fatal(e.Start(":" + port))
+	e.Logger.Fatal(e.Start(":" + config.Port))
 }
