@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import HomePage from "./features/views/components/HomePage";
 import AppHeader from "./features/layout/components/AppHeader";
+import TestPage from "./features/views/components/TestPage";
 
 const queryClient = new QueryClient();
 
@@ -13,6 +14,7 @@ function App() {
           <AppHeader />
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/test" element={<TestPage />} />
           </Routes>
         </div>
       </BrowserRouter>
