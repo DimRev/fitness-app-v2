@@ -42,12 +42,13 @@ func Login(c echo.Context) error {
 	}
 
 	token := services.CreateJwt(user.ID)
-
-	cookie := new(http.Cookie)
-	cookie.Name = "jwt"
-	cookie.Value = token.Raw
-	cookie.HttpOnly = true
-	cookie.Expires = time.Now().Add(time.Hour * 24)
+	cookie, err := services.GenerateAndSignCookie(token)
+	if err != nil {
+		log.Println(err)
+		c.JSON(500, map[string]string{
+			"message": "failed to create cookie",
+		})
+	}
 	c.SetCookie(cookie)
 
 	respUser := models.User(user)
@@ -104,12 +105,13 @@ func Register(c echo.Context) error {
 	}
 
 	token := services.CreateJwt(user.ID)
-
-	cookie := new(http.Cookie)
-	cookie.Name = "jwt"
-	cookie.Value = token.Raw
-	cookie.HttpOnly = true
-	cookie.Expires = time.Now().Add(time.Hour * 24)
+	cookie, err := services.GenerateAndSignCookie(token)
+	if err != nil {
+		log.Println(err)
+		c.JSON(500, map[string]string{
+			"message": "failed to create cookie",
+		})
+	}
 	c.SetCookie(cookie)
 
 	respUser := models.User(user)
