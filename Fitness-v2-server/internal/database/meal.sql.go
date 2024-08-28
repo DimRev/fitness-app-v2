@@ -115,7 +115,7 @@ func (q *Queries) CreateMealWithFoodItems(ctx context.Context, arg CreateMealWit
 	return i, err
 }
 
-const getMealsByID = `-- name: GetMealsByID :one
+const getMealByID = `-- name: GetMealByID :one
 SELECT 
   m.id, m.name, m.description, m.image_url, m.created_at, m.updated_at, m.user_id, 
   COALESCE(SUM(fi.calories * rmf.amount), 0) AS total_calories,
@@ -129,7 +129,7 @@ WHERE m.id = $1
 GROUP BY m.id
 `
 
-type GetMealsByIDRow struct {
+type GetMealByIDRow struct {
 	ID            uuid.UUID
 	Name          string
 	Description   sql.NullString
@@ -143,9 +143,9 @@ type GetMealsByIDRow struct {
 	TotalCarbs    interface{}
 }
 
-func (q *Queries) GetMealsByID(ctx context.Context, id uuid.UUID) (GetMealsByIDRow, error) {
-	row := q.db.QueryRowContext(ctx, getMealsByID, id)
-	var i GetMealsByIDRow
+func (q *Queries) GetMealByID(ctx context.Context, id uuid.UUID) (GetMealByIDRow, error) {
+	row := q.db.QueryRowContext(ctx, getMealByID, id)
+	var i GetMealByIDRow
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
@@ -158,6 +158,176 @@ func (q *Queries) GetMealsByID(ctx context.Context, id uuid.UUID) (GetMealsByIDR
 		&i.TotalFat,
 		&i.TotalProtein,
 		&i.TotalCarbs,
+	)
+	return i, err
+}
+
+const getMealsByUserID = `-- name: GetMealsByUserID :many
+SELECT 
+  m.id, m.name, m.description, m.image_url, m.created_at, m.updated_at, m.user_id, 
+  COALESCE(SUM(fi.calories * rmf.amount), 0) AS total_calories,
+  COALESCE(SUM(fi.fat * rmf.amount), 0) AS total_fat,
+  COALESCE(SUM(fi.protein * rmf.amount), 0) AS total_protein,
+  COALESCE(SUM(fi.carbs * rmf.amount), 0) AS total_carbs
+FROM meals m
+LEFT JOIN rel_meal_food rmf ON m.id = rmf.meal_id
+LEFT JOIN food_items fi ON rmf.food_item_id = fi.id
+WHERE m.user_id = $1
+GROUP BY m.id
+ORDER BY m.created_at DESC
+LIMIT $2
+OFFSET $3
+`
+
+type GetMealsByUserIDParams struct {
+	UserID uuid.UUID
+	Limit  int32
+	Offset int32
+}
+
+type GetMealsByUserIDRow struct {
+	ID            uuid.UUID
+	Name          string
+	Description   sql.NullString
+	ImageUrl      sql.NullString
+	CreatedAt     sql.NullTime
+	UpdatedAt     sql.NullTime
+	UserID        uuid.UUID
+	TotalCalories interface{}
+	TotalFat      interface{}
+	TotalProtein  interface{}
+	TotalCarbs    interface{}
+}
+
+func (q *Queries) GetMealsByUserID(ctx context.Context, arg GetMealsByUserIDParams) ([]GetMealsByUserIDRow, error) {
+	rows, err := q.db.QueryContext(ctx, getMealsByUserID, arg.UserID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetMealsByUserIDRow
+	for rows.Next() {
+		var i GetMealsByUserIDRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.ImageUrl,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.UserID,
+			&i.TotalCalories,
+			&i.TotalFat,
+			&i.TotalProtein,
+			&i.TotalCarbs,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateMealWithFoodItems = `-- name: UpdateMealWithFoodItems :one
+WITH updated_meal AS (
+  UPDATE meals
+  SET name = $2,
+      description = $3,
+      image_url = $4,
+      updated_at = NOW()
+  WHERE meals.id = $1  -- Explicitly reference meals.id
+  RETURNING id, name, description, image_url, created_at, updated_at, user_id
+),
+deleted_old_relations AS (
+  DELETE FROM rel_meal_food WHERE meal_id = $1
+),
+inserted_food_items AS (
+  INSERT INTO rel_meal_food (
+      meal_id, 
+      food_item_id, 
+      user_id, 
+      amount
+  )
+  SELECT 
+    updated_meal.id, 
+    unnest($5::uuid[]), -- unnest to expand array into rows
+    $4::uuid,           -- user_id (assuming same as meal)
+    unnest($6::numeric[]) -- unnest to expand array into rows
+  FROM updated_meal
+  RETURNING meal_id, food_item_id
+)
+SELECT 
+  updated_meal.id AS meal_id, -- Explicitly reference updated_meal.id
+  updated_meal.name,
+  updated_meal.description,
+  updated_meal.image_url,
+  updated_meal.created_at,
+  updated_meal.updated_at,
+  updated_meal.user_id,
+  json_agg(
+    json_build_object(
+      'food_item_id', f.food_item_id,
+      'name', fi.name,
+      'description', fi.description,
+      'image_url', fi.image_url,
+      'food_type', fi.food_type,
+      'calories', fi.calories,
+      'fat', fi.fat,
+      'protein', fi.protein,
+      'carbs', fi.carbs
+    )
+  ) AS foods
+FROM updated_meal
+JOIN inserted_food_items f ON f.meal_id = updated_meal.id -- Explicitly reference updated_meal.id
+JOIN food_items fi ON fi.id = f.food_item_id
+GROUP BY updated_meal.id
+`
+
+type UpdateMealWithFoodItemsParams struct {
+	ID          uuid.UUID
+	Name        string
+	Description sql.NullString
+	ImageUrl    sql.NullString
+	Column5     []uuid.UUID
+	Column6     []string
+}
+
+type UpdateMealWithFoodItemsRow struct {
+	MealID      uuid.UUID
+	Name        string
+	Description sql.NullString
+	ImageUrl    sql.NullString
+	CreatedAt   sql.NullTime
+	UpdatedAt   sql.NullTime
+	UserID      uuid.UUID
+	Foods       json.RawMessage
+}
+
+func (q *Queries) UpdateMealWithFoodItems(ctx context.Context, arg UpdateMealWithFoodItemsParams) (UpdateMealWithFoodItemsRow, error) {
+	row := q.db.QueryRowContext(ctx, updateMealWithFoodItems,
+		arg.ID,
+		arg.Name,
+		arg.Description,
+		arg.ImageUrl,
+		pq.Array(arg.Column5),
+		pq.Array(arg.Column6),
+	)
+	var i UpdateMealWithFoodItemsRow
+	err := row.Scan(
+		&i.MealID,
+		&i.Name,
+		&i.Description,
+		&i.ImageUrl,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.UserID,
+		&i.Foods,
 	)
 	return i, err
 }

@@ -1,8 +1,8 @@
 -- +goose Up
 CREATE TABLE rel_meal_food (
-  meal_id UUID NOT NULL REFERENCES meals(id),
+  meal_id UUID NOT NULL REFERENCES meals(id) ON DELETE CASCADE,
   food_item_id UUID NOT NULL REFERENCES food_items(id),
-  user_id UUID NOT NULL REFERENCES users(id),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 
   amount INTEGER DEFAULT 1,
 
