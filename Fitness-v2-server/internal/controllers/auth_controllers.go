@@ -51,7 +51,16 @@ func Login(c echo.Context) error {
 	}
 	c.SetCookie(cookie)
 
-	respUser := models.User(user)
+	respUser := models.User{
+		ID:           user.ID.String(),
+		Email:        user.Email,
+		PasswordHash: user.PasswordHash,
+		Username:     user.Username,
+		ImageUrl:     user.ImageUrl,
+		CreatedAt:    user.CreatedAt,
+		UpdatedAt:    user.UpdatedAt,
+	}
+
 	return c.JSON(200, respUser)
 }
 
@@ -114,6 +123,14 @@ func Register(c echo.Context) error {
 	}
 	c.SetCookie(cookie)
 
-	respUser := models.User(user)
+	respUser := models.User{
+		ID:           user.ID.String(),
+		Email:        user.Email,
+		PasswordHash: user.PasswordHash,
+		Username:     user.Username,
+		ImageUrl:     user.ImageUrl,
+		CreatedAt:    user.CreatedAt,
+		UpdatedAt:    user.UpdatedAt,
+	}
 	return c.JSON(200, respUser)
 }

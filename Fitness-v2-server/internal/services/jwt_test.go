@@ -8,20 +8,21 @@ import (
 
 	"github.com/DimRev/Fitness-v2-server/internal/config"
 	"github.com/golang-jwt/jwt"
+	"github.com/google/uuid"
 )
 
 func TestCreateJwt(t *testing.T) {
 	tests := []struct {
 		name        string
-		userId      string
+		userId      uuid.UUID
 		expectedErr error
 		expected    *jwt.Token
 	}{
 		{
 			name:   "Valid token",
-			userId: "123123",
+			userId: uuid.MustParse("f47ac10b-58cc-4372-a567-0e02b2c3d479"),
 			expected: jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
-				Issuer:    "123123",
+				Issuer:    "f47ac10b-58cc-4372-a567-0e02b2c3d479",
 				ExpiresAt: time.Now().Add(time.Hour * 24 * 7).Unix(),
 			}),
 			expectedErr: nil,
@@ -45,18 +46,18 @@ func TestExtractIssuerFromCookie(t *testing.T) {
 		name        string
 		cookie      *http.Cookie
 		expectedErr error
-		expected    string
+		expected    uuid.UUID
 	}{
 		{
 			name:        "correct cookie",
-			cookie:      generateCookie("123123"),
-			expected:    "123123",
+			cookie:      generateCookie("f47ac10b-58cc-4372-a567-0e02b2c3d479"),
+			expected:    uuid.MustParse("f47ac10b-58cc-4372-a567-0e02b2c3d479"),
 			expectedErr: nil,
 		},
 		{
 			name:        "expired cookie",
-			cookie:      generateExpiredCookie("123123"),
-			expected:    "",
+			cookie:      generateExpiredCookie("f47ac10b-58cc-4372-a567-0e02b2c3d479"),
+			expected:    uuid.MustParse("f47ac10b-58cc-4372-a567-0e02b2c3d479"),
 			expectedErr: fmt.Errorf("error parsing token: token is expired by 168h0m0s"),
 		},
 	}
@@ -84,11 +85,16 @@ func TestExtractIssuerFromCookie(t *testing.T) {
 func TestGenerateAndSignCookie(t *testing.T) {
 	tests := []struct {
 		name        string
-		issuer      string
+		issuer      uuid.UUID
 		expectedErr error
 		expected    *http.Cookie
 	}{
-		{name: "correct token", issuer: "123123", expected: generateCookie("123123"), expectedErr: nil},
+		{
+			name:        "correct token",
+			issuer:      uuid.MustParse("f47ac10b-58cc-4372-a567-0e02b2c3d479"),
+			expected:    generateCookie("f47ac10b-58cc-4372-a567-0e02b2c3d479"),
+			expectedErr: nil,
+		},
 	}
 
 	for i, tc := range tests {

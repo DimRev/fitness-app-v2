@@ -6,18 +6,89 @@ package database
 
 import (
 	"database/sql"
+	"database/sql/driver"
+	"fmt"
+
+	"github.com/google/uuid"
 )
 
-type Test struct {
-	ID        string
-	UserID    string
-	Name      string
-	CreatedAt sql.NullTime
-	UpdatedAt sql.NullTime
+type FoodItemType string
+
+const (
+	FoodItemTypeVegetable FoodItemType = "vegetable"
+	FoodItemTypeFruit     FoodItemType = "fruit"
+	FoodItemTypeGrain     FoodItemType = "grain"
+	FoodItemTypeProtein   FoodItemType = "protein"
+)
+
+func (e *FoodItemType) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = FoodItemType(s)
+	case string:
+		*e = FoodItemType(s)
+	default:
+		return fmt.Errorf("unsupported scan type for FoodItemType: %T", src)
+	}
+	return nil
+}
+
+type NullFoodItemType struct {
+	FoodItemType FoodItemType
+	Valid        bool // Valid is true if FoodItemType is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullFoodItemType) Scan(value interface{}) error {
+	if value == nil {
+		ns.FoodItemType, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.FoodItemType.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullFoodItemType) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.FoodItemType), nil
+}
+
+type FoodItem struct {
+	ID          uuid.UUID
+	Name        string
+	Description sql.NullString
+	ImageUrl    sql.NullString
+	FoodType    FoodItemType
+	Calories    string
+	Fat         string
+	Protein     string
+	Carbs       string
+	CreatedAt   sql.NullTime
+	UpdatedAt   sql.NullTime
+}
+
+type Meal struct {
+	ID          uuid.UUID
+	Name        string
+	Description sql.NullString
+	ImageUrl    sql.NullString
+	CreatedAt   sql.NullTime
+	UpdatedAt   sql.NullTime
+	UserID      uuid.UUID
+}
+
+type RelMealFood struct {
+	MealID     uuid.UUID
+	FoodItemID uuid.UUID
+	UserID     uuid.UUID
+	Amount     sql.NullInt32
 }
 
 type User struct {
-	ID           string
+	ID           uuid.UUID
 	Email        string
 	PasswordHash []byte
 	Username     string

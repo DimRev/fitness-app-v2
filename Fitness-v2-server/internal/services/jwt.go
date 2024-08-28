@@ -7,11 +7,12 @@ import (
 
 	"github.com/DimRev/Fitness-v2-server/internal/config"
 	"github.com/golang-jwt/jwt"
+	"github.com/google/uuid"
 )
 
-func CreateJwt(userId string) *jwt.Token {
+func CreateJwt(userId uuid.UUID) *jwt.Token {
 	return jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
-		Issuer:    userId,
+		Issuer:    userId.String(),
 		ExpiresAt: time.Now().Add(time.Hour * 24 * 7).Unix(),
 	})
 }
@@ -31,16 +32,20 @@ func GenerateAndSignCookie(token *jwt.Token) (*http.Cookie, error) {
 	return cookie, nil
 }
 
-func ExtractIssuerFromCookie(cookie string) (string, error) {
+func ExtractIssuerFromCookie(cookie string) (uuid.UUID, error) {
 	token, err := jwt.ParseWithClaims(cookie, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(config.JwtSecret), nil
 	})
 	if err != nil {
-		return "", fmt.Errorf("error parsing token: %w", err)
+		return uuid.UUID{}, fmt.Errorf("error parsing token: %w", err)
 	}
 	claims := token.Claims.(*jwt.StandardClaims)
 	if claims.ExpiresAt < time.Now().Unix() {
-		return "", fmt.Errorf("token expired")
+		return uuid.UUID{}, fmt.Errorf("token expired")
 	}
-	return claims.Issuer, nil
+	userId, err := uuid.Parse(claims.Issuer)
+	if err != nil {
+		return uuid.UUID{}, fmt.Errorf("error parsing token: %w", err)
+	}
+	return userId, nil
 }

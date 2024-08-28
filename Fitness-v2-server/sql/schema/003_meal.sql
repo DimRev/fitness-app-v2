@@ -6,10 +6,10 @@ CREATE TABLE meals (
   image_url TEXT,
 
   created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
+  updated_at TIMESTAMP DEFAULT NOW(),
 
   user_id UUID NOT NULL REFERENCES users(id)
-)
+);
 
 -- +goose Down
 DROP TABLE meals;

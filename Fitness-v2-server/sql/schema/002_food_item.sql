@@ -1,13 +1,7 @@
 -- +goose Up
-CREATE ENUM food_item_type (
-  "vegetable",
-  "fruit",
-  "grain",
-  "protein"
-);
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- +goose Up
-CREATE ENUM food_item_type (
+CREATE TYPE food_item_type AS ENUM (
   'vegetable',
   'fruit',
   'grain',
