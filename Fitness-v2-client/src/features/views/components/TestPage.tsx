@@ -1,123 +1,108 @@
+import { cn } from "~/lib/utils";
+import MainPageWrapper from "./MainPage";
+
 function TestPage() {
   return (
-    <div className="h-main">
-      <h2>Color Palette | Background & Foreground</h2>
-      <div className="flex flex-wrap justify-center gap-4 font-bold">
-        <div className="flex gap-2 border-2 p-1 border-black">
-          <div className="flex justify-center items-center bg-primary text-primary-foreground size-36">
-            Primary
-          </div>
-          <div className="flex justify-center items-center bg-primary text-primary-foreground dark size-36">
-            Primary Dark
-          </div>
-        </div>
-        <div className="flex gap-2 border-2 p-1 border-black">
-          <div className="flex justify-center items-center bg-secondary text-secondary-foreground size-36">
-            Secondary
-          </div>
-          <div className="flex justify-center items-center bg-secondary text-secondary-foreground dark size-36">
-            Secondary Dark
-          </div>
-        </div>
-        <div className="flex gap-2 border-2 p-1 border-black">
-          <div className="flex justify-center items-center bg-destructive text-destructive-foreground size-36">
-            Destructive
-          </div>
-          <div className="dark: flex justify-center items-center bg-destructive text-destructive-foreground size-36">
-            Destructive Dark
-          </div>
-        </div>
-        <div className="flex gap-2 border-2 p-1 border-black">
-          <div className="flex justify-center items-center bg-muted text-muted-foreground size-36">
-            Muted
-          </div>
-          <div className="flex justify-center items-center bg-muted text-muted-foreground dark size-36">
-            Muted Dark
-          </div>
-        </div>
-        <div className="flex gap-2 border-2 p-1 border-black">
-          <div className="flex justify-center items-center bg-accent text-accent-foreground size-36">
-            Accent
-          </div>
-          <div className="flex justify-center items-center bg-accent text-accent-foreground dark size-36">
-            Accent Dark
-          </div>
-        </div>
-        <div className="flex gap-2 border-2 p-1 border-black">
-          <div className="flex justify-center items-center bg-popover text-popover-foreground size-36">
-            Popover
-          </div>
-          <div className="flex justify-center items-center bg-popover text-popover-foreground dark size-36">
-            Popover Dark
-          </div>
-        </div>
-        <div className="flex gap-2 border-2 p-1 border-black">
-          <div className="flex justify-center items-center bg-card text-card-foreground size-36">
-            Card
-          </div>
-          <div className="flex justify-center items-center bg-card text-card-foreground dark size-36">
-            Card Dark
-          </div>
-        </div>
-        <div className="flex gap-2 border-2 p-1 border-black">
-          <div className="flex justify-center items-center bg-header text-header-foreground size-36">
-            Header
-          </div>
-          <div className="flex justify-center items-center bg-header text-header-foreground dark size-36">
-            Header Dark
-          </div>
-        </div>
-        <div className="flex gap-2 border-2 p-1 border-black">
-          <div className="flex justify-center items-center bg-sidebar text-sidebar-foreground size-36">
-            Sidebar
-          </div>
-          <div className="flex justify-center items-center bg-sidebar text-sidebar-foreground dark size-36">
-            Sidebar Dark
-          </div>
-        </div>
+    <MainPageWrapper>
+      <TestCard title="Color Palette | Background & Foreground">
+        <DarkLightColorCards
+          title="Primary"
+          colorClasses="bg-primary text-primary-foreground"
+        />
+        <DarkLightColorCards
+          title="Secondary"
+          colorClasses="bg-secondary text-secondary-foreground"
+        />
+        <DarkLightColorCards
+          title="Destructive"
+          colorClasses="bg-destructive text-destructive-foreground"
+        />
+        <DarkLightColorCards
+          title="Muted"
+          colorClasses="bg-muted text-muted-foreground"
+        />
+        <DarkLightColorCards
+          title="Accent"
+          colorClasses="bg-accent text-accent-foreground"
+        />
+        <DarkLightColorCards
+          title="Popover"
+          colorClasses="bg-popover text-popover-foreground"
+        />
+        <DarkLightColorCards
+          title="Card"
+          colorClasses="bg-card text-card-foreground"
+        />
+        <DarkLightColorCards
+          title="Header"
+          colorClasses="bg-header text-header-foreground"
+        />
+        <DarkLightColorCards
+          title="Sidebar"
+          colorClasses="bg-sidebar text-sidebar-foreground"
+        />
+      </TestCard>
+      <TestCard title="Color Palette | Only Background">
+        <DarkLightColorCards
+          title="Background"
+          colorClasses="bg-background text-foreground"
+        />
+        <DarkLightColorCards
+          title="Foreground"
+          colorClasses="bg-foreground text-muted"
+        />
+        <DarkLightColorCards
+          title="Input"
+          colorClasses="bg-input text-foreground"
+        />
+        <DarkLightColorCards
+          title="Border"
+          colorClasses="bg-border text-foreground"
+        />
+        <DarkLightColorCards
+          title="Ring"
+          colorClasses="bg-ring text-foreground"
+        />
+      </TestCard>
+    </MainPageWrapper>
+  );
+}
+
+type TestCardProps = {
+  title: string;
+  children: React.ReactNode;
+};
+function TestCard({ title, children }: TestCardProps) {
+  return (
+    <div className="flex flex-col gap-2 border-t font-bold">
+      <h2 className="text-center text-lg">{title}</h2>
+      <div className="flex flex-wrap justify-center gap-4 py-2 border-b font-bold">
+        {children}
       </div>
-      <h2>Color Palette | Only Background</h2>
-      <div className="flex flex-wrap justify-center gap-4">
-        <div className="flex gap-2 border-2 p-1 border-black">
-          <div className="flex justify-center items-center border-2 bg-background border-black rounded-md size-36">
-            Background
-          </div>
-          <div className="flex justify-center items-center border-2 bg-background border-black rounded-md text-white dark size-36">
-            Background Dark
-          </div>
-        </div>
-        <div className="flex gap-2 border-2 p-1 border-black">
-          <div className="flex justify-center items-center border-2 bg-foreground border-black rounded-md text-white size-36">
-            Foreground
-          </div>
-          <div className="flex justify-center items-center border-2 bg-foreground border-black rounded-md dark size-36">
-            Foreground Dark
-          </div>
-        </div>
-        <div className="flex gap-2 border-2 p-1 border-black">
-          <div className="flex justify-center items-center border-2 bg-input border-black rounded-md size-36">
-            Input
-          </div>
-          <div className="flex justify-center items-center border-2 bg-input border-black rounded-md text-white dark size-36">
-            Input Dark
-          </div>
-        </div>
-        <div className="flex gap-2 border-2 p-1 border-black">
-          <div className="flex justify-center items-center border-2 bg-border border-black rounded-md size-36">
-            Border
-          </div>
-          <div className="flex justify-center items-center border-2 bg-border border-black rounded-md text-white dark size-36">
-            Border Dark
-          </div>
-        </div>
-        <div className="flex gap-2 border-2 p-1 border-black">
-          <div className="flex justify-center items-center border-2 border-black rounded-md bg-ring size-36">
-            Ring
-          </div>
-          <div className="flex justify-center items-center border-2 border-black rounded-md bg-ring dark size-36">
-            Ring Dark
-          </div>
-        </div>
+    </div>
+  );
+}
+
+type DuelColorCardProps = {
+  title: string;
+  colorClasses: string;
+};
+
+function DarkLightColorCards({ title, colorClasses }: DuelColorCardProps) {
+  return (
+    <div className="flex gap-2 border-2 p-1 border-black">
+      <div
+        className={cn("flex size-36 items-center justify-center", colorClasses)}
+      >
+        {title}
+      </div>
+      <div
+        className={cn(
+          "dark flex size-36 items-center justify-center",
+          colorClasses,
+        )}
+      >
+        {title} Dark
       </div>
     </div>
   );

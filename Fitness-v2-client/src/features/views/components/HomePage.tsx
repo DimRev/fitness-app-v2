@@ -1,5 +1,7 @@
+import MainPageWrapper from "./MainPage";
+
 function HomePage() {
-  return <div className="h-main">HomePage</div>;
+  return <MainPageWrapper>HomePage</MainPageWrapper>;
 }
 
 export default HomePage;
