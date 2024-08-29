@@ -158,3 +158,28 @@ func Register(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, respUser)
 }
+
+func LoginFromCookie(c echo.Context) error {
+	user, ok := c.Get("user").(database.User)
+	if !ok {
+		log.Printf("Reached create Meal without user")
+		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
+	}
+
+	var imageUrl *string
+	if user.ImageUrl.Valid {
+		imageUrl = &user.ImageUrl.String
+	}
+
+	respUser := models.User{
+		ID:           user.ID,
+		Email:        user.Email,
+		PasswordHash: user.PasswordHash,
+		Username:     user.Username,
+		ImageUrl:     imageUrl,
+		CreatedAt:    user.CreatedAt.Time,
+		UpdatedAt:    user.UpdatedAt.Time,
+	}
+
+	return c.JSON(http.StatusOK, respUser)
+}
