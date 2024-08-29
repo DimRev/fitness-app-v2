@@ -284,7 +284,7 @@ SELECT
       'protein', fi.protein,
       'carbs', fi.carbs,
       'created_at', fi.created_at,
-      'updated_at', fi.updated_at1
+      'updated_at', fi.updated_at
     )
   ) AS foods
 FROM updated_meal
