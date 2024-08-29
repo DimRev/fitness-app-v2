@@ -47,7 +47,7 @@ func GetFoodItems(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get foods")
 	}
 
-	foodItemsResp := make([]models.FoodItem, len(foods))
+	respFoodItems := make([]models.FoodItem, len(foods))
 	for i, food := range foods {
 		var description *string
 		var imageUrl *string
@@ -58,7 +58,7 @@ func GetFoodItems(c echo.Context) error {
 			imageUrl = &food.ImageUrl.String
 		}
 
-		foodItemsResp[i] = models.FoodItem{
+		respFoodItems[i] = models.FoodItem{
 			ID:          food.ID,
 			Name:        food.Name,
 			Description: description,
@@ -73,5 +73,5 @@ func GetFoodItems(c echo.Context) error {
 		}
 	}
 
-	return c.JSON(http.StatusOK, foodItemsResp)
+	return c.JSON(http.StatusOK, respFoodItems)
 }
