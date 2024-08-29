@@ -9,7 +9,7 @@ function AuthLayout() {
     if (location.pathname === "/auth/" || location.pathname === "/auth") {
       navigate("/auth/login");
     }
-  }, [location]);
+  }, [location, navigate]);
 
   return (
     <MainPageWrapper className="flex flex-col justify-center items-center">
