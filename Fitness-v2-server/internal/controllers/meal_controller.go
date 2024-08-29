@@ -3,6 +3,7 @@ package controllers
 import (
 	"database/sql"
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -23,19 +24,25 @@ type CreateMealRequest struct {
 	}
 }
 
-func (ms *MiddlewareState) CreateMeal(c echo.Context) error {
+func CreateMeal(c echo.Context) error {
 	createMealReq := CreateMealRequest{}
 	if err := c.Bind(&createMealReq); err != nil {
-		c.JSON(400, map[string]string{
+		c.JSON(http.StatusBadRequest, map[string]string{
 			"message": "malformed request",
 		})
+	}
+
+	user, ok := c.Get("user").(*database.User)
+	if !ok || user == nil {
+		log.Printf("Reached create Meal without user")
+		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
 	}
 
 	createMealWithFoodItemsParams := database.CreateMealWithFoodItemsParams{
 		Name:        createMealReq.Name,
 		Description: sql.NullString{String: *createMealReq.Description, Valid: createMealReq.Description != nil},
 		ImageUrl:    sql.NullString{String: *createMealReq.ImageUrl, Valid: createMealReq.ImageUrl != nil},
-		UserID:      ms.User.ID,
+		UserID:      user.ID,
 		Column5:     []uuid.UUID{},
 		Column6:     []int32{},
 	}
@@ -47,12 +54,12 @@ func (ms *MiddlewareState) CreateMeal(c echo.Context) error {
 
 	mealWithFoodItems, err := config.Queries.CreateMealWithFoodItems(c.Request().Context(), createMealWithFoodItemsParams)
 	if err != nil {
-		return echo.NewHTTPError(500, "failed to create meal")
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to create meal")
 	}
 
 	var foodItems []models.FoodItem
 	if err := json.Unmarshal(mealWithFoodItems.Foods, &foodItems); err != nil {
-		return echo.NewHTTPError(500, "failed to parse food items")
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse food items")
 	}
 
 	mealWithFoodItemsResp := models.MealWithFoodItems{
@@ -76,7 +83,7 @@ type GetMealsByUserIDRequest struct {
 	Offset int `json:"offset"`
 }
 
-func (ms *MiddlewareState) GetMealsByUserID(c echo.Context) error {
+func GetMealsByUserID(c echo.Context) error {
 	offset := int32(0)
 	limit := int32(10)
 	offsetStr := c.QueryParam("offset")
@@ -96,8 +103,14 @@ func (ms *MiddlewareState) GetMealsByUserID(c echo.Context) error {
 		limit = int32(convLimit)
 	}
 
+	user, ok := c.Get("user").(*database.User)
+	if !ok || user == nil {
+		log.Printf("Reached create Meal without user")
+		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
+	}
+
 	getMealsByUserIdParams := database.GetMealsByUserIDParams{
-		UserID: ms.User.ID,
+		UserID: user.ID,
 		Limit:  limit,
 		Offset: offset,
 	}
@@ -129,10 +142,16 @@ func (ms *MiddlewareState) GetMealsByUserID(c echo.Context) error {
 	return c.JSON(http.StatusOK, mealsWithNutrition)
 }
 
-func (ms *MiddlewareState) GetMealByID(c echo.Context) error {
+func GetMealByID(c echo.Context) error {
 	mealID, err := uuid.Parse(c.Param("meal_id"))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid meal id")
+	}
+
+	user, ok := c.Get("user").(*database.User)
+	if !ok || user == nil {
+		log.Printf("Reached create Meal without user")
+		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
 	}
 
 	meal, err := config.Queries.GetMealByID(c.Request().Context(), mealID)
@@ -169,15 +188,21 @@ type UpdateMealRequest struct {
 	}
 }
 
-func (ms *MiddlewareState) UpdateMeal(c echo.Context) error {
+func UpdateMeal(c echo.Context) error {
 	mealID, err := uuid.Parse(c.Param("meal_id"))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid meal id")
 	}
 
+	user, ok := c.Get("user").(*database.User)
+	if !ok || user == nil {
+		log.Printf("Reached create Meal without user")
+		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
+	}
+
 	updateMealReq := UpdateMealRequest{}
 	if err := c.Bind(&updateMealReq); err != nil {
-		c.JSON(400, map[string]string{
+		c.JSON(http.StatusBadRequest, map[string]string{
 			"message": "malformed request",
 		})
 	}
@@ -203,7 +228,7 @@ func (ms *MiddlewareState) UpdateMeal(c echo.Context) error {
 
 	var foodItems []models.FoodItem
 	if err := json.Unmarshal(mealWithFoodItems.Foods, &foodItems); err != nil {
-		return echo.NewHTTPError(500, "failed to parse food items")
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse food items")
 	}
 
 	mealWithFoodItemsResp := models.MealWithFoodItems{

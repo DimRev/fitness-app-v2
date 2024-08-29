@@ -1,4 +1,5 @@
-package controllers
+// auth_middleware.go
+package middleware
 
 import (
 	"net/http"
@@ -9,7 +10,7 @@ import (
 	"github.com/labstack/echo"
 )
 
-func (s *MiddlewareState) ProtectedRoute(next echo.HandlerFunc) echo.HandlerFunc {
+func ProtectedRoute(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		cookie, err := c.Cookie("jwt")
 		if err != nil {
@@ -29,7 +30,7 @@ func (s *MiddlewareState) ProtectedRoute(next echo.HandlerFunc) echo.HandlerFunc
 			return echo.NewHTTPError(http.StatusUnauthorized, "invalid jwt token")
 		}
 
-		s.User = user
+		c.Set("user", user)
 
 		return next(c)
 	}

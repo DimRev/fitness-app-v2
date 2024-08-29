@@ -20,7 +20,7 @@ type LoginRequest struct {
 func Login(c echo.Context) error {
 	loginReq := LoginRequest{}
 	if err := c.Bind(&loginReq); err != nil {
-		c.JSON(400, map[string]string{
+		c.JSON(http.StatusBadRequest, map[string]string{
 			"message": "malformed request",
 		})
 	}
@@ -28,7 +28,7 @@ func Login(c echo.Context) error {
 	user, err := config.Queries.GetUserByEmail(c.Request().Context(), loginReq.Email)
 	if err != nil {
 		log.Println(err)
-		c.JSON(500, map[string]string{
+		c.JSON(http.StatusInternalServerError, map[string]string{
 			"message": "wrong email or password",
 		})
 	}
@@ -36,7 +36,7 @@ func Login(c echo.Context) error {
 	err = services.ComparePassword(loginReq.Password, user.PasswordHash)
 	if err != nil {
 		log.Println(err)
-		c.JSON(500, map[string]string{
+		c.JSON(http.StatusInternalServerError, map[string]string{
 			"message": "wrong email or password",
 		})
 	}
@@ -45,7 +45,7 @@ func Login(c echo.Context) error {
 	cookie, err := services.GenerateAndSignCookie(token)
 	if err != nil {
 		log.Println(err)
-		c.JSON(500, map[string]string{
+		c.JSON(http.StatusInternalServerError, map[string]string{
 			"message": "failed to create cookie",
 		})
 	}
@@ -61,7 +61,7 @@ func Login(c echo.Context) error {
 		UpdatedAt:    user.UpdatedAt,
 	}
 
-	return c.JSON(200, respUser)
+	return c.JSON(http.StatusOK, respUser)
 }
 
 func Logout(c echo.Context) error {
@@ -72,7 +72,7 @@ func Logout(c echo.Context) error {
 	cookie.Expires = time.Now().Add(time.Hour * 24)
 	c.SetCookie(cookie)
 
-	return c.JSON(200, map[string]string{
+	return c.JSON(http.StatusOK, map[string]string{
 		"message": "logged out",
 	})
 }
@@ -86,7 +86,7 @@ type RegisterRequest struct {
 func Register(c echo.Context) error {
 	registerReq := RegisterRequest{}
 	if err := c.Bind(&registerReq); err != nil {
-		c.JSON(400, map[string]string{
+		c.JSON(http.StatusBadRequest, map[string]string{
 			"message": "malformed request",
 		})
 	}
@@ -94,7 +94,7 @@ func Register(c echo.Context) error {
 	hash, err := services.HashPassword(registerReq.Password)
 	if err != nil {
 		log.Println(err)
-		c.JSON(500, map[string]string{
+		c.JSON(http.StatusInternalServerError, map[string]string{
 			"message": "failed to create user",
 		})
 	}
@@ -108,7 +108,7 @@ func Register(c echo.Context) error {
 	user, err := config.Queries.CreateUser(c.Request().Context(), createUserParams)
 	if err != nil {
 		log.Println(err)
-		c.JSON(500, map[string]string{
+		c.JSON(http.StatusInternalServerError, map[string]string{
 			"message": "failed to create user",
 		})
 	}
@@ -117,7 +117,7 @@ func Register(c echo.Context) error {
 	cookie, err := services.GenerateAndSignCookie(token)
 	if err != nil {
 		log.Println(err)
-		c.JSON(500, map[string]string{
+		c.JSON(http.StatusInternalServerError, map[string]string{
 			"message": "failed to create cookie",
 		})
 	}
@@ -132,5 +132,5 @@ func Register(c echo.Context) error {
 		CreatedAt:    user.CreatedAt,
 		UpdatedAt:    user.UpdatedAt,
 	}
-	return c.JSON(200, respUser)
+	return c.JSON(http.StatusOK, respUser)
 }
