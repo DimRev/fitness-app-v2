@@ -1,6 +1,8 @@
--- name: GetFoodsByID :many
+-- name: GetFoods :many
 SELECT * FROM food_items 
-WHERE id = $1;
+ORDER BY name DESC
+LIMIT $1
+OFFSET $2;
 
 -- name: CreateFood :one
 INSERT INTO food_items (

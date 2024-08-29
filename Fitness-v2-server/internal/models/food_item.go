@@ -1,30 +1,22 @@
 package models
 
 import (
-	"database/sql"
+	"time"
 
+	"github.com/DimRev/Fitness-v2-server/internal/database"
 	"github.com/google/uuid"
 )
 
-type FoodItemType string
-
-const (
-	FoodItemTypeVegetable FoodItemType = "vegetable"
-	FoodItemTypeFruit     FoodItemType = "fruit"
-	FoodItemTypeGrain     FoodItemType = "grain"
-	FoodItemTypeProtein   FoodItemType = "protein"
-)
-
 type FoodItem struct {
-	ID          uuid.UUID
-	Name        string
-	Description sql.NullString
-	ImageUrl    sql.NullString
-	FoodType    FoodItemType
-	Calories    string
-	Fat         string
-	Protein     string
-	Carbs       string
-	CreatedAt   sql.NullTime
-	UpdatedAt   sql.NullTime
+	ID          uuid.UUID             `json:"id"`
+	Name        string                `json:"name"`
+	Description *string               `json:"description"`
+	ImageUrl    *string               `json:"image_url"`
+	FoodType    database.FoodItemType `json:"food_type"`
+	Calories    string                `json:"calories"`
+	Fat         string                `json:"fat"`
+	Protein     string                `json:"protein"`
+	Carbs       string                `json:"carbs"`
+	CreatedAt   time.Time             `json:"-"`
+	UpdatedAt   time.Time             `json:"-"`
 }

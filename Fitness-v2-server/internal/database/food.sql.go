@@ -8,8 +8,6 @@ package database
 import (
 	"context"
 	"database/sql"
-
-	"github.com/google/uuid"
 )
 
 const createFood = `-- name: CreateFood :one
@@ -75,13 +73,20 @@ func (q *Queries) CreateFood(ctx context.Context, arg CreateFoodParams) (FoodIte
 	return i, err
 }
 
-const getFoodsByID = `-- name: GetFoodsByID :many
+const getFoods = `-- name: GetFoods :many
 SELECT id, name, description, image_url, food_type, calories, fat, protein, carbs, created_at, updated_at FROM food_items 
-WHERE id = $1
+ORDER BY name DESC
+LIMIT $1
+OFFSET $2
 `
 
-func (q *Queries) GetFoodsByID(ctx context.Context, id uuid.UUID) ([]FoodItem, error) {
-	rows, err := q.db.QueryContext(ctx, getFoodsByID, id)
+type GetFoodsParams struct {
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) GetFoods(ctx context.Context, arg GetFoodsParams) ([]FoodItem, error) {
+	rows, err := q.db.QueryContext(ctx, getFoods, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
