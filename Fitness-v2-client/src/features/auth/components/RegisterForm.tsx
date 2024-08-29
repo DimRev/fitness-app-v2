@@ -1,8 +1,8 @@
-import { z } from "zod";
-import useRegister from "../hooks/useRegister";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Button } from "~/features/shared/components/ui/button";
 import {
   Form,
   FormControl,
@@ -12,7 +12,8 @@ import {
   FormMessage,
 } from "~/features/shared/components/ui/form";
 import { Input } from "~/features/shared/components/ui/input";
-import { Button } from "~/features/shared/components/ui/button";
+import useRegister from "../hooks/useRegister";
+import useAuthStore from "../hooks/useAuthStore";
 
 const registerFormSchema = z.object({
   email: z.string().email(),
@@ -24,6 +25,7 @@ export type RegisterFormSchema = z.infer<typeof registerFormSchema>;
 
 function RegisterForm() {
   const { mutateAsync: register, isLoading: isRegisterLoading } = useRegister();
+  const { setUser } = useAuthStore();
   const [error, setError] = useState<string | undefined>();
 
   const form = useForm<RegisterFormSchema>({
@@ -38,8 +40,8 @@ function RegisterForm() {
   async function handleSubmit(data: RegisterFormSchema) {
     try {
       await register(data, {
-        onSuccess: (respData) => {
-          console.log(respData);
+        onSuccess: (user) => {
+          setUser(user);
         },
       });
     } catch (err) {

@@ -1,15 +1,22 @@
+import { useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import MainPageWrapper from "./MainPage";
-import { useEffect } from "react";
+import useAuthStore from "~/features/auth/hooks/useAuthStore";
 
 function AuthLayout() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuthStore();
   useEffect(() => {
-    if (location.pathname === "/auth/" || location.pathname === "/auth") {
+    if (user) {
+      navigate("/");
+    } else if (
+      location.pathname === "/auth/" ||
+      location.pathname === "/auth"
+    ) {
       navigate("/auth/login");
     }
-  }, [location, navigate]);
+  }, [location, navigate, user]);
 
   return (
     <MainPageWrapper className="flex flex-col justify-center items-center">

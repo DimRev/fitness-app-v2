@@ -13,6 +13,7 @@ import {
 } from "~/features/shared/components/ui/form";
 import { Input } from "~/features/shared/components/ui/input";
 import useLogin from "../hooks/useLogin";
+import useAuthStore from "../hooks/useAuthStore";
 
 const loginFormSchema = z.object({
   email: z.string().email(),
@@ -23,6 +24,7 @@ export type LoginFormSchema = z.infer<typeof loginFormSchema>;
 
 function LoginForm() {
   const { mutateAsync: login, isLoading: isLoginLoading } = useLogin();
+  const { setUser } = useAuthStore();
   const [error, setError] = useState<string | undefined>();
 
   const form = useForm<LoginFormSchema>({
@@ -36,8 +38,8 @@ function LoginForm() {
   async function handleSubmit(data: LoginFormSchema) {
     try {
       await login(data, {
-        onSuccess: (respData) => {
-          console.log(respData);
+        onSuccess: (user) => {
+          setUser(user);
         },
       });
     } catch (err) {

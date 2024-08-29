@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
-import { buttonVariants } from "~/features/shared/components/ui/button";
+import UserBadge from "~/features/auth/components/UserBadge";
+import useAuthStore from "~/features/auth/hooks/useAuthStore";
+import { Button, buttonVariants } from "~/features/shared/components/ui/button";
 
 function AppHeader() {
+  const { user } = useAuthStore();
   return (
     <div className="flex justify-between items-center px-4 border-b-2 h-header">
       <Link to="/">
@@ -14,17 +17,21 @@ function AppHeader() {
         <Link to="/about" className={buttonVariants({ variant: "link" })}>
           About
         </Link>
-        <div className="flex gap-1">
-          <Link
-            to="/auth/register"
-            className={buttonVariants({ variant: "ghost" })}
-          >
-            Register
-          </Link>
-          <Link to="/auth/login" className={buttonVariants()}>
-            Login
-          </Link>
-        </div>
+        {user ? (
+          <UserBadge user={user} />
+        ) : (
+          <div className="flex gap-1">
+            <Link
+              to="/auth/register"
+              className={buttonVariants({ variant: "ghost" })}
+            >
+              Register
+            </Link>
+            <Link to="/auth/login" className={buttonVariants()}>
+              Login
+            </Link>
+          </div>
+        )}
       </nav>
     </div>
   );
