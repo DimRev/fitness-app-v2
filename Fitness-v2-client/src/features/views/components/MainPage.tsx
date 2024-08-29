@@ -1,11 +1,17 @@
 import React from "react";
+import { cn } from "~/lib/utils";
 
 type Props = {
   children: React.ReactNode;
+  className?: string;
 };
 
-function MainPageWrapper({ children }: Props) {
-  return <div className="h-main overflow-y-scroll">{children}</div>;
+function MainPageWrapper({ children, className }: Props) {
+  return (
+    <div className={cn("h-main overflow-y-auto", className)}>
+      <div className="container">{children}</div>
+    </div>
+  );
 }
 
 export default MainPageWrapper;
