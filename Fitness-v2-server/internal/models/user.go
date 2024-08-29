@@ -1,13 +1,17 @@
 package models
 
-import "database/sql"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type User struct {
-	ID           string         `json:"id"`
-	Email        string         `json:"email"`
-	PasswordHash []byte         `json:"-"`
-	Username     string         `json:"username"`
-	ImageUrl     sql.NullString `json:"image_url"`
-	CreatedAt    sql.NullTime   `json:"-"`
-	UpdatedAt    sql.NullTime   `json:"-"`
+	ID           uuid.UUID `json:"id"`
+	Email        string    `json:"email"`
+	PasswordHash []byte    `json:"-"`
+	Username     string    `json:"username"`
+	ImageUrl     *string   `json:"image_url"`
+	CreatedAt    time.Time `json:"-"`
+	UpdatedAt    time.Time `json:"-"`
 }

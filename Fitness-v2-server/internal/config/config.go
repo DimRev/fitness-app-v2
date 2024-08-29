@@ -11,9 +11,12 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var Queries *database.Queries
-var Port string
-var JwtSecret string
+var (
+	Queries   *database.Queries
+	Port      string
+	JwtSecret string
+	DB        *sql.DB
+)
 
 func New() error {
 	err := godotenv.Load()
@@ -42,9 +45,18 @@ func New() error {
 	if err != nil {
 		return fmt.Errorf("error opening database: %w", err)
 	}
-	defer db.Close()
 
+	// Assign the database connection to the global variable
+	DB = db
 	Queries = database.New(db)
 
+	return nil
+}
+
+// Close will close the database connection gracefully
+func Close() error {
+	if DB != nil {
+		return DB.Close()
+	}
 	return nil
 }

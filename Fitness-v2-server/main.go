@@ -12,6 +12,11 @@ func main() {
 	if err := config.New(); err != nil {
 		log.Fatal(err)
 	}
+	defer func() {
+		if err := config.Close(); err != nil {
+			log.Println("Error closing database connection:", err)
+		}
+	}()
 
 	e := echo.New()
 

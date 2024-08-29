@@ -10,6 +10,7 @@ import (
 	"github.com/DimRev/Fitness-v2-server/internal/models"
 	"github.com/DimRev/Fitness-v2-server/internal/services"
 	"github.com/labstack/echo"
+	"github.com/lib/pq"
 )
 
 type LoginRequest struct {
@@ -20,7 +21,7 @@ type LoginRequest struct {
 func Login(c echo.Context) error {
 	loginReq := LoginRequest{}
 	if err := c.Bind(&loginReq); err != nil {
-		c.JSON(http.StatusBadRequest, map[string]string{
+		return c.JSON(http.StatusBadRequest, map[string]string{
 			"message": "malformed request",
 		})
 	}
@@ -28,7 +29,7 @@ func Login(c echo.Context) error {
 	user, err := config.Queries.GetUserByEmail(c.Request().Context(), loginReq.Email)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, map[string]string{
+		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"message": "wrong email or password",
 		})
 	}
@@ -36,7 +37,7 @@ func Login(c echo.Context) error {
 	err = services.ComparePassword(loginReq.Password, user.PasswordHash)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, map[string]string{
+		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"message": "wrong email or password",
 		})
 	}
@@ -45,20 +46,25 @@ func Login(c echo.Context) error {
 	cookie, err := services.GenerateAndSignCookie(token)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, map[string]string{
+		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"message": "failed to create cookie",
 		})
 	}
 	c.SetCookie(cookie)
 
+	var imageUrl *string
+	if user.ImageUrl.Valid {
+		imageUrl = &user.ImageUrl.String
+	}
+
 	respUser := models.User{
-		ID:           user.ID.String(),
+		ID:           user.ID,
 		Email:        user.Email,
 		PasswordHash: user.PasswordHash,
 		Username:     user.Username,
-		ImageUrl:     user.ImageUrl,
-		CreatedAt:    user.CreatedAt,
-		UpdatedAt:    user.UpdatedAt,
+		ImageUrl:     imageUrl,
+		CreatedAt:    user.CreatedAt.Time,
+		UpdatedAt:    user.UpdatedAt.Time,
 	}
 
 	return c.JSON(http.StatusOK, respUser)
@@ -69,7 +75,8 @@ func Logout(c echo.Context) error {
 	cookie.Name = "jwt"
 	cookie.Value = ""
 	cookie.HttpOnly = true
-	cookie.Expires = time.Now().Add(time.Hour * 24)
+	cookie.Expires = time.Now().Add(-time.Hour * 24)
+	cookie.Path = "/"
 	c.SetCookie(cookie)
 
 	return c.JSON(http.StatusOK, map[string]string{
@@ -94,7 +101,7 @@ func Register(c echo.Context) error {
 	hash, err := services.HashPassword(registerReq.Password)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, map[string]string{
+		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"message": "failed to create user",
 		})
 	}
@@ -108,9 +115,17 @@ func Register(c echo.Context) error {
 	user, err := config.Queries.CreateUser(c.Request().Context(), createUserParams)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, map[string]string{
-			"message": "failed to create user",
-		})
+		pgErr := err.(*pq.Error)
+		switch pgErr.Code {
+		case "23505":
+			return c.JSON(http.StatusConflict, map[string]string{
+				"message": "email already exists",
+			})
+		default:
+			return c.JSON(http.StatusInternalServerError, map[string]string{
+				"message": "failed to create user",
+			})
+		}
 	}
 
 	token := services.CreateJwt(user.ID)
@@ -123,14 +138,19 @@ func Register(c echo.Context) error {
 	}
 	c.SetCookie(cookie)
 
+	var imageUrl *string
+	if user.ImageUrl.Valid {
+		imageUrl = &user.ImageUrl.String
+	}
+
 	respUser := models.User{
-		ID:           user.ID.String(),
+		ID:           user.ID,
 		Email:        user.Email,
 		PasswordHash: user.PasswordHash,
 		Username:     user.Username,
-		ImageUrl:     user.ImageUrl,
-		CreatedAt:    user.CreatedAt,
-		UpdatedAt:    user.UpdatedAt,
+		ImageUrl:     imageUrl,
+		CreatedAt:    user.CreatedAt.Time,
+		UpdatedAt:    user.UpdatedAt.Time,
 	}
 	return c.JSON(http.StatusOK, respUser)
 }

@@ -32,8 +32,8 @@ func CreateMeal(c echo.Context) error {
 		})
 	}
 
-	user, ok := c.Get("user").(*database.User)
-	if !ok || user == nil {
+	user, ok := c.Get("user").(database.User)
+	if !ok {
 		log.Printf("Reached create Meal without user")
 		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
 	}
@@ -103,8 +103,8 @@ func GetMealsByUserID(c echo.Context) error {
 		limit = int32(convLimit)
 	}
 
-	user, ok := c.Get("user").(*database.User)
-	if !ok || user == nil {
+	user, ok := c.Get("user").(database.User)
+	if !ok {
 		log.Printf("Reached create Meal without user")
 		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
 	}
@@ -148,8 +148,8 @@ func GetMealByID(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid meal id")
 	}
 
-	user, ok := c.Get("user").(*database.User)
-	if !ok || user == nil {
+	_, ok := c.Get("user").(database.User)
+	if !ok {
 		log.Printf("Reached create Meal without user")
 		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
 	}
@@ -194,8 +194,8 @@ func UpdateMeal(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid meal id")
 	}
 
-	user, ok := c.Get("user").(*database.User)
-	if !ok || user == nil {
+	_, ok := c.Get("user").(database.User)
+	if !ok {
 		log.Printf("Reached create Meal without user")
 		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
 	}

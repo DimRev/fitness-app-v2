@@ -28,6 +28,7 @@ func GenerateAndSignCookie(token *jwt.Token) (*http.Cookie, error) {
 	cookie.Value = tokenString
 	cookie.HttpOnly = true
 	cookie.Expires = time.Now().Add(time.Hour * 24)
+	cookie.Path = "/"
 
 	return cookie, nil
 }
