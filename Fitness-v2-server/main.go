@@ -23,9 +23,9 @@ func main() {
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{
 			"http://localhost:1323",
-			"http://localhost:5137",
+			"http://localhost:5173",
 			"http://127.0.0.1:1323",
-			"http://127.0.0.1:5137",
+			"http://127.0.0.1:5173",
 		},
 		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 		AllowCredentials: true,

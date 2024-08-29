@@ -27,7 +27,7 @@ type CreateMealRequest struct {
 func CreateMeal(c echo.Context) error {
 	createMealReq := CreateMealRequest{}
 	if err := c.Bind(&createMealReq); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
 			"message": "malformed request",
 		})
 	}
@@ -62,7 +62,7 @@ func CreateMeal(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse food items")
 	}
 
-	mealWithFoodItemsResp := models.MealWithFoodItems{
+	respMealWithFoodItems := models.MealWithFoodItems{
 		Meal: models.Meal{
 			ID:          mealWithFoodItems.MealID,
 			Name:        mealWithFoodItems.Name,
@@ -75,7 +75,7 @@ func CreateMeal(c echo.Context) error {
 		FoodItems: foodItems,
 	}
 
-	return c.JSON(200, mealWithFoodItemsResp)
+	return c.JSON(http.StatusOK, respMealWithFoodItems)
 }
 
 type GetMealsByUserIDRequest struct {
@@ -120,9 +120,9 @@ func GetMealsByUserID(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get meals")
 	}
 
-	mealsWithNutrition := make([]models.MealWithNutrition, len(mealWithSums))
+	respMealsWithNutrition := make([]models.MealWithNutrition, len(mealWithSums))
 	for i, mealWithSum := range mealWithSums {
-		mealsWithNutrition[i] = models.MealWithNutrition{
+		respMealsWithNutrition[i] = models.MealWithNutrition{
 			Meal: models.Meal{
 				ID:          mealWithSum.ID,
 				Name:        mealWithSum.Name,
@@ -139,7 +139,7 @@ func GetMealsByUserID(c echo.Context) error {
 		}
 	}
 
-	return c.JSON(http.StatusOK, mealsWithNutrition)
+	return c.JSON(http.StatusOK, respMealsWithNutrition)
 }
 
 func GetMealByID(c echo.Context) error {
@@ -202,7 +202,7 @@ func UpdateMeal(c echo.Context) error {
 
 	updateMealReq := UpdateMealRequest{}
 	if err := c.Bind(&updateMealReq); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
 			"message": "malformed request",
 		})
 	}
@@ -231,7 +231,7 @@ func UpdateMeal(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse food items")
 	}
 
-	mealWithFoodItemsResp := models.MealWithFoodItems{
+	respMealWithFoodItems := models.MealWithFoodItems{
 		Meal: models.Meal{
 			ID:          mealWithFoodItems.MealID,
 			Name:        mealWithFoodItems.Name,
@@ -244,5 +244,5 @@ func UpdateMeal(c echo.Context) error {
 		FoodItems: foodItems,
 	}
 
-	return c.JSON(http.StatusOK, mealWithFoodItemsResp)
+	return c.JSON(http.StatusOK, respMealWithFoodItems)
 }

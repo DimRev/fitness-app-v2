@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"database/sql"
 	"log"
 	"net/http"
 	"time"
@@ -21,23 +22,26 @@ type LoginRequest struct {
 func Login(c echo.Context) error {
 	loginReq := LoginRequest{}
 	if err := c.Bind(&loginReq); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
 			"message": "malformed request",
 		})
 	}
 
 	user, err := config.Queries.GetUserByEmail(c.Request().Context(), loginReq.Email)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
+				"message": "wrong email or password",
+			})
+		}
 		log.Println(err)
-		return c.JSON(http.StatusInternalServerError, map[string]string{
-			"message": "wrong email or password",
-		})
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to login")
 	}
 
 	err = services.ComparePassword(loginReq.Password, user.PasswordHash)
 	if err != nil {
 		log.Println(err)
-		return c.JSON(http.StatusInternalServerError, map[string]string{
+		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
 			"message": "wrong email or password",
 		})
 	}
@@ -46,7 +50,7 @@ func Login(c echo.Context) error {
 	cookie, err := services.GenerateAndSignCookie(token)
 	if err != nil {
 		log.Println(err)
-		return c.JSON(http.StatusInternalServerError, map[string]string{
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 			"message": "failed to create cookie",
 		})
 	}
@@ -93,7 +97,7 @@ type RegisterRequest struct {
 func Register(c echo.Context) error {
 	registerReq := RegisterRequest{}
 	if err := c.Bind(&registerReq); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
 			"message": "malformed request",
 		})
 	}
@@ -101,7 +105,7 @@ func Register(c echo.Context) error {
 	hash, err := services.HashPassword(registerReq.Password)
 	if err != nil {
 		log.Println(err)
-		return c.JSON(http.StatusInternalServerError, map[string]string{
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 			"message": "failed to create user",
 		})
 	}
@@ -118,11 +122,11 @@ func Register(c echo.Context) error {
 		pgErr := err.(*pq.Error)
 		switch pgErr.Code {
 		case "23505":
-			return c.JSON(http.StatusConflict, map[string]string{
+			return echo.NewHTTPError(http.StatusConflict, map[string]string{
 				"message": "email already exists",
 			})
 		default:
-			return c.JSON(http.StatusInternalServerError, map[string]string{
+			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 				"message": "failed to create user",
 			})
 		}
@@ -132,7 +136,7 @@ func Register(c echo.Context) error {
 	cookie, err := services.GenerateAndSignCookie(token)
 	if err != nil {
 		log.Println(err)
-		return c.JSON(http.StatusInternalServerError, map[string]string{
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 			"message": "failed to create cookie",
 		})
 	}

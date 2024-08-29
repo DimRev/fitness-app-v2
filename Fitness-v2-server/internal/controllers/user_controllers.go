@@ -19,7 +19,7 @@ type UpdateUserRequest struct {
 func UpdateUser(c echo.Context) error {
 	updateUserReq := UpdateUserRequest{}
 	if err := c.Bind(&updateUserReq); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
 			"message": "malformed request",
 		})
 	}
