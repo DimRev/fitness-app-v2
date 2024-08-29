@@ -25,7 +25,7 @@ inserted_food_items AS (
     new_meal.id, 
     unnest($5::uuid[]), -- unnest to expand array into rows
     $4::uuid,
-    unnest($6::numeric[]) -- unnest to expand array into rows
+    unnest($6::int[]) -- unnest to expand array into rows
   FROM new_meal
   RETURNING meal_id, food_item_id
 )
@@ -39,7 +39,7 @@ SELECT
   m.user_id,
   json_agg(
     json_build_object(
-      'food_item_id', f.food_item_id,
+      'id', f.food_item_id,
       'name', fi.name,
       'description', fi.description,
       'image_url', fi.image_url,
@@ -47,7 +47,9 @@ SELECT
       'calories', fi.calories,
       'fat', fi.fat,
       'protein', fi.protein,
-      'carbs', fi.carbs
+      'carbs', fi.carbs,
+      'created_at', fi.created_at,
+      'updated_at', fi.updated_at
     )
   ) AS foods
 FROM new_meal m
@@ -109,7 +111,7 @@ inserted_food_items AS (
     updated_meal.id, 
     unnest($5::uuid[]), -- unnest to expand array into rows
     $4::uuid,           -- user_id (assuming same as meal)
-    unnest($6::numeric[]) -- unnest to expand array into rows
+    unnest($6::int[]) -- unnest to expand array into rows
   FROM updated_meal
   RETURNING meal_id, food_item_id
 )
@@ -123,7 +125,7 @@ SELECT
   updated_meal.user_id,
   json_agg(
     json_build_object(
-      'food_item_id', f.food_item_id,
+      'id', f.food_item_id,
       'name', fi.name,
       'description', fi.description,
       'image_url', fi.image_url,
@@ -131,7 +133,9 @@ SELECT
       'calories', fi.calories,
       'fat', fi.fat,
       'protein', fi.protein,
-      'carbs', fi.carbs
+      'carbs', fi.carbs,
+      'created_at', fi.created_at,
+      'updated_at', fi.updated_at
     )
   ) AS foods
 FROM updated_meal

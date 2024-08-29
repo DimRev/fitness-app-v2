@@ -80,7 +80,6 @@ type Meal struct {
 	UserID      uuid.UUID
 }
 
-
 type RelMealFood struct {
 	MealID     uuid.UUID
 	FoodItemID uuid.UUID
