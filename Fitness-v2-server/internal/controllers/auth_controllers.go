@@ -93,7 +93,7 @@ type RegisterRequest struct {
 func Register(c echo.Context) error {
 	registerReq := RegisterRequest{}
 	if err := c.Bind(&registerReq); err != nil {
-		c.JSON(http.StatusBadRequest, map[string]string{
+		return c.JSON(http.StatusBadRequest, map[string]string{
 			"message": "malformed request",
 		})
 	}
@@ -132,7 +132,7 @@ func Register(c echo.Context) error {
 	cookie, err := services.GenerateAndSignCookie(token)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, map[string]string{
+		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"message": "failed to create cookie",
 		})
 	}

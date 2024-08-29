@@ -27,7 +27,7 @@ type CreateMealRequest struct {
 func CreateMeal(c echo.Context) error {
 	createMealReq := CreateMealRequest{}
 	if err := c.Bind(&createMealReq); err != nil {
-		c.JSON(http.StatusBadRequest, map[string]string{
+		return c.JSON(http.StatusBadRequest, map[string]string{
 			"message": "malformed request",
 		})
 	}
@@ -202,7 +202,7 @@ func UpdateMeal(c echo.Context) error {
 
 	updateMealReq := UpdateMealRequest{}
 	if err := c.Bind(&updateMealReq); err != nil {
-		c.JSON(http.StatusBadRequest, map[string]string{
+		return c.JSON(http.StatusBadRequest, map[string]string{
 			"message": "malformed request",
 		})
 	}
