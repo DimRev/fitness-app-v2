@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import MainPageWrapper from "./MainPage";
 import useAuthStore from "~/features/auth/hooks/useAuthStore";
+import MainPageWrapper from "./MainPage";
 
 function AuthLayout() {
   const navigate = useNavigate();
@@ -10,13 +10,15 @@ function AuthLayout() {
   useEffect(() => {
     if (user) {
       navigate("/");
-    } else if (
-      location.pathname === "/auth/" ||
-      location.pathname === "/auth"
-    ) {
+    }
+    if (location.pathname === "/auth/" || location.pathname === "/auth") {
       navigate("/auth/login");
     }
   }, [location, navigate, user]);
+
+  if (user) {
+    return <></>;
+  }
 
   return (
     <MainPageWrapper className="flex flex-col justify-center items-center">

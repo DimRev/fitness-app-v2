@@ -1,5 +1,5 @@
 type User = {
   email: string;
   username: string;
-  imageUrl: string;
+  imageUrl: null | string;
 };

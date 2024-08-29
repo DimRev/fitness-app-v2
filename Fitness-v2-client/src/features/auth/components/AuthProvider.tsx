@@ -24,6 +24,7 @@ function AuthProvider({ children }: Props) {
   if (isLoginFromCookieLoading) {
     return <div>Loading page...</div>;
   }
+
   return <>{children}</>;
 }
 
