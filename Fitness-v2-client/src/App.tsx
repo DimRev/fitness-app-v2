@@ -19,6 +19,10 @@ const queryClient = new QueryClient();
 function App() {
   const { isDarkMode } = useLayoutStore();
 
+  console.log(
+    `App is running in ${import.meta.env.MODE} connected to ${import.meta.env.VITE_API_URL}`,
+  );
+
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
