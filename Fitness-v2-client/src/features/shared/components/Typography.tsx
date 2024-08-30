@@ -1,5 +1,5 @@
 import { type LucideIcon, Slash } from "lucide-react";
-import { useMemo, type ReactNode } from "react";
+import React, { useMemo, type ReactNode } from "react";
 import { cn } from "~/lib/utils";
 import {
   Breadcrumb,
@@ -104,9 +104,9 @@ export function PageHeader({
         <Breadcrumb>
           <BreadcrumbList>
             {toRoutes.map((route, idx) => (
-              <>
-                <BreadcrumbItem key={route.path}>
-                  <BreadcrumbLink>
+              <React.Fragment key={route.path + idx}>
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
                     <Link to={`/${route.path}`}>{route.title}</Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
@@ -115,7 +115,7 @@ export function PageHeader({
                     <Slash />
                   </BreadcrumbSeparator>
                 )}
-              </>
+              </React.Fragment>
             ))}
           </BreadcrumbList>
         </Breadcrumb>
