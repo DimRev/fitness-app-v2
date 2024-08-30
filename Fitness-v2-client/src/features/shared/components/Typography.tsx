@@ -1,6 +1,14 @@
-import { LucideIcon } from "lucide-react";
-import { type ReactNode } from "react";
+import { type LucideIcon, Slash } from "lucide-react";
+import { useMemo, type ReactNode } from "react";
 import { cn } from "~/lib/utils";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from "./ui/breadcrumb";
+import { Link } from "react-router-dom";
 
 type Props = {
   children: ReactNode;
@@ -68,18 +76,50 @@ export function P({ children, className, ...props }: Props) {
 
 interface PageHeaderProps extends Props {
   LucideIcon: LucideIcon;
+  to: string;
 }
 
 export function PageHeader({
   children,
-  className,
   LucideIcon,
+  to,
   ...props
 }: PageHeaderProps) {
+  const toRoutes = useMemo(() => {
+    const routesArr = to.split("/").slice(1);
+    return routesArr.map((path, idx) => ({
+      path: routesArr.slice(0, idx + 1).join("/"),
+      title:
+        path === "" ? "Home" : path.charAt(0).toUpperCase() + path.slice(1),
+    }));
+  }, [to]);
+
   return (
-    <div className="flex justify-between items-center border-2 border-foreground px-5 py-4 rounded-md">
-      <H1 {...props}>{children}</H1>
-      <LucideIcon className="size-7" />
+    <div className="border-2 border-foreground bg-popover px-5 py-4 rounded-md text-popover-foreground stroke-popover-foreground">
+      <div className="flex justify-between items-center border-b">
+        <H1 {...props}>{children}</H1>
+        <LucideIcon className="size-7" />
+      </div>
+      <div className="py-2">
+        <Breadcrumb>
+          <BreadcrumbList>
+            {toRoutes.map((route, idx) => (
+              <>
+                <BreadcrumbItem key={route.path}>
+                  <BreadcrumbLink>
+                    <Link to={`/${route.path}`}>{route.title}</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                {idx !== toRoutes.length - 1 && (
+                  <BreadcrumbSeparator>
+                    <Slash />
+                  </BreadcrumbSeparator>
+                )}
+              </>
+            ))}
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
     </div>
   );
 }

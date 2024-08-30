@@ -5,7 +5,9 @@ import DashboardPageWrapper from "./DashboardPageWrapper";
 function DashboardOverviewPage() {
   return (
     <DashboardPageWrapper>
-      <PageHeader LucideIcon={LineChart}>Overview</PageHeader>
+      <PageHeader to="/dashboard" LucideIcon={LineChart}>
+        Overview
+      </PageHeader>
     </DashboardPageWrapper>
   );
 }

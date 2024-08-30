@@ -6,7 +6,9 @@ import { Sandwich } from "lucide-react";
 function DashboardMealPage() {
   return (
     <DashboardPageWrapper>
-      <PageHeader LucideIcon={Sandwich}>Meals</PageHeader>
+      <PageHeader to="/dashboard/meal" LucideIcon={Sandwich}>
+        Meals
+      </PageHeader>
       <MealsList />
     </DashboardPageWrapper>
   );

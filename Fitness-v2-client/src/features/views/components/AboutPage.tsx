@@ -5,7 +5,9 @@ import { Info } from "lucide-react";
 function AboutPage() {
   return (
     <MainPageWrapper>
-      <PageHeader LucideIcon={Info}>About Page</PageHeader>
+      <PageHeader to="/about" LucideIcon={Info}>
+        About Page
+      </PageHeader>
     </MainPageWrapper>
   );
 }

@@ -71,7 +71,7 @@ function UserBadge({ user }: Props) {
             <AvatarFallback>{formattedUsername}</AvatarFallback>
           </Avatar>
         </PopoverTrigger>
-        <PopoverContent>
+        <PopoverContent className={cn(isDarkMode && "dark")}>
           <h3 className="font-bold text-lg">{user.username}</h3>
           <p className="font-light text-sm">{user.email}</p>
           <div className="flex items-center gap-2 transition-colors duration-500 hover:cursor-pointer hover:fill-primary hover:text-primary">
