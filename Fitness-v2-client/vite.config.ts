@@ -4,7 +4,7 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   build: {
-    outDir: "../Fitness-v2-server/public",
+    outDir: "dist",
   },
   plugins: [react()],
   resolve: {
