@@ -11,15 +11,24 @@ import AuthProvider from "./features/auth/components/AuthProvider";
 import DashboardLayout from "./features/views/components/DashboardLayout";
 import DashboardOverviewPage from "./features/views/components/DashboardOverviewPage";
 import DashboardMealPage from "./features/views/components/DashboardMealPage";
+import useLayoutStore from "./features/layout/hooks/useLayoutStore";
+import { cn } from "./lib/utils";
 
 const queryClient = new QueryClient();
 
 function App() {
+  const { isDarkMode } = useLayoutStore();
+
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AuthProvider>
-          <div className="flex flex-col bg-background w-screen h-dvh text-foreground antialiased overflow-hidden">
+          <div
+            className={cn(
+              "flex h-dvh w-screen flex-col overflow-hidden bg-background text-foreground antialiased",
+              isDarkMode && "dark",
+            )}
+          >
             <AppHeader />
             <Routes>
               <Route path="/" element={<HomePage />} />

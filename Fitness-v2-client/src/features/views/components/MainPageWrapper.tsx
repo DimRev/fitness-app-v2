@@ -8,7 +8,7 @@ type Props = {
 
 function MainPageWrapper({ children, className }: Props) {
   return (
-    <div className={cn("h-main overflow-y-auto", className)}>
+    <div className={cn("h-main overflow-y-auto pt-4", className)}>
       <div className="container">{children}</div>
     </div>
   );

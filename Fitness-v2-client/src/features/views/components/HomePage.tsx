@@ -1,9 +1,10 @@
+import { H1 } from "~/features/shared/components/Typography";
 import MainPageWrapper from "./MainPageWrapper";
 
 function HomePage() {
   return (
     <MainPageWrapper>
-      <div>Home Page</div>
+      <H1>Home Page</H1>
     </MainPageWrapper>
   );
 }

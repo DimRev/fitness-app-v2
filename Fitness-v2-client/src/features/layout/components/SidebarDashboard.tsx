@@ -3,6 +3,7 @@ import { Button } from "~/features/shared/components/ui/button";
 import { cn } from "~/lib/utils";
 import useLayoutStore from "../hooks/useLayoutStore";
 import SidebarNavLink from "./SidebarNavLink";
+import { H3 } from "~/features/shared/components/Typography";
 
 function SidebarDashboard() {
   const { isSidebarOpen, setIsSidebarOpen } = useLayoutStore();
@@ -17,8 +18,9 @@ function SidebarDashboard() {
       {isSidebarOpen ? (
         <>
           <div className="flex justify-between items-center gap-2 w-full">
-            <h3 className="font-bold text-lg truncate">Dashboard</h3>
+            <H3 className="truncate">Dashboard</H3>
             <Button
+              className="bg-sidebar"
               variant="outline"
               size="icon"
               onClick={() => setIsSidebarOpen()}
@@ -30,6 +32,7 @@ function SidebarDashboard() {
       ) : (
         <>
           <Button
+            className="bg-sidebar"
             variant="outline"
             size="icon"
             onClick={() => setIsSidebarOpen()}
@@ -48,7 +51,7 @@ function SidebarDashboard() {
       <SidebarNavLink
         LucideIcon={Sandwich}
         to="/dashboard/meal"
-        title="Meal"
+        title="Meals"
         onlyIcon={!isSidebarOpen}
       />
     </nav>

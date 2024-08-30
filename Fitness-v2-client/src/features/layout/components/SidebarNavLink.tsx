@@ -14,7 +14,11 @@ function SidebarNavLink({ to, title, LucideIcon, onlyIcon }: Props) {
     return (
       <Link
         to={to}
-        className={buttonVariants({ variant: "outline", size: "icon" })}
+        className={buttonVariants({
+          variant: "outline",
+          size: "icon",
+          className: "bg-sidebar",
+        })}
       >
         <LucideIcon className="size-5" />
       </Link>
@@ -26,7 +30,7 @@ function SidebarNavLink({ to, title, LucideIcon, onlyIcon }: Props) {
       to={to}
       className={buttonVariants({
         variant: "outline",
-        className: "grid w-full grid-cols-[auto_1fr]",
+        className: "grid w-full grid-cols-[auto_1fr] bg-sidebar",
       })}
     >
       <LucideIcon className="me-4 size-4" />

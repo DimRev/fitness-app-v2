@@ -12,7 +12,9 @@ import {
   PopoverContent,
 } from "~/features/shared/components/ui/popover";
 import { PopoverTrigger } from "@radix-ui/react-popover";
-import { Settings } from "lucide-react";
+import { Moon, Settings, Sun } from "lucide-react";
+import useLayoutStore from "~/features/layout/hooks/useLayoutStore";
+import { cn } from "~/lib/utils";
 
 type Props = {
   user: User;
@@ -21,6 +23,7 @@ type Props = {
 function UserBadge({ user }: Props) {
   const { mutateAsync: logout, isLoading: isLogoutLoading } = useLogout();
   const { setUser } = useAuthStore();
+  const { setIsDarkMode, isDarkMode } = useLayoutStore();
   async function handleLogout() {
     try {
       await logout(undefined, {
@@ -74,6 +77,22 @@ function UserBadge({ user }: Props) {
           <div className="flex items-center gap-2 transition-colors duration-500 hover:cursor-pointer hover:fill-primary hover:text-primary">
             <Settings className="size-4" />
             <p>Settings</p>
+          </div>
+          <div className="flex gap-1 py-2">
+            <Button
+              size="icon"
+              className={cn(!isDarkMode && "bg-yellow-500 hover:bg-yellow-700")}
+              onClick={() => setIsDarkMode(!isDarkMode)}
+            >
+              <Sun className={cn("size-4", !isDarkMode && "stroke-black")} />
+            </Button>
+            <Button
+              size="icon"
+              className={cn(isDarkMode && "bg-blue-500 hover:bg-blue-700")}
+              onClick={() => setIsDarkMode(!isDarkMode)}
+            >
+              <Moon className={cn("size-4", isDarkMode && "stroke-black")} />
+            </Button>
           </div>
           <div className="flex justify-end">
             <Button
