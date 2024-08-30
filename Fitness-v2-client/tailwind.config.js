@@ -23,8 +23,12 @@ module.exports = {
       },
       width: {
         main: "100dvw",
-        dashboard: "calc(100dvw - 200px)",
-        dashboardSidebar: "200px",
+        "dashboard-lg": "calc(100dvw - 200px)",
+        "dashboard-md": "calc(100dvw - 150px)",
+        "dashboard-sm": "calc(100dvw - 56px)",
+        "dashboardSidebar-lg": "200px",
+        "dashboardSidebar-md": "150px",
+        "dashboardSidebar-sm": "56px",
       },
       colors: {
         border: "hsl(var(--border))",

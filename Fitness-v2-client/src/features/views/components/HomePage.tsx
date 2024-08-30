@@ -1,4 +1,4 @@
-import MainPageWrapper from "./MainPage";
+import MainPageWrapper from "./MainPageWrapper";
 
 function HomePage() {
   return (

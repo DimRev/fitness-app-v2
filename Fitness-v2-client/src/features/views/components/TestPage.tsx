@@ -1,5 +1,5 @@
 import { cn } from "~/lib/utils";
-import MainPageWrapper from "./MainPage";
+import MainPageWrapper from "./MainPageWrapper";
 
 function TestPage() {
   return (

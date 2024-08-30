@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import UserBadge from "~/features/auth/components/UserBadge";
 import useAuthStore from "~/features/auth/hooks/useAuthStore";
-import { Button, buttonVariants } from "~/features/shared/components/ui/button";
+import { buttonVariants } from "~/features/shared/components/ui/button";
 
 function AppHeader() {
   const { user } = useAuthStore();
@@ -18,7 +18,15 @@ function AppHeader() {
           About
         </Link>
         {user ? (
-          <UserBadge user={user} />
+          <>
+            <Link
+              to="/dashboard"
+              className={buttonVariants({ variant: "link" })}
+            >
+              Dashboard
+            </Link>
+            <UserBadge user={user} />
+          </>
         ) : (
           <div className="flex gap-1">
             <Link
