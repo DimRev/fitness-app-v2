@@ -6,7 +6,7 @@ import { buttonVariants } from "~/features/shared/components/ui/button";
 function AppHeader() {
   const { user } = useAuthStore();
   return (
-    <div className="flex justify-between items-center bg-header px-4 border-b-2 h-header">
+    <div className="flex justify-between items-center border-foreground bg-header px-4 border-b h-header">
       <Link to="/">
         <div>Fitness</div>
       </Link>

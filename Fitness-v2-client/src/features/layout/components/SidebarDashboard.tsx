@@ -1,9 +1,9 @@
-import { ChevronLeft, ChevronRight, Sandwich, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, LineChart, Sandwich } from "lucide-react";
+import { H3 } from "~/features/shared/components/Typography";
 import { Button } from "~/features/shared/components/ui/button";
 import { cn } from "~/lib/utils";
 import useLayoutStore from "../hooks/useLayoutStore";
 import SidebarNavLink from "./SidebarNavLink";
-import { H3 } from "~/features/shared/components/Typography";
 
 function SidebarDashboard() {
   const { isSidebarOpen, setIsSidebarOpen } = useLayoutStore();
@@ -20,7 +20,7 @@ function SidebarDashboard() {
           <div className="flex justify-between items-center gap-2 w-full">
             <H3 className="truncate">Dashboard</H3>
             <Button
-              className="bg-sidebar"
+              className="border-foreground bg-sidebar"
               variant="outline"
               size="icon"
               onClick={() => setIsSidebarOpen()}
@@ -32,7 +32,7 @@ function SidebarDashboard() {
       ) : (
         <>
           <Button
-            className="bg-sidebar"
+            className="border-foreground bg-sidebar"
             variant="outline"
             size="icon"
             onClick={() => setIsSidebarOpen()}
@@ -41,9 +41,9 @@ function SidebarDashboard() {
           </Button>
         </>
       )}
-      <div className="border-b-2 w-full"></div>
+      <div className="border-foreground border-b w-full"></div>
       <SidebarNavLink
-        LucideIcon={Search}
+        LucideIcon={LineChart}
         to="/dashboard"
         title="Overview"
         onlyIcon={!isSidebarOpen}

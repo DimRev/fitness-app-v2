@@ -1,10 +1,11 @@
-import { H1 } from "~/features/shared/components/Typography";
+import { PageHeader } from "~/features/shared/components/Typography";
 import MainPageWrapper from "./MainPageWrapper";
+import { Home } from "lucide-react";
 
 function HomePage() {
   return (
     <MainPageWrapper>
-      <H1>Home Page</H1>
+      <PageHeader LucideIcon={Home}>Home Page</PageHeader>
     </MainPageWrapper>
   );
 }

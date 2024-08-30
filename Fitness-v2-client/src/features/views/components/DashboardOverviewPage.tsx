@@ -1,10 +1,11 @@
-import { H1 } from "~/features/shared/components/Typography";
+import { LineChart } from "lucide-react";
+import { PageHeader } from "~/features/shared/components/Typography";
 import DashboardPageWrapper from "./DashboardPageWrapper";
 
 function DashboardOverviewPage() {
   return (
     <DashboardPageWrapper>
-      <H1>Overview</H1>
+      <PageHeader LucideIcon={LineChart}>Overview</PageHeader>
     </DashboardPageWrapper>
   );
 }

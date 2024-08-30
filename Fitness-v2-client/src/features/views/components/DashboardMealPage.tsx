@@ -1,10 +1,13 @@
-import { H1 } from "~/features/shared/components/Typography";
+import MealsList from "~/features/meal/components/MealsList";
+import { PageHeader } from "~/features/shared/components/Typography";
 import DashboardPageWrapper from "./DashboardPageWrapper";
+import { Sandwich } from "lucide-react";
 
 function DashboardMealPage() {
   return (
     <DashboardPageWrapper>
-      <H1>Meals</H1>
+      <PageHeader LucideIcon={Sandwich}>Meals</PageHeader>
+      <MealsList />
     </DashboardPageWrapper>
   );
 }

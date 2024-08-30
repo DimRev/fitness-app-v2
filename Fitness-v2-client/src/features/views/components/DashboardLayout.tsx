@@ -26,7 +26,7 @@ function DashboardLayout() {
   if (!isSidebarOpen) {
     return (
       <div className="flex">
-        <div className="border-e-2 bg-sidebar w-dashboardSidebar-sm h-main">
+        <div className="border-e border-foreground bg-sidebar w-dashboardSidebar-sm h-main">
           <SidebarDashboard />
         </div>
         <div className="w-dashboard-sm h-main">
@@ -38,7 +38,7 @@ function DashboardLayout() {
 
   return (
     <div className="flex">
-      <div className="border-e-2 bg-sidebar w-dashboardSidebar-md md:w-dashboardSidebar-lg h-main">
+      <div className="border-e border-foreground bg-sidebar w-dashboardSidebar-md md:w-dashboardSidebar-lg h-main">
         <SidebarDashboard />
       </div>
       <div className="w-dashboard-md md:w-dashboard-lg h-main">
