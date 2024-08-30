@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useQuery, type UseQueryResult } from "react-query";
 import axiosInstance from "~/lib/axios";
+import { QUERY_KEYS, USE_QUERY_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
 type GetMealsByUserIDRequestBody = {
   limit: number;
@@ -14,13 +15,16 @@ type ErrorResponseBody = {
 function useGetMealsByUserID(
   params: GetMealsByUserIDRequestBody,
 ): UseQueryResult<MealWithNutrition[], Error> {
-  return useQuery<MealWithNutrition[], Error>(
-    ["getMealsByUserID", params.limit, params.offset],
-    () => getMealsByUserID(params),
-    {
-      enabled: !!params,
-    },
-  );
+  return useQuery<MealWithNutrition[], Error>({
+    ...USE_QUERY_DEFAULT_OPTIONS,
+    queryKey: [
+      QUERY_KEYS.MEALS.GET_MEALS_BY_USER_ID,
+      params.limit,
+      params.offset,
+    ],
+    queryFn: () => getMealsByUserID(params),
+    enabled: !!params,
+  });
 }
 
 async function getMealsByUserID({

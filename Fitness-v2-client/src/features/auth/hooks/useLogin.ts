@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useMutation, type UseMutationResult } from "react-query";
 import axiosInstance from "~/lib/axios";
+import { USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
 type LoginRequestBody = {
   email: string;
@@ -12,7 +13,9 @@ type ErrorResponseBody = {
 };
 
 function useLogin(): UseMutationResult<User, Error, LoginRequestBody> {
-  return useMutation<User, Error, LoginRequestBody>(login);
+  return useMutation<User, Error, LoginRequestBody>(login, {
+    ...USE_MUTATION_DEFAULT_OPTIONS,
+  });
 }
 
 async function login({ email, password }: LoginRequestBody): Promise<User> {

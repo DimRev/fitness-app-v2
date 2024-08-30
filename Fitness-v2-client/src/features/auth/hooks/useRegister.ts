@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useMutation, type UseMutationResult } from "react-query";
 import axiosInstance from "~/lib/axios";
+import { USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
 type RegisterRequestBody = {
   email: string;
@@ -13,7 +14,9 @@ type ErrorResponseBody = {
 };
 
 function useRegister(): UseMutationResult<User, Error, RegisterRequestBody> {
-  return useMutation<User, Error, RegisterRequestBody>(register);
+  return useMutation<User, Error, RegisterRequestBody>(register, {
+    ...USE_MUTATION_DEFAULT_OPTIONS,
+  });
 }
 
 async function register({

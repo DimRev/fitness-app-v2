@@ -1,13 +1,16 @@
 import axios from "axios";
 import { useMutation, type UseMutationResult } from "react-query";
 import axiosInstance from "~/lib/axios";
+import { USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
 type ErrorResponseBody = {
   message: string;
 };
 
 function useLoginFromCookie(): UseMutationResult<User, Error, void> {
-  return useMutation<User, Error, void>(loginFromCookie);
+  return useMutation<User, Error, void>(loginFromCookie, {
+    ...USE_MUTATION_DEFAULT_OPTIONS,
+  });
 }
 
 async function loginFromCookie(): Promise<User> {
