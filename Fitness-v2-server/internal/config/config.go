@@ -4,10 +4,12 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/DimRev/Fitness-v2-server/internal/database"
 	"github.com/joho/godotenv"
 
+	_ "github.com/jackc/pgx/v4/stdlib"
 	_ "github.com/lib/pq"
 )
 
@@ -16,13 +18,12 @@ var (
 	Port      string
 	JwtSecret string
 	DB        *sql.DB
+	CORS      []string
 )
 
 func New() error {
-	err := godotenv.Load()
-	if err != nil {
-		return err
-	}
+	// Try to load .env file, but don't fail if it doesn't exist
+	_ = godotenv.Load()
 
 	dbUrl := os.Getenv("DATABASE_URL")
 	if dbUrl == "" {
@@ -40,6 +41,31 @@ func New() error {
 		return fmt.Errorf("JWT_SECRET environment variable not set")
 	}
 	JwtSecret = jwtSecret
+
+	corsStr := os.Getenv("CORS")
+	if corsStr == "" {
+		return fmt.Errorf("CORS environment variable not set")
+	}
+	CORS = strings.Split(corsStr, ",")
+
+	// Use a separate connection for Goose migration
+	// ---------------------------------------------
+	// gooseDBconn, err := goose.OpenDBWithDriver("postgres", dbUrl)
+	// if err != nil {
+	// 	return fmt.Errorf("failed to connect to database: %v", err)
+	// }
+	// defer gooseDBconn.Close()
+
+	// migrationDir := "sql/schema"
+	// if err := goose.Up(gooseDBconn, migrationDir); err != nil {
+	// 	return fmt.Errorf("failed to run migrations: %v", err)
+	// }
+
+	// // Print the current migration status
+	// if err := goose.Status(gooseDBconn, migrationDir); err != nil {
+	// 	return fmt.Errorf("failed to print migration status: %v", err)
+	// }
+	// ---------------------------------------------
 
 	db, err := sql.Open("postgres", dbUrl)
 	if err != nil {

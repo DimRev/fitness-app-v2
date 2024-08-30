@@ -119,13 +119,18 @@ func Register(c echo.Context) error {
 	user, err := config.Queries.CreateUser(c.Request().Context(), createUserParams)
 	if err != nil {
 		log.Println(err)
-		pgErr := err.(*pq.Error)
-		switch pgErr.Code {
-		case "23505":
-			return echo.NewHTTPError(http.StatusConflict, map[string]string{
-				"message": "email already exists",
-			})
-		default:
+		if pgErr, ok := err.(*pq.Error); ok {
+			switch pgErr.Code {
+			case "23505":
+				return echo.NewHTTPError(http.StatusConflict, map[string]string{
+					"message": "email already exists",
+				})
+			default:
+				return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+					"message": "failed to create user",
+				})
+			}
+		} else {
 			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 				"message": "failed to create user",
 			})

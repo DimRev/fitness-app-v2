@@ -21,12 +21,7 @@ func main() {
 
 	e := echo.New()
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{
-			"http://localhost:1323",
-			"http://localhost:5173",
-			"http://127.0.0.1:1323",
-			"http://127.0.0.1:5173",
-		},
+		AllowOrigins:     config.CORS,
 		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 		AllowCredentials: true,
 		AllowMethods: []string{
@@ -37,11 +32,16 @@ func main() {
 		},
 	}))
 
+	log.Printf("Server settings\nCors: %v\nAllowHeaders: %v\nAllowCredentials: %v\nAllowMethods: %v\n",
+		config.CORS,
+		[]string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+		true,
+		[]string{echo.GET, echo.PUT, echo.POST, echo.DELETE})
+
 	routes.V1ApiRoutes(e)
 
 	e.GET("/", func(c echo.Context) error {
 		return c.String(200, "Hello, World!")
 	})
-
 	e.Logger.Fatal(e.Start(":" + config.Port))
 }
