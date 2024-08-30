@@ -10,6 +10,7 @@ import TestPage from "./features/views/components/TestPage";
 import AuthProvider from "./features/auth/components/AuthProvider";
 import DashboardLayout from "./features/views/components/DashboardLayout";
 import DashboardOverviewPage from "./features/views/components/DashboardOverviewPage";
+import DashboardMealPage from "./features/views/components/DashboardMealPage";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ function App() {
               <Route path="/about" element={<AboutPage />} />
               <Route path="/dashboard" element={<DashboardLayout />}>
                 <Route index element={<DashboardOverviewPage />} />
+                <Route path="meal" element={<DashboardMealPage />} />
               </Route>
               <Route path="/auth" element={<AuthLayout />}>
                 <Route path="login" index element={<LoginPage />} />

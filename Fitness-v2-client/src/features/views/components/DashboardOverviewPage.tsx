@@ -1,5 +1,7 @@
+import DashboardPageWrapper from "./DashboardPageWrapper";
+
 function DashboardOverviewPage() {
-  return <div>DashboardOverviewPage</div>;
+  return <DashboardPageWrapper>DashboardOverviewPage</DashboardPageWrapper>;
 }
 
 export default DashboardOverviewPage;
