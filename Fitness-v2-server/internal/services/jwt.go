@@ -27,10 +27,16 @@ func GenerateAndSignCookie(token *jwt.Token) (*http.Cookie, error) {
 	cookie.Name = "jwt"
 	cookie.Value = tokenString
 	cookie.HttpOnly = true
-	cookie.SameSite = http.SameSiteLaxMode
-	cookie.Secure = false
 	cookie.Expires = time.Now().Add(time.Hour * 24)
 	cookie.Path = "/"
+
+	if config.ENV == "production" {
+		cookie.Secure = true
+		cookie.SameSite = http.SameSiteNoneMode
+	} else {
+		cookie.Secure = false
+		cookie.SameSite = http.SameSiteLaxMode
+	}
 
 	return cookie, nil
 }

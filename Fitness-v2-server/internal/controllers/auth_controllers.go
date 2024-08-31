@@ -102,10 +102,17 @@ func Logout(c echo.Context) error {
 	cookie.Name = "jwt"
 	cookie.Value = ""
 	cookie.HttpOnly = true
-	cookie.SameSite = http.SameSiteLaxMode
-	cookie.Secure = false
 	cookie.Expires = time.Now().Add(-time.Hour * 24)
 	cookie.Path = "/"
+
+	if config.ENV == "production" {
+		cookie.Secure = true
+		cookie.SameSite = http.SameSiteNoneMode
+	} else {
+		cookie.Secure = false
+		cookie.SameSite = http.SameSiteLaxMode
+	}
+
 	c.SetCookie(cookie)
 
 	err := services.DeleteSession(c, sessionToken)

@@ -37,11 +37,13 @@ func main() {
 		CustomTimeFormat: "2006-01-02 15:04:05",
 	}))
 
-	log.Printf("Server settings\nCors: %v\nAllowHeaders: %v\nAllowCredentials: %v\nAllowMethods: %v\n",
+	log.Printf("Server settings\nCors: %v\nAllowHeaders: %v\nAllowCredentials: %v\nAllowMethods: %v\nServer Environment: %v\n",
 		config.CORS,
 		[]string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 		true,
-		[]string{echo.GET, echo.PUT, echo.POST, echo.DELETE})
+		[]string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
+		config.ENV,
+	)
 
 	routes.V1ApiRoutes(e)
 
