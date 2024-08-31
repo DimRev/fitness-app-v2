@@ -68,9 +68,13 @@ func New() error {
 	}
 	// ---------------------------------------------
 
-	db, err := sql.Open("postgres", dbUrl)
+	db, err := sql.Open("pgx", dbUrl)
 	if err != nil {
 		return fmt.Errorf("error opening database: %w", err)
+	}
+
+	if err := db.Ping(); err != nil {
+		return fmt.Errorf("database ping failed: %v", err)
 	}
 
 	// Assign the database connection to the global variable

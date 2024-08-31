@@ -14,4 +14,6 @@ type User struct {
 	ImageUrl     *string   `json:"image_url"`
 	CreatedAt    time.Time `json:"-"`
 	UpdatedAt    time.Time `json:"-"`
+
+	SessionToken string `json:"session_token"`
 }

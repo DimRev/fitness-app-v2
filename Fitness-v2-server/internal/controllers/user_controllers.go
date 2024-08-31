@@ -45,6 +45,13 @@ func UpdateUser(c echo.Context) error {
 		username = user.Username
 	}
 
+	if err := config.DB.Ping(); err != nil {
+		log.Println("Connection to database failed: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "failed to update user",
+		})
+	}
+
 	updateUserParams := database.UpdateUserParams{
 		ID:       user.ID,
 		ImageUrl: imageUrl,

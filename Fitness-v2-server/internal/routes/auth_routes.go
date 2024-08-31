@@ -11,7 +11,8 @@ func AuthRoutesV1(e *echo.Group) {
 	{
 		auth.POST("/login", controllers.Login)
 		auth.POST("/register", controllers.Register)
-		auth.POST("/logout", controllers.Logout)
+		auth.POST("/logout", middleware.ProtectedRoute(controllers.Logout))
 		auth.POST("/loginFromCookie", middleware.ProtectedRoute(controllers.LoginFromCookie))
+		auth.POST("/loginFromSession", controllers.LoginWithSession)
 	}
 }

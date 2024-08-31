@@ -39,6 +39,7 @@ function LoginForm() {
     try {
       await login(data, {
         onSuccess: (user) => {
+          sessionStorage.setItem("fitness_app_session", user.session_token);
           setUser(user);
         },
       });

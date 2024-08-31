@@ -1,5 +1,6 @@
 type User = {
   email: string;
   username: string;
-  imageUrl: null | string;
+  image_url: null | string;
+  session_token: string;
 };
