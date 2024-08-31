@@ -23,15 +23,24 @@ const (
 )
 
 func (e *FoodItemType) Scan(src interface{}) error {
+	var str string
+
 	switch s := src.(type) {
 	case []byte:
-		*e = FoodItemType(s)
+		str = string(s)
 	case string:
-		*e = FoodItemType(s)
+		str = s
 	default:
 		return fmt.Errorf("unsupported scan type for FoodItemType: %T", src)
 	}
-	return nil
+
+	switch FoodItemType(str) {
+	case FoodItemTypeVegetable, FoodItemTypeFruit, FoodItemTypeGrain, FoodItemTypeProtein:
+		*e = FoodItemType(str)
+		return nil
+	default:
+		return fmt.Errorf("invalid food type: %s", str)
+	}
 }
 
 type NullFoodItemType struct {

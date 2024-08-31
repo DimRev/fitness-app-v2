@@ -45,6 +45,7 @@ func ProtectedRoute(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
+// ProtectedRouteWithRoles checks if the user has a role in the given roles array, comes AFTER the ProtectedRoute middleware
 func ProtectedRouteWithRoles(next echo.HandlerFunc, roles []database.UserRole) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		user := c.Get("user")
@@ -52,7 +53,7 @@ func ProtectedRouteWithRoles(next echo.HandlerFunc, roles []database.UserRole) e
 			return echo.NewHTTPError(http.StatusUnauthorized, "user not found in context")
 		}
 
-		userDetails, ok := user.(*database.User)
+		userDetails, ok := user.(database.User)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "invalid user type")
 		}
@@ -69,7 +70,6 @@ func ProtectedRouteWithRoles(next echo.HandlerFunc, roles []database.UserRole) e
 			return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
 		}
 
-		// Call the next handler
 		return next(c)
 	}
 }
