@@ -5,10 +5,12 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/DimRev/Fitness-v2-server/internal/config"
 	"github.com/DimRev/Fitness-v2-server/internal/database"
 	"github.com/DimRev/Fitness-v2-server/internal/models"
+	"github.com/jackc/pgconn"
 	"github.com/labstack/echo"
 )
 
@@ -126,7 +128,7 @@ func CreateFoodItem(c echo.Context) error {
 
 	foodType := database.FoodItemType(createFoodItemReq.FoodType)
 	if err := foodType.Scan(string(createFoodItemReq.FoodType)); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid food type")
 	}
 
 	if _, err := strconv.ParseFloat(createFoodItemReq.Fat, 64); err != nil {
@@ -167,7 +169,23 @@ func CreateFoodItem(c echo.Context) error {
 
 	foodItem, err := config.Queries.CreateFood(c.Request().Context(), createFoodItemParams)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to create food item")
+		if pgErr, ok := err.(*pgconn.PgError); ok {
+			switch pgErr.Code {
+			case "22P02":
+				errMsg := strings.Replace(pgErr.Message, "_", " ", -1)
+				return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+					"message": errMsg,
+				})
+
+			default:
+				return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+					"message": "failed to create food item",
+				})
+			}
+		} else {
+			log.Println("Non-PostgreSQL error detected: ", err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "failed to create food item")
+		}
 	}
 
 	var respDescription *string
