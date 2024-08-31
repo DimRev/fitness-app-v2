@@ -13,6 +13,7 @@ import DashboardOverviewPage from "./features/views/components/DashboardOverview
 import DashboardMealPage from "./features/views/components/DashboardMealPage";
 import useLayoutStore from "./features/layout/hooks/useLayoutStore";
 import { cn } from "./lib/utils";
+import PageNotFound from "./features/views/components/PageNotFound";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,8 @@ function App() {
                 <Route path="register" element={<RegisterPage />} />
               </Route>
               <Route path="/test" element={<TestPage />} />
+
+              <Route path="*" element={<PageNotFound />} />
             </Routes>
           </div>
         </AuthProvider>

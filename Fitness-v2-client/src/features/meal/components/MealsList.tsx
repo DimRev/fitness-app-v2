@@ -1,5 +1,6 @@
 import { DashboardContentCards } from "~/features/shared/components/CustomCards";
 import useGetMealsByUserID from "../hooks/useGetMealsByUserID";
+import { Button } from "~/features/shared/components/ui/button";
 
 function MealsList() {
   const {
@@ -25,11 +26,20 @@ function MealsList() {
   if (!mealsWithNutrition) {
     return (
       <DashboardContentCards title="Meals">
+        <div className="flex justify-end">
+          <Button>Add Meal</Button>
+        </div>
         No meals found
       </DashboardContentCards>
     );
   }
-  return <DashboardContentCards title="Meals"></DashboardContentCards>;
+  return (
+    <DashboardContentCards title="Meals">
+      <div className="flex justify-end">
+        <Button>Add Meal</Button>
+      </div>
+    </DashboardContentCards>
+  );
 }
 
 export default MealsList;
