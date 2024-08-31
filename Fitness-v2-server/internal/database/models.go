@@ -7,6 +7,7 @@ package database
 import (
 	"database/sql"
 	"database/sql/driver"
+	"encoding/json"
 	"fmt"
 
 	"github.com/google/uuid"
@@ -85,6 +86,16 @@ type RelMealFood struct {
 	FoodItemID uuid.UUID
 	UserID     uuid.UUID
 	Amount     sql.NullInt32
+}
+
+type Session struct {
+	ID           uuid.UUID
+	UserID       uuid.UUID
+	CreatedAt    sql.NullTime
+	UpdatedAt    sql.NullTime
+	ExpiresAt    sql.NullTime
+	SessionToken string
+	SessionData  json.RawMessage
 }
 
 type User struct {

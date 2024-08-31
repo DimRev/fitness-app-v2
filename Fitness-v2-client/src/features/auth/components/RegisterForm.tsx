@@ -41,6 +41,7 @@ function RegisterForm() {
     try {
       await register(data, {
         onSuccess: (user) => {
+          sessionStorage.setItem("fitness_app_session", user.session_token);
           setUser(user);
         },
       });

@@ -30,6 +30,14 @@ func ProtectedRoute(next echo.HandlerFunc) echo.HandlerFunc {
 			return echo.NewHTTPError(http.StatusUnauthorized, "invalid jwt token")
 		}
 
+		sessionToken, err := services.GenerateAndRefresh(c, user.ID)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+				"message": "failed to generate session",
+			})
+		}
+
+		c.Set("session_token", sessionToken)
 		c.Set("user", user)
 
 		return next(c)

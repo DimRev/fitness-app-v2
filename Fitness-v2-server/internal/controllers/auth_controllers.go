@@ -53,6 +53,14 @@ func Login(c echo.Context) error {
 		})
 	}
 
+	sessionToken, err := services.GenerateAndRefresh(c, user.ID)
+	if err != nil {
+		log.Println("Failed to generate session: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "failed to generate session",
+		})
+	}
+
 	token := services.CreateJwt(user.ID)
 	cookie, err := services.GenerateAndSignCookie(token)
 	if err != nil {
@@ -76,19 +84,37 @@ func Login(c echo.Context) error {
 		ImageUrl:     imageUrl,
 		CreatedAt:    user.CreatedAt.Time,
 		UpdatedAt:    user.UpdatedAt.Time,
+
+		SessionToken: sessionToken,
 	}
 
 	return c.JSON(http.StatusOK, respUser)
 }
 
 func Logout(c echo.Context) error {
+	sessionToken, ok := c.Get("session_token").(string)
+	if !ok {
+		log.Printf("Reached logout without user")
+		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
+	}
+
 	cookie := new(http.Cookie)
 	cookie.Name = "jwt"
 	cookie.Value = ""
 	cookie.HttpOnly = true
+	cookie.SameSite = http.SameSiteLaxMode
+	cookie.Secure = false
 	cookie.Expires = time.Now().Add(-time.Hour * 24)
 	cookie.Path = "/"
 	c.SetCookie(cookie)
+
+	err := services.DeleteSession(c, sessionToken)
+	if err != nil {
+		log.Println("Failed to delete session: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "failed to delete session",
+		})
+	}
 
 	return c.JSON(http.StatusOK, map[string]string{
 		"message": "logged out",
@@ -151,6 +177,14 @@ func Register(c echo.Context) error {
 		}
 	}
 
+	sessionToken, err := services.GenerateAndRefresh(c, user.ID)
+	if err != nil {
+		log.Println("Failed to generate session: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "failed to generate session",
+		})
+	}
+
 	token := services.CreateJwt(user.ID)
 	cookie, err := services.GenerateAndSignCookie(token)
 	if err != nil {
@@ -174,6 +208,8 @@ func Register(c echo.Context) error {
 		ImageUrl:     imageUrl,
 		CreatedAt:    user.CreatedAt.Time,
 		UpdatedAt:    user.UpdatedAt.Time,
+
+		SessionToken: sessionToken,
 	}
 	return c.JSON(http.StatusOK, respUser)
 }
@@ -181,7 +217,7 @@ func Register(c echo.Context) error {
 func LoginFromCookie(c echo.Context) error {
 	user, ok := c.Get("user").(database.User)
 	if !ok {
-		log.Printf("Reached create Meal without user")
+		log.Printf("Reached login from cookie without user")
 		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
 	}
 
@@ -198,6 +234,58 @@ func LoginFromCookie(c echo.Context) error {
 		ImageUrl:     imageUrl,
 		CreatedAt:    user.CreatedAt.Time,
 		UpdatedAt:    user.UpdatedAt.Time,
+	}
+
+	return c.JSON(http.StatusOK, respUser)
+}
+
+type LoginWithSessionRequest struct {
+	SessionToken string `json:"session_token"`
+}
+
+func LoginWithSession(c echo.Context) error {
+	loginWithSessionReq := LoginWithSessionRequest{}
+	if err := c.Bind(&loginWithSessionReq); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "malformed request",
+		})
+	}
+
+	userId, err := services.ValidateSession(c, loginWithSessionReq.SessionToken)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, "invalid session token")
+	}
+
+	user, err := config.Queries.GetUserByID(c.Request().Context(), userId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, "invalid session token")
+	}
+
+	token := services.CreateJwt(user.ID)
+	cookie, err := services.GenerateAndSignCookie(token)
+	if err != nil {
+		log.Println("Failed to create cookie: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "failed to create cookie",
+		})
+	}
+	c.SetCookie(cookie)
+
+	var imageUrl *string
+	if user.ImageUrl.Valid {
+		imageUrl = &user.ImageUrl.String
+	}
+
+	respUser := models.User{
+		ID:           user.ID,
+		Email:        user.Email,
+		PasswordHash: user.PasswordHash,
+		Username:     user.Username,
+		ImageUrl:     imageUrl,
+		CreatedAt:    user.CreatedAt.Time,
+		UpdatedAt:    user.UpdatedAt.Time,
+
+		SessionToken: loginWithSessionReq.SessionToken,
 	}
 
 	return c.JSON(http.StatusOK, respUser)

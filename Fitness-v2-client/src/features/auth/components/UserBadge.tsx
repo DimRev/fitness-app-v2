@@ -29,6 +29,7 @@ function UserBadge({ user }: Props) {
       await logout(undefined, {
         onSuccess: () => {
           setUser(null);
+          sessionStorage.removeItem("fitness_app_session");
         },
       });
     } catch (err) {
@@ -67,7 +68,7 @@ function UserBadge({ user }: Props) {
       <Popover>
         <PopoverTrigger>
           <Avatar>
-            <AvatarImage src={user.imageUrl ?? undefined} />
+            <AvatarImage src={user.image_url ?? undefined} />
             <AvatarFallback>{formattedUsername}</AvatarFallback>
           </Avatar>
         </PopoverTrigger>
