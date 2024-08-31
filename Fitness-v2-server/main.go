@@ -32,6 +32,11 @@ func main() {
 		},
 	}))
 
+	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format:           "[${time_rfc3339}] ${status} ${method} ${path} (${remote_ip}) ${latency_human} \n",
+		CustomTimeFormat: "2006-01-02 15:04:05",
+	}))
+
 	log.Printf("Server settings\nCors: %v\nAllowHeaders: %v\nAllowCredentials: %v\nAllowMethods: %v\n",
 		config.CORS,
 		[]string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},

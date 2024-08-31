@@ -10,6 +10,7 @@ type ErrorResponseBody = {
 function useLoginFromCookie(): UseMutationResult<User, Error, void> {
   return useMutation<User, Error, void>(loginFromCookie, {
     ...USE_MUTATION_DEFAULT_OPTIONS,
+    retry: false,
   });
 }
 

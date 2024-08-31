@@ -8,9 +8,10 @@ import (
 
 	"github.com/DimRev/Fitness-v2-server/internal/database"
 	"github.com/joho/godotenv"
+	"github.com/pressly/goose/v3"
 
 	_ "github.com/jackc/pgx/v4/stdlib"
-	_ "github.com/lib/pq"
+	// _ "github.com/lib/pq"
 )
 
 var (
@@ -50,21 +51,21 @@ func New() error {
 
 	// Use a separate connection for Goose migration
 	// ---------------------------------------------
-	// gooseDBconn, err := goose.OpenDBWithDriver("postgres", dbUrl)
-	// if err != nil {
-	// 	return fmt.Errorf("failed to connect to database: %v", err)
-	// }
-	// defer gooseDBconn.Close()
+	gooseDBconn, err := goose.OpenDBWithDriver("postgres", dbUrl)
+	if err != nil {
+		return fmt.Errorf("failed to connect to database: %v", err)
+	}
+	defer gooseDBconn.Close()
 
-	// migrationDir := "sql/schema"
-	// if err := goose.Up(gooseDBconn, migrationDir); err != nil {
-	// 	return fmt.Errorf("failed to run migrations: %v", err)
-	// }
+	migrationDir := "sql/schema"
+	if err := goose.Up(gooseDBconn, migrationDir); err != nil {
+		return fmt.Errorf("failed to run migrations: %v", err)
+	}
 
-	// // Print the current migration status
-	// if err := goose.Status(gooseDBconn, migrationDir); err != nil {
-	// 	return fmt.Errorf("failed to print migration status: %v", err)
-	// }
+	// Print the current migration status
+	if err := goose.Status(gooseDBconn, migrationDir); err != nil {
+		return fmt.Errorf("failed to print migration status: %v", err)
+	}
 	// ---------------------------------------------
 
 	db, err := sql.Open("postgres", dbUrl)
