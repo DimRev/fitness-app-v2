@@ -17,6 +17,8 @@ import PageNotFound from "./features/views/components/PageNotFound";
 import DashboardMealAddPage from "./features/views/components/DashboardMealAddPage";
 import AdminLayout from "./features/views/components/AdminLayout";
 import AdminOverviewPage from "./features/views/components/AdminOverviewPage";
+import AdminFoodItemPage from "./features/views/components/AdminFoodItemPage";
+import AdminFoodItemAddPage from "./features/views/components/AdminFoodItemAddPage";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +50,11 @@ function App() {
               </Route>
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminOverviewPage />} />
+                <Route path="food_item" element={<AdminFoodItemPage />} />
+                <Route
+                  path="food_item/add"
+                  element={<AdminFoodItemAddPage />}
+                />
               </Route>
               <Route path="/auth" element={<AuthLayout />}>
                 <Route path="login" index element={<LoginPage />} />

@@ -90,7 +90,12 @@ export function PageHeader({
     return routesArr.map((path, idx) => ({
       path: routesArr.slice(0, idx + 1).join("/"),
       title:
-        path === "" ? "Home" : path.charAt(0).toUpperCase() + path.slice(1),
+        path === ""
+          ? "Home"
+          : path
+              .split("_")
+              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+              .join(" "),
     }));
   }, [to]);
 

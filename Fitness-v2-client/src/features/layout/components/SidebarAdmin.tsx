@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, LineChart } from "lucide-react";
+import { Apple, ChevronLeft, ChevronRight, LineChart } from "lucide-react";
 import { H3 } from "~/features/shared/components/Typography";
 import { Button } from "~/features/shared/components/ui/button";
 import { cn } from "~/lib/utils";
@@ -46,6 +46,12 @@ function SidebarAdmin() {
         LucideIcon={LineChart}
         to="/admin"
         title="Overview"
+        onlyIcon={!isSidebarOpen}
+      />
+      <SidebarNavLink
+        LucideIcon={Apple}
+        to="/admin/food_item"
+        title="Food Items"
         onlyIcon={!isSidebarOpen}
       />
     </nav>
