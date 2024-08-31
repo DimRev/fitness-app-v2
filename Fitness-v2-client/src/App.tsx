@@ -15,6 +15,8 @@ import useLayoutStore from "./features/layout/hooks/useLayoutStore";
 import { cn } from "./lib/utils";
 import PageNotFound from "./features/views/components/PageNotFound";
 import DashboardMealAddPage from "./features/views/components/DashboardMealAddPage";
+import AdminLayout from "./features/views/components/AdminLayout";
+import AdminOverviewPage from "./features/views/components/AdminOverviewPage";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +45,9 @@ function App() {
                 <Route index element={<DashboardOverviewPage />} />
                 <Route path="meal" element={<DashboardMealPage />} />
                 <Route path="meal/add" element={<DashboardMealAddPage />} />
+              </Route>
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminOverviewPage />} />
               </Route>
               <Route path="/auth" element={<AuthLayout />}>
                 <Route path="login" index element={<LoginPage />} />

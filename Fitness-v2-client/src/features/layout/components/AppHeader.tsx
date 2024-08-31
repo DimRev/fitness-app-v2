@@ -25,6 +25,12 @@ function AppHeader() {
             >
               Dashboard
             </Link>
+
+            {user.role === "admin" && (
+              <Link to="/admin" className={buttonVariants({ variant: "link" })}>
+                Admin
+              </Link>
+            )}
             <UserBadge user={user} />
           </>
         ) : (
