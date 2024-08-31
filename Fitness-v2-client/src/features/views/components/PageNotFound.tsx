@@ -1,4 +1,4 @@
-import { CrossIcon, XCircle } from "lucide-react";
+import { XCircle } from "lucide-react";
 import {
   Card,
   CardContent,

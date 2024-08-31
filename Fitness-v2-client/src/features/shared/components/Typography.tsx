@@ -97,7 +97,9 @@ export function PageHeader({
   return (
     <div className="border-2 border-foreground bg-popover px-5 py-4 rounded-md text-popover-foreground stroke-popover-foreground">
       <div className="flex justify-between items-center border-b">
-        <H1 {...props}>{children}</H1>
+        <H1 className="truncate" {...props}>
+          {children}
+        </H1>
         <LucideIcon className="size-7" />
       </div>
       <div className="py-2">

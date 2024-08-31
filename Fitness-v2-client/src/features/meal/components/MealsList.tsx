@@ -1,6 +1,7 @@
+import { Link } from "react-router-dom";
 import { DashboardContentCards } from "~/features/shared/components/CustomCards";
+import { buttonVariants } from "~/features/shared/components/ui/button";
 import useGetMealsByUserID from "../hooks/useGetMealsByUserID";
-import { Button } from "~/features/shared/components/ui/button";
 
 function MealsList() {
   const {
@@ -27,7 +28,9 @@ function MealsList() {
     return (
       <DashboardContentCards title="Meals">
         <div className="flex justify-end">
-          <Button>Add Meal</Button>
+          <Link className={buttonVariants()} to="/dashboard/meal/add">
+            Add Meal
+          </Link>
         </div>
         No meals found
       </DashboardContentCards>
@@ -36,7 +39,9 @@ function MealsList() {
   return (
     <DashboardContentCards title="Meals">
       <div className="flex justify-end">
-        <Button>Add Meal</Button>
+        <Link className={buttonVariants()} to="/dashboard/meal/add">
+          Add Meal
+        </Link>
       </div>
     </DashboardContentCards>
   );
