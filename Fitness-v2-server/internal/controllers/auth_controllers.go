@@ -27,6 +27,13 @@ func Login(c echo.Context) error {
 		})
 	}
 
+	if err := config.DB.Ping(); err != nil {
+		log.Println("Connection to database failed: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "failed to login",
+		})
+	}
+
 	user, err := config.Queries.GetUserByEmail(c.Request().Context(), loginReq.Email)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -34,13 +41,13 @@ func Login(c echo.Context) error {
 				"message": "wrong email or password",
 			})
 		}
-		log.Println(err)
+		log.Println("Failed to get user by email: ", err)
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to login")
 	}
 
 	err = services.ComparePassword(loginReq.Password, user.PasswordHash)
 	if err != nil {
-		log.Println(err)
+		log.Println("Failed to compare password: ", err)
 		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
 			"message": "wrong email or password",
 		})
@@ -49,7 +56,7 @@ func Login(c echo.Context) error {
 	token := services.CreateJwt(user.ID)
 	cookie, err := services.GenerateAndSignCookie(token)
 	if err != nil {
-		log.Println(err)
+		log.Println("Failed to create cookie: ", err)
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 			"message": "failed to create cookie",
 		})
@@ -104,7 +111,7 @@ func Register(c echo.Context) error {
 
 	hash, err := services.HashPassword(registerReq.Password)
 	if err != nil {
-		log.Println(err)
+		log.Println("Failed to hash password: ", err)
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 			"message": "failed to create user",
 		})
@@ -116,9 +123,16 @@ func Register(c echo.Context) error {
 		PasswordHash: hash,
 	}
 
+	if err := config.DB.Ping(); err != nil {
+		log.Println("Connection to database failed: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "failed to create user",
+		})
+	}
+
 	user, err := config.Queries.CreateUser(c.Request().Context(), createUserParams)
 	if err != nil {
-		log.Println(err)
+		log.Println("Failed to create user: ", err)
 		if pgErr, ok := err.(*pq.Error); ok {
 			switch pgErr.Code {
 			case "23505":
@@ -140,7 +154,7 @@ func Register(c echo.Context) error {
 	token := services.CreateJwt(user.ID)
 	cookie, err := services.GenerateAndSignCookie(token)
 	if err != nil {
-		log.Println(err)
+		log.Println("Failed to create cookie: ", err)
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 			"message": "failed to create cookie",
 		})

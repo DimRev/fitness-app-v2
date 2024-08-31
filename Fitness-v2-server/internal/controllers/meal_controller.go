@@ -52,6 +52,13 @@ func CreateMeal(c echo.Context) error {
 		createMealWithFoodItemsParams.Column6 = append(createMealWithFoodItemsParams.Column6, int32(foodItem.Amount))
 	}
 
+	if err := config.DB.Ping(); err != nil {
+		log.Println("Connection to database failed: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "failed to create meal",
+		})
+	}
+
 	mealWithFoodItems, err := config.Queries.CreateMealWithFoodItems(c.Request().Context(), createMealWithFoodItemsParams)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to create meal")
@@ -113,6 +120,13 @@ func GetMealsByUserID(c echo.Context) error {
 		UserID: user.ID,
 		Limit:  limit,
 		Offset: offset,
+	}
+
+	if err := config.DB.Ping(); err != nil {
+		log.Println("Connection to database failed: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "failed to get meals",
+		})
 	}
 
 	mealWithSums, err := config.Queries.GetMealsByUserID(c.Request().Context(), getMealsByUserIdParams)

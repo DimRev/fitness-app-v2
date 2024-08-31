@@ -37,6 +37,13 @@ func GetFoodItems(c echo.Context) error {
 		limit = int32(convLimit)
 	}
 
+	if err := config.DB.Ping(); err != nil {
+		log.Println("Connection to database failed: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "failed to get foods",
+		})
+	}
+
 	getFoodParams := database.GetFoodsParams{
 		Limit:  limit,
 		Offset: offset,
