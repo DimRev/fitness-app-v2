@@ -20,6 +20,7 @@ var (
 	JwtSecret string
 	DB        *sql.DB
 	CORS      []string
+	ENV       string
 )
 
 func New() error {
@@ -48,6 +49,12 @@ func New() error {
 		return fmt.Errorf("CORS environment variable not set")
 	}
 	CORS = strings.Split(corsStr, ",")
+
+	env := os.Getenv("ENV")
+	if env == "" {
+		return fmt.Errorf("ENV environment variable not set")
+	}
+	ENV = env
 
 	// Use a separate connection for Goose migration
 	// ---------------------------------------------
