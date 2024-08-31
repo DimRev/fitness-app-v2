@@ -85,6 +85,7 @@ func Login(c echo.Context) error {
 		CreatedAt:    user.CreatedAt.Time,
 		UpdatedAt:    user.UpdatedAt.Time,
 
+		Role:         user.Role,
 		SessionToken: sessionToken,
 	}
 
@@ -216,6 +217,7 @@ func Register(c echo.Context) error {
 		CreatedAt:    user.CreatedAt.Time,
 		UpdatedAt:    user.UpdatedAt.Time,
 
+		Role:         user.Role,
 		SessionToken: sessionToken,
 	}
 	return c.JSON(http.StatusOK, respUser)
@@ -226,6 +228,14 @@ func LoginFromCookie(c echo.Context) error {
 	if !ok {
 		log.Printf("Reached login from cookie without user")
 		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
+	}
+
+	sessionToken, err := services.GenerateAndRefresh(c, user.ID)
+	if err != nil {
+		log.Println("Failed to generate session: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "failed to generate session",
+		})
 	}
 
 	var imageUrl *string
@@ -241,6 +251,9 @@ func LoginFromCookie(c echo.Context) error {
 		ImageUrl:     imageUrl,
 		CreatedAt:    user.CreatedAt.Time,
 		UpdatedAt:    user.UpdatedAt.Time,
+
+		Role:         user.Role,
+		SessionToken: sessionToken,
 	}
 
 	return c.JSON(http.StatusOK, respUser)
@@ -292,6 +305,7 @@ func LoginWithSession(c echo.Context) error {
 		CreatedAt:    user.CreatedAt.Time,
 		UpdatedAt:    user.UpdatedAt.Time,
 
+		Role:         user.Role,
 		SessionToken: loginWithSessionReq.SessionToken,
 	}
 

@@ -59,7 +59,7 @@ func (q *Queries) DeleteSession(ctx context.Context, sessionToken string) error 
 }
 
 const getSessionByID = `-- name: GetSessionByID :one
-SELECT sessions.id, sessions.user_id, sessions.created_at, sessions.updated_at, sessions.expires_at, sessions.session_token, sessions.session_data, users.id, users.email, users.password_hash, users.username, users.image_url, users.created_at, users.updated_at
+SELECT sessions.id, sessions.user_id, sessions.created_at, sessions.updated_at, sessions.expires_at, sessions.session_token, sessions.session_data, users.id, users.email, users.password_hash, users.username, users.image_url, users.created_at, users.updated_at, users.role
 FROM sessions
 LEFT JOIN users ON users.id = sessions.user_id
 WHERE sessions.id = $1
@@ -80,6 +80,7 @@ type GetSessionByIDRow struct {
 	ImageUrl     sql.NullString
 	CreatedAt_2  sql.NullTime
 	UpdatedAt_2  sql.NullTime
+	Role         NullUserRole
 }
 
 func (q *Queries) GetSessionByID(ctx context.Context, id uuid.UUID) (GetSessionByIDRow, error) {
@@ -100,12 +101,13 @@ func (q *Queries) GetSessionByID(ctx context.Context, id uuid.UUID) (GetSessionB
 		&i.ImageUrl,
 		&i.CreatedAt_2,
 		&i.UpdatedAt_2,
+		&i.Role,
 	)
 	return i, err
 }
 
 const getSessionByToken = `-- name: GetSessionByToken :one
-SELECT sessions.id, sessions.user_id, sessions.created_at, sessions.updated_at, sessions.expires_at, sessions.session_token, sessions.session_data, users.id, users.email, users.password_hash, users.username, users.image_url, users.created_at, users.updated_at
+SELECT sessions.id, sessions.user_id, sessions.created_at, sessions.updated_at, sessions.expires_at, sessions.session_token, sessions.session_data, users.id, users.email, users.password_hash, users.username, users.image_url, users.created_at, users.updated_at, users.role
 FROM sessions
 LEFT JOIN users ON users.id = sessions.user_id
 WHERE sessions.session_token = $1
@@ -126,6 +128,7 @@ type GetSessionByTokenRow struct {
 	ImageUrl     sql.NullString
 	CreatedAt_2  sql.NullTime
 	UpdatedAt_2  sql.NullTime
+	Role         NullUserRole
 }
 
 func (q *Queries) GetSessionByToken(ctx context.Context, sessionToken string) (GetSessionByTokenRow, error) {
@@ -146,6 +149,7 @@ func (q *Queries) GetSessionByToken(ctx context.Context, sessionToken string) (G
 		&i.ImageUrl,
 		&i.CreatedAt_2,
 		&i.UpdatedAt_2,
+		&i.Role,
 	)
 	return i, err
 }
