@@ -12,5 +12,6 @@ func FoodItemPendingRoutesV1(e *echo.Group) {
 		foodItem.GET("", controllers.GetFoodItemsPending)
 		foodItem.GET("/user", controllers.GetFoodItemsPendingByUserID)
 		foodItem.POST("", controllers.CreateFoodItemPending)
+		foodItem.POST("/toggle/:food_item_pending_id", controllers.ToggleFoodItemPending)
 	}
 }

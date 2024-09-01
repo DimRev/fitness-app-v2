@@ -9,13 +9,16 @@ import (
 	"github.com/DimRev/Fitness-v2-server/internal/config"
 	"github.com/DimRev/Fitness-v2-server/internal/database"
 	"github.com/DimRev/Fitness-v2-server/internal/models"
+	"github.com/google/uuid"
 	"github.com/labstack/echo"
 )
 
 func GetFoodItemsPending(c echo.Context) error {
 	user, ok := c.Get("user").(database.User)
 	if !ok {
-		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
+		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
+			"message": "unauthorized",
+		})
 	}
 
 	limit := int32(10)
@@ -23,14 +26,18 @@ func GetFoodItemsPending(c echo.Context) error {
 	if limitStr := c.QueryParam("limit"); limitStr != "" {
 		convLimit, err := strconv.Atoi(limitStr)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "invalid limit")
+			return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+				"message": "invalid limit",
+			})
 		}
 		limit = int32(convLimit)
 	}
 	if offsetStr := c.QueryParam("offset"); offsetStr != "" {
 		convOffset, err := strconv.Atoi(offsetStr)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "invalid offset")
+			return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+				"message": "invalid offset",
+			})
 		}
 		offset = int32(convOffset)
 	}
@@ -44,7 +51,9 @@ func GetFoodItemsPending(c echo.Context) error {
 	foodItemsPending, err := config.Queries.GetFoodItemsPending(c.Request().Context(), getFoodItemsPendingParams)
 	if err != nil {
 		log.Println("Failed to get food items: ", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get food items")
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "failed to get food items",
+		})
 	}
 
 	respFoodItemsPending := make([]models.FoodItemsPending, len(foodItemsPending))
@@ -83,7 +92,9 @@ func GetFoodItemsPending(c echo.Context) error {
 func GetFoodItemsPendingByUserID(c echo.Context) error {
 	user, ok := c.Get("user").(database.User)
 	if !ok {
-		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
+		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
+			"message": "unauthorized",
+		})
 	}
 
 	limit := int32(10)
@@ -91,14 +102,18 @@ func GetFoodItemsPendingByUserID(c echo.Context) error {
 	if limitStr := c.QueryParam("limit"); limitStr != "" {
 		convLimit, err := strconv.Atoi(limitStr)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "invalid limit")
+			return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+				"message": "invalid limit",
+			})
 		}
 		limit = int32(convLimit)
 	}
 	if offsetStr := c.QueryParam("offset"); offsetStr != "" {
 		convOffset, err := strconv.Atoi(offsetStr)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "invalid offset")
+			return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+				"message": "invalid offset",
+			})
 		}
 		offset = int32(convOffset)
 	}
@@ -112,7 +127,9 @@ func GetFoodItemsPendingByUserID(c echo.Context) error {
 	foodItemsPending, err := config.Queries.GetFoodItemsPendingByUserID(c.Request().Context(), getFoodItemsPendingByUserIDParams)
 	if err != nil {
 		log.Println("Failed to get food items by user id: ", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get food items")
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "failed to get food items",
+		})
 	}
 
 	respFoodItemsPending := make([]models.FoodItemsPending, len(foodItemsPending))
@@ -162,7 +179,9 @@ type CreateFoodItemPendingRequest struct {
 func CreateFoodItemPending(c echo.Context) error {
 	user, ok := c.Get("user").(database.User)
 	if !ok {
-		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
+		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
+			"message": "unauthorized",
+		})
 	}
 
 	createFoodItemPendingReq := CreateFoodItemPendingRequest{}
@@ -204,7 +223,9 @@ func CreateFoodItemPending(c echo.Context) error {
 	foodItemPending, err := config.Queries.CreateFoodItemPending(c.Request().Context(), createFoodItemPendingParams)
 	if err != nil {
 		log.Println("Failed to create food item: ", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to create food item")
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "failed to create food item",
+		})
 	}
 
 	var respDescription *string
@@ -235,4 +256,55 @@ func CreateFoodItemPending(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, respFoodItemPending)
+}
+
+func ToggleFoodItemPending(c echo.Context) error {
+	user, ok := c.Get("user").(database.User)
+	if !ok {
+		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
+	}
+
+	foodItemPendingID, err := uuid.Parse(c.Param("food_item_pending_id"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid food item pending id")
+	}
+
+	getFoodItemPendingLikeForUserParams := database.GetFoodItemPendingLikeForUserParams{
+		UserID:     user.ID,
+		FoodItemID: foodItemPendingID,
+	}
+
+	_, err = config.Queries.GetFoodItemPendingLikeForUser(
+		c.Request().Context(),
+		getFoodItemPendingLikeForUserParams,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			likeFoodItemPendingForUserParams := database.LikeFoodItemPendingForUserParams{
+				UserID:     user.ID,
+				FoodItemID: foodItemPendingID,
+			}
+			if err := config.Queries.LikeFoodItemPendingForUser(c.Request().Context(), likeFoodItemPendingForUserParams); err != nil {
+				log.Println("Failed to like food item pending: ", err)
+				return echo.NewHTTPError(http.StatusInternalServerError, "failed to unlike food item pending")
+			}
+			return c.JSON(http.StatusOK, map[string]string{
+				"message": "food item pending liked",
+			})
+		}
+		log.Println("Failed to get food item pending like for user: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get food item pending like for user")
+	}
+
+	unlikeFoodItemPendingForUserParams := database.UnlikeFoodItemPendingForUserParams{
+		UserID:     user.ID,
+		FoodItemID: foodItemPendingID,
+	}
+	if err := config.Queries.UnlikeFoodItemPendingForUser(c.Request().Context(), unlikeFoodItemPendingForUserParams); err != nil {
+		log.Println("Failed to unlike food item pending: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to unlike food item pending")
+	}
+	return c.JSON(http.StatusOK, map[string]string{
+		"message": "food item pending unliked",
+	})
 }
