@@ -113,6 +113,21 @@ type FoodItem struct {
 	UpdatedAt   sql.NullTime
 }
 
+type FoodItemsPending struct {
+	ID          uuid.UUID
+	Name        string
+	Description sql.NullString
+	ImageUrl    sql.NullString
+	FoodType    FoodItemType
+	Calories    string
+	Fat         string
+	Protein     string
+	Carbs       string
+	CreatedAt   sql.NullTime
+	UpdatedAt   sql.NullTime
+	UserID      uuid.UUID
+}
+
 type Meal struct {
 	ID          uuid.UUID
 	Name        string
@@ -128,6 +143,11 @@ type RelMealFood struct {
 	FoodItemID uuid.UUID
 	UserID     uuid.UUID
 	Amount     sql.NullInt32
+}
+
+type RelUserLikeFoodItemPending struct {
+	UserID     uuid.UUID
+	FoodItemID uuid.UUID
 }
 
 type Session struct {

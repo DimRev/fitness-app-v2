@@ -8,5 +8,6 @@ func V1ApiRoutes(e *echo.Echo) {
 	AuthRoutesV1(v1)
 	MealRoutesV1(v1)
 	UserRoutesV1(v1)
-	FoodItemRoutesV1(v1)
+	FoodItemPendingRoutesV1(v1)
+	FoodItemPendingRoutesV1(v1)
 }
