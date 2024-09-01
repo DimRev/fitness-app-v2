@@ -12,26 +12,29 @@ type ErrorResponseBody = {
   message: string;
 };
 
-function useGetMealsByUserID(
+function useGetFoodItemsPending(
   params: GetMealsByUserIDRequestBody,
-): UseQueryResult<MealWithNutrition[], Error> {
-  return useQuery<MealWithNutrition[], Error>({
+): UseQueryResult<FoodItemPending[], Error> {
+  return useQuery<FoodItemPending[], Error>({
     ...USE_QUERY_DEFAULT_OPTIONS,
-    queryKey: QUERY_KEYS.MEALS.GET_MEALS_BY_USER_ID,
+    queryKey: QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
 
-    queryFn: () => getMealsByUserID(params),
+    queryFn: () => getFoodItemsPending(params),
     enabled: !!params,
   });
 }
 
-async function getMealsByUserID({
+async function getFoodItemsPending({
   limit,
   offset,
-}: GetMealsByUserIDRequestBody): Promise<MealWithNutrition[]> {
+}: GetMealsByUserIDRequestBody): Promise<FoodItemPending[]> {
   try {
-    const response = await axiosInstance.get<MealWithNutrition[]>(`/meals`, {
-      params: { limit, offset },
-    });
+    const response = await axiosInstance.get<FoodItemPending[]>(
+      `/food_items_pending`,
+      {
+        params: { limit, offset },
+      },
+    );
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
@@ -44,4 +47,4 @@ async function getMealsByUserID({
   }
 }
 
-export default useGetMealsByUserID;
+export default useGetFoodItemsPending;

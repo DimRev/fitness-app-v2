@@ -21,4 +21,7 @@ export const QUERY_KEYS = {
   MEALS: {
     GET_MEALS_BY_USER_ID: "getMealsByUserID",
   },
+  FOOD_ITEMS_PENDING: {
+    GET_FOOD_ITEMS_PENDING: "getFoodItemsPending",
+  },
 } as const;
