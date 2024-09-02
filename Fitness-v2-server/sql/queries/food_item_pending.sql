@@ -13,9 +13,13 @@ FROM food_items_pending fip
 LEFT JOIN rel_user_like_food_item_pending rufip ON rufip.food_item_id = fip.id
 LEFT JOIN users u ON u.id = fip.user_id
 GROUP BY fip.id, u.username
+ORDER BY likes DESC
 LIMIT $2
 OFFSET $3;
 
+-- name: GetFoodItemsPendingTotalPages :one
+SELECT COUNT(*) AS total_pages
+FROM food_items_pending;
 
 -- name: GetFoodItemsPendingByUserID :many
 SELECT 
@@ -33,8 +37,14 @@ LEFT JOIN rel_user_like_food_item_pending rufip ON rufip.food_item_id = fip.id
 LEFT JOIN users u ON u.id = fip.user_id
 WHERE fip.user_id = $1
 GROUP BY fip.id, u.username
+ORDER BY likes DESC
 LIMIT $2
 OFFSET $3;
+
+-- name: GetFoodItemsPendingByUserTotalPages :one
+SELECT COUNT(*) AS total_pages
+FROM food_items_pending
+WHERE user_id = $1;
 
 -- name: CreateFoodItemPending :one
 INSERT INTO food_items_pending (

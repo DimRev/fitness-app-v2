@@ -24,3 +24,8 @@ type FoodItemsPending struct {
 	Liked       bool                  `json:"liked"`
 	Author      string                `json:"author_name"`
 }
+
+type FoodItemsPendingWithPages struct {
+	FoodItemsPending []FoodItemsPending `json:"food_items_pending"`
+	TotalPages       int64              `json:"total_pages"`
+}

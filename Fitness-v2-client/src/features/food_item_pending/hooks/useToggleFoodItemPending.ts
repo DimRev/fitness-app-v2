@@ -18,11 +18,11 @@ type ErrorResponseBody = {
 };
 
 type OptimisticUpdateContext = {
-  previousFoodItemsPending: FoodItemPending[] | undefined;
+  previousFoodItemsPending: FoodItemsPendingWithPages | undefined;
 };
 
 function useToggleFoodItemPending(): UseMutationResult<
-  FoodItemPending,
+  FoodItemsPendingWithPages,
   Error,
   ToggleFoodItemPendingRequestParams,
   OptimisticUpdateContext
@@ -30,7 +30,7 @@ function useToggleFoodItemPending(): UseMutationResult<
   const queryClient = useQueryClient();
 
   return useMutation<
-    FoodItemPending,
+    FoodItemsPendingWithPages,
     Error,
     ToggleFoodItemPendingRequestParams,
     OptimisticUpdateContext
@@ -42,33 +42,47 @@ function useToggleFoodItemPending(): UseMutationResult<
         { limit, offset },
       ]);
 
-      const previousFoodItemsPending = queryClient.getQueryData<
-        FoodItemPending[]
-      >([
-        QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
-        { limit, offset },
-      ]);
+      // Snapshot the previous value
+      const previousFoodItemsPending =
+        queryClient.getQueryData<FoodItemsPendingWithPages>([
+          QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
+          { limit, offset },
+        ]);
 
-      queryClient.setQueryData<FoodItemPending[]>(
+      // Optimistically update to the new value
+      queryClient.setQueryData<FoodItemsPendingWithPages>(
         [
           QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
           { limit, offset },
         ],
-        (old) =>
-          (old ?? []).map((foodItemPending) => {
-            if (foodItemPending.id === food_item_pending_id) {
-              return {
-                ...foodItemPending,
-                liked: !foodItemPending.liked,
-                likes: foodItemPending.liked
-                  ? foodItemPending.likes - 1
-                  : foodItemPending.likes + 1,
-              };
-            }
-            return foodItemPending;
-          }),
+        (old) => {
+          const newFoodItemsPending = old!.food_items_pending.map(
+            (foodItemPending) => {
+              if (foodItemPending.id === food_item_pending_id) {
+                return {
+                  ...foodItemPending,
+                  liked: !foodItemPending.liked,
+                  likes: foodItemPending.liked
+                    ? foodItemPending.likes - 1
+                    : foodItemPending.likes + 1,
+                };
+              }
+              return foodItemPending;
+            },
+          );
+
+          const sortedFoodItemsPending = newFoodItemsPending.sort(
+            (a, b) => b.likes - a.likes,
+          );
+
+          return {
+            total_pages: old!.total_pages,
+            food_items_pending: sortedFoodItemsPending,
+          };
+        },
       );
 
+      // Return a context with the previous data to rollback on error
       return { previousFoodItemsPending };
     },
     onError: (err, { limit, offset }, context) => {
@@ -93,9 +107,9 @@ function useToggleFoodItemPending(): UseMutationResult<
 
 async function toggleFoodItemPending({
   food_item_pending_id,
-}: ToggleFoodItemPendingRequestParams): Promise<FoodItemPending> {
+}: ToggleFoodItemPendingRequestParams): Promise<FoodItemsPendingWithPages> {
   try {
-    const response = await axiosInstance.post<FoodItemPending>(
+    const response = await axiosInstance.post<FoodItemsPendingWithPages>(
       `/food_items_pending/toggle/${food_item_pending_id}`,
     );
     return response.data;

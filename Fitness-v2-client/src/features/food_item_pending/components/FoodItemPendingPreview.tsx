@@ -9,7 +9,7 @@ import {
 import { Skeleton } from "~/features/shared/components/ui/skeleton";
 
 type Props = {
-  foodItemPending: FoodItemPending;
+  foodItemPending: FoodItemsPending;
   handleToggleFoodItemPending: (foodItemPendingId: string) => void;
 };
 
@@ -28,19 +28,19 @@ function FoodItemPendingPreview({
       </CardHeader>
       <CardContent>
         <div className="gap-2 grid grid-cols-[4fr_2fr]">
-          <div className="px-1 border rounded-md">
+          <div className="p-2 border rounded-md">
             <div className="p-1 h-[50%]">{foodItemPending.description}</div>
-            {foodItemPending.image_url ? (
-              <img
-                src={foodItemPending.image_url}
-                alt={foodItemPending.name}
-                className="w-full h-[%50] object-cover"
-              />
-            ) : (
-              <div className="flex justify-center items-center w-full h-[50%]">
+            <div className="flex justify-center items-center border rounded-md w-full h-[50%]">
+              {foodItemPending.image_url ? (
+                <img
+                  src={foodItemPending.image_url}
+                  alt={foodItemPending.name}
+                  className="w-full h-[%50] object-cover"
+                />
+              ) : (
                 <Apple className="size-[80%]" />
-              </div>
-            )}
+              )}
+            </div>
           </div>
           <div className="flex flex-col gap-1">
             <div className="px-2 border rounded-md">

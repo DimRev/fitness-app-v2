@@ -14,8 +14,8 @@ type ErrorResponseBody = {
 
 function useGetFoodItemsPending(
   params: GetMealsByUserIDRequestBody,
-): UseQueryResult<FoodItemPending[], Error> {
-  return useQuery<FoodItemPending[], Error>({
+): UseQueryResult<FoodItemsPendingWithPages, Error> {
+  return useQuery<FoodItemsPendingWithPages, Error>({
     ...USE_QUERY_DEFAULT_OPTIONS,
     queryKey: [
       QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
@@ -30,9 +30,9 @@ function useGetFoodItemsPending(
 async function getFoodItemsPending({
   limit,
   offset,
-}: GetMealsByUserIDRequestBody): Promise<FoodItemPending[]> {
+}: GetMealsByUserIDRequestBody): Promise<FoodItemsPendingWithPages> {
   try {
-    const response = await axiosInstance.get<FoodItemPending[]>(
+    const response = await axiosInstance.get<FoodItemsPendingWithPages>(
       `/food_items_pending`,
       {
         params: { limit, offset },

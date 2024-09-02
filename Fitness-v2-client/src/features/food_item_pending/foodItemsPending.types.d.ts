@@ -16,7 +16,7 @@
 // 	Author      string                `json:"author_name"`
 // }
 
-type FoodItemPending = {
+type FoodItemsPending = {
   id: string;
   name: string;
   description?: string;
@@ -29,4 +29,9 @@ type FoodItemPending = {
   likes: number;
   liked: boolean;
   author_name: string;
+};
+
+type FoodItemsPendingWithPages = {
+  food_items_pending: FoodItemsPending[];
+  total_pages: number;
 };

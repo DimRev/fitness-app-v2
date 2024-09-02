@@ -146,6 +146,7 @@ FROM food_items_pending fip
 LEFT JOIN rel_user_like_food_item_pending rufip ON rufip.food_item_id = fip.id
 LEFT JOIN users u ON u.id = fip.user_id
 GROUP BY fip.id, u.username
+ORDER BY likes DESC
 LIMIT $2
 OFFSET $3
 `
@@ -229,6 +230,7 @@ LEFT JOIN rel_user_like_food_item_pending rufip ON rufip.food_item_id = fip.id
 LEFT JOIN users u ON u.id = fip.user_id
 WHERE fip.user_id = $1
 GROUP BY fip.id, u.username
+ORDER BY likes DESC
 LIMIT $2
 OFFSET $3
 `
@@ -294,6 +296,31 @@ func (q *Queries) GetFoodItemsPendingByUserID(ctx context.Context, arg GetFoodIt
 		return nil, err
 	}
 	return items, nil
+}
+
+const getFoodItemsPendingByUserTotalPages = `-- name: GetFoodItemsPendingByUserTotalPages :one
+SELECT COUNT(*) AS total_pages
+FROM food_items_pending
+WHERE user_id = $1
+`
+
+func (q *Queries) GetFoodItemsPendingByUserTotalPages(ctx context.Context, userID uuid.UUID) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getFoodItemsPendingByUserTotalPages, userID)
+	var total_pages int64
+	err := row.Scan(&total_pages)
+	return total_pages, err
+}
+
+const getFoodItemsPendingTotalPages = `-- name: GetFoodItemsPendingTotalPages :one
+SELECT COUNT(*) AS total_pages
+FROM food_items_pending
+`
+
+func (q *Queries) GetFoodItemsPendingTotalPages(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getFoodItemsPendingTotalPages)
+	var total_pages int64
+	err := row.Scan(&total_pages)
+	return total_pages, err
 }
 
 const likeFoodItemPendingForUser = `-- name: LikeFoodItemPendingForUser :exec

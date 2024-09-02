@@ -3,6 +3,7 @@ package controllers
 import (
 	"database/sql"
 	"log"
+	"math"
 	"net/http"
 	"strconv"
 
@@ -56,7 +57,15 @@ func GetFoodItemsPending(c echo.Context) error {
 		})
 	}
 
-	respFoodItemsPending := make([]models.FoodItemsPending, len(foodItemsPending))
+	rowCount, err := config.Queries.GetFoodItemsPendingTotalPages(c.Request().Context())
+	if err != nil {
+		log.Println("Failed to get food items: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "failed to get food items",
+		})
+	}
+
+	mFoodItemsPending := make([]models.FoodItemsPending, len(foodItemsPending))
 	for i, foodItemPending := range foodItemsPending {
 		var description *string
 		var imageUrl *string
@@ -67,7 +76,7 @@ func GetFoodItemsPending(c echo.Context) error {
 			imageUrl = &foodItemPending.ImageUrl.String
 		}
 
-		respFoodItemsPending[i] = models.FoodItemsPending{
+		mFoodItemsPending[i] = models.FoodItemsPending{
 			ID:          foodItemPending.ID,
 			Name:        foodItemPending.Name,
 			Description: description,
@@ -84,6 +93,13 @@ func GetFoodItemsPending(c echo.Context) error {
 			Liked:       foodItemPending.Liked,
 			Author:      foodItemPending.Username.String,
 		}
+	}
+
+	totalPages := int64(math.Ceil(float64(rowCount) / float64(limit)))
+
+	respFoodItemsPending := models.FoodItemsPendingWithPages{
+		FoodItemsPending: mFoodItemsPending,
+		TotalPages:       totalPages,
 	}
 
 	return c.JSON(http.StatusOK, respFoodItemsPending)
@@ -132,7 +148,15 @@ func GetFoodItemsPendingByUserID(c echo.Context) error {
 		})
 	}
 
-	respFoodItemsPending := make([]models.FoodItemsPending, len(foodItemsPending))
+	rowCount, err := config.Queries.GetFoodItemsPendingByUserTotalPages(c.Request().Context(), user.ID)
+	if err != nil {
+		log.Println("Failed to get food items by user id: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "failed to get food items",
+		})
+	}
+
+	mFoodItemsPending := make([]models.FoodItemsPending, len(foodItemsPending))
 	for i, foodItemPending := range foodItemsPending {
 		var description *string
 		var imageUrl *string
@@ -143,7 +167,7 @@ func GetFoodItemsPendingByUserID(c echo.Context) error {
 			imageUrl = &foodItemPending.ImageUrl.String
 		}
 
-		respFoodItemsPending[i] = models.FoodItemsPending{
+		mFoodItemsPending[i] = models.FoodItemsPending{
 			ID:          foodItemPending.ID,
 			Name:        foodItemPending.Name,
 			Description: description,
@@ -160,6 +184,13 @@ func GetFoodItemsPendingByUserID(c echo.Context) error {
 			Liked:       foodItemPending.Liked,
 			Author:      foodItemPending.Username.String,
 		}
+	}
+
+	totalPages := int64(math.Ceil(float64(rowCount) / float64(limit)))
+
+	respFoodItemsPending := models.FoodItemsPendingWithPages{
+		FoodItemsPending: mFoodItemsPending,
+		TotalPages:       totalPages,
 	}
 
 	return c.JSON(http.StatusOK, respFoodItemsPending)
