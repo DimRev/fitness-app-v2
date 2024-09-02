@@ -17,7 +17,10 @@ function useGetFoodItemsPending(
 ): UseQueryResult<FoodItemPending[], Error> {
   return useQuery<FoodItemPending[], Error>({
     ...USE_QUERY_DEFAULT_OPTIONS,
-    queryKey: QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
+    queryKey: [
+      QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
+      { limit: params.limit, offset: params.offset },
+    ],
 
     queryFn: () => getFoodItemsPending(params),
     enabled: !!params,

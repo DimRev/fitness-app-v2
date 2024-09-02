@@ -9,6 +9,8 @@ import { QUERY_KEYS, USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
 type ToggleFoodItemPendingRequestParams = {
   food_item_pending_id: string;
+  limit: number;
+  offset: number;
 };
 
 type ErrorResponseBody = {
@@ -34,17 +36,24 @@ function useToggleFoodItemPending(): UseMutationResult<
     OptimisticUpdateContext
   >(toggleFoodItemPending, {
     ...USE_MUTATION_DEFAULT_OPTIONS,
-    onMutate: async ({ food_item_pending_id }) => {
-      await queryClient.cancelQueries(
+    onMutate: async ({ food_item_pending_id, limit, offset }) => {
+      await queryClient.cancelQueries([
         QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
-      );
+        { limit, offset },
+      ]);
 
       const previousFoodItemsPending = queryClient.getQueryData<
         FoodItemPending[]
-      >(QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING);
+      >([
+        QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
+        { limit, offset },
+      ]);
 
       queryClient.setQueryData<FoodItemPending[]>(
-        QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
+        [
+          QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
+          { limit, offset },
+        ],
         (old) =>
           (old ?? []).map((foodItemPending) => {
             if (foodItemPending.id === food_item_pending_id) {
@@ -62,18 +71,22 @@ function useToggleFoodItemPending(): UseMutationResult<
 
       return { previousFoodItemsPending };
     },
-    onError: (err, variables, context) => {
+    onError: (err, { limit, offset }, context) => {
       if (context?.previousFoodItemsPending) {
         queryClient.setQueryData(
-          QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
+          [
+            QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
+            { limit, offset },
+          ],
           context.previousFoodItemsPending,
         );
       }
     },
-    onSettled: () => {
-      void queryClient.invalidateQueries(
+    onSettled: (data, error, { limit, offset }) => {
+      void queryClient.invalidateQueries([
         QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
-      );
+        { limit, offset },
+      ]);
     },
   });
 }

@@ -1,33 +1,33 @@
+import { XCircleIcon } from "lucide-react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { DashboardContentCards } from "~/features/shared/components/CustomCards";
 import { buttonVariants } from "~/features/shared/components/ui/button";
+import { ScrollArea } from "~/features/shared/components/ui/scroll-area";
 import useGetFoodItemsPending from "../hooks/useGetFoodItemsPending";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHeader,
-  TableRow,
-} from "~/features/shared/components/ui/table";
-import { Heart, XCircleIcon } from "lucide-react";
-import { Skeleton } from "~/features/shared/components/ui/skeleton";
 import useToggleFoodItemPending from "../hooks/useToggleFoodItemPending";
+import FoodItemPendingPreview, {
+  FoodItemPendingPreviewSkeleton,
+} from "./FoodItemPendingPreview";
 
 function FoodItemsPendingList() {
+  const [limit, setLimit] = useState(10);
+  const [offset, setOffset] = useState(0);
   const {
     data: foodItemsPending,
     isLoading: foodItemsPendingLoading,
     isError: foodItemsPendingError,
   } = useGetFoodItemsPending({
-    limit: 10,
-    offset: 0,
+    limit,
+    offset,
   });
   const { mutateAsync: toggleFoodItemPending } = useToggleFoodItemPending();
 
   function handleToggleFoodItemPending(foodItemPendingId: string) {
     void toggleFoodItemPending({
       food_item_pending_id: foodItemPendingId,
+      limit,
+      offset,
     });
   }
 
@@ -39,29 +39,14 @@ function FoodItemsPendingList() {
             Add Food Item
           </Link>
         </div>
-        <Table>
-          <TableCaption>Food Items</TableCaption>
-          <TableHeader>
-            <TableRow>
-              <TableCell>Liked</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>Author</TableCell>
-              <TableCell>Likes</TableCell>
-              <TableCell>Food Type</TableCell>
-              <TableCell>Calories</TableCell>
-              <TableCell>Protein</TableCell>
-              <TableCell>Fat</TableCell>
-              <TableCell>Carbs</TableCell>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <SkeletonTableRow />
-            <SkeletonTableRow />
-            <SkeletonTableRow />
-            <SkeletonTableRow />
-          </TableBody>
-        </Table>
+        <div className="gap-3 grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-2">
+          <FoodItemPendingPreviewSkeleton />
+          <FoodItemPendingPreviewSkeleton />
+          <FoodItemPendingPreviewSkeleton />
+          <FoodItemPendingPreviewSkeleton />
+          <FoodItemPendingPreviewSkeleton />
+          <FoodItemPendingPreviewSkeleton />
+        </div>
       </DashboardContentCards>
     );
   }
@@ -74,36 +59,12 @@ function FoodItemsPendingList() {
             Add Food Item
           </Link>
         </div>
-        <Table>
-          <TableCaption>Food Items</TableCaption>
-          <TableHeader>
-            <TableRow>
-              <TableCell>Liked</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>Author</TableCell>
-              <TableCell>Likes</TableCell>
-              <TableCell>Food Type</TableCell>
-              <TableCell>Calories</TableCell>
-              <TableCell>Protein</TableCell>
-              <TableCell>Fat</TableCell>
-              <TableCell>Carbs</TableCell>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <TableRow>
-              <TableCell
-                colSpan={10}
-                rowSpan={4}
-                className="font-bold text-center text-destructive text-lg"
-              >
-                <span className="flex justify-center items-center gap-2">
-                  <XCircleIcon /> An Error Has Occurred
-                </span>
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
+
+        <div className="mt-2 font-bold text-center text-destructive text-lg">
+          <span className="flex justify-center items-center gap-2">
+            <XCircleIcon /> An Error Has Occurred
+          </span>
+        </div>
       </DashboardContentCards>
     );
   }
@@ -115,94 +76,18 @@ function FoodItemsPendingList() {
           Add Food Item
         </Link>
       </div>
-      <Table>
-        <TableCaption>Food Items</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableCell>Liked</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Description</TableCell>
-            <TableCell>Author</TableCell>
-            <TableCell>Likes</TableCell>
-            <TableCell>Food Type</TableCell>
-            <TableCell>Calories</TableCell>
-            <TableCell>Protein</TableCell>
-            <TableCell>Fat</TableCell>
-            <TableCell>Carbs</TableCell>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
+      <ScrollArea className="flex-1">
+        <div className="gap-3 grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-2">
           {foodItemsPending.map((foodItemPending) => (
-            <TableRow key={foodItemPending.id}>
-              <TableCell>
-                {foodItemPending.liked ? (
-                  <Heart
-                    fill="red"
-                    className="cursor-pointer"
-                    onClick={() =>
-                      handleToggleFoodItemPending(foodItemPending.id)
-                    }
-                  />
-                ) : (
-                  <Heart
-                    className="cursor-pointer"
-                    onClick={() =>
-                      handleToggleFoodItemPending(foodItemPending.id)
-                    }
-                  />
-                )}
-              </TableCell>
-              <TableCell>{foodItemPending.name}</TableCell>
-              <TableCell>{foodItemPending.description}</TableCell>
-              <TableCell>{foodItemPending.author_name}</TableCell>
-              <TableCell>{foodItemPending.likes}</TableCell>
-              <TableCell>{foodItemPending.food_type}</TableCell>
-              <TableCell>{foodItemPending.calories}</TableCell>
-              <TableCell>{foodItemPending.protein}</TableCell>
-              <TableCell>{foodItemPending.fat}</TableCell>
-              <TableCell>{foodItemPending.carbs}</TableCell>
-            </TableRow>
+            <FoodItemPendingPreview
+              key={foodItemPending.id}
+              foodItemPending={foodItemPending}
+              handleToggleFoodItemPending={handleToggleFoodItemPending}
+            />
           ))}
-        </TableBody>
-      </Table>
+        </div>
+      </ScrollArea>
     </DashboardContentCards>
-  );
-}
-
-function SkeletonTableRow() {
-  return (
-    <TableRow>
-      <TableCell>
-        <Skeleton className="w-full h-4" />
-      </TableCell>
-      <TableCell>
-        <Skeleton className="w-full h-4" />
-      </TableCell>
-      <TableCell>
-        <Skeleton className="w-full h-4" />
-      </TableCell>
-      <TableCell>
-        <Skeleton className="w-full h-4" />
-      </TableCell>
-      <TableCell>
-        <Skeleton className="w-full h-4" />
-      </TableCell>
-      <TableCell>
-        <Skeleton className="w-full h-4" />
-      </TableCell>
-      <TableCell>
-        <Skeleton className="w-full h-4" />
-      </TableCell>
-      <TableCell>
-        <Skeleton className="w-full h-4" />
-      </TableCell>
-      <TableCell>
-        <Skeleton className="w-full h-4" />
-      </TableCell>
-      <TableCell>
-        <Skeleton className="w-full h-4" />
-      </TableCell>
-    </TableRow>
   );
 }
 
