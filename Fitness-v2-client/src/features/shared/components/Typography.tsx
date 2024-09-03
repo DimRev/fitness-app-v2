@@ -100,7 +100,7 @@ export function PageHeader({
   }, [to]);
 
   return (
-    <div className="border-2 border-foreground bg-popover px-5 py-4 rounded-md text-popover-foreground stroke-popover-foreground">
+    <div className="border-2 border-foreground bg-popover mt-4 px-5 py-4 rounded-md text-popover-foreground stroke-popover-foreground">
       <div className="flex justify-between items-center border-b">
         <H1 className="truncate" {...props}>
           {children}

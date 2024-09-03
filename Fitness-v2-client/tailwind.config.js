@@ -20,12 +20,13 @@ module.exports = {
       height: {
         header: "56px",
         main: "calc(100dvh - 56px)",
+        "main-content": "calc(100dvh - 56px - 170px)",
       },
       width: {
         main: "100dvw",
-        "dashboard-lg": "calc(100dvw - 200px)",
-        "dashboard-md": "calc(100dvw - 150px)",
-        "dashboard-sm": "calc(100dvw - 56px)",
+        "dashboard-lg": "calc(100dvw - 200px - 32px)",
+        "dashboard-md": "calc(100dvw - 150px - 32px)",
+        "dashboard-sm": "calc(100dvw - 56px - 32px)",
         "dashboardSidebar-lg": "200px",
         "dashboardSidebar-md": "150px",
         "dashboardSidebar-sm": "56px",

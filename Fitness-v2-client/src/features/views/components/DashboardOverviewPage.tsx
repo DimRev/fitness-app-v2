@@ -4,10 +4,12 @@ import DashboardPageWrapper from "./DashboardPageWrapper";
 
 function DashboardOverviewPage() {
   return (
-    <DashboardPageWrapper>
-      <PageHeader to="/dashboard" LucideIcon={LineChart}>
-        Overview
-      </PageHeader>
+    <DashboardPageWrapper
+      title="Overview"
+      LucideIcon={LineChart}
+      to="/dashboard"
+    >
+      <div>This is the overview page</div>
     </DashboardPageWrapper>
   );
 }

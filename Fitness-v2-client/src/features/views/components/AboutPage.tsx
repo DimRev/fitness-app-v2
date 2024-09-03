@@ -1,13 +1,10 @@
-import { PageHeader } from "~/features/shared/components/Typography";
-import MainPageWrapper from "./MainPageWrapper";
 import { Info } from "lucide-react";
+import MainPageWrapper from "./MainPageWrapper";
 
 function AboutPage() {
   return (
-    <MainPageWrapper>
-      <PageHeader to="/about" LucideIcon={Info}>
-        About Page
-      </PageHeader>
+    <MainPageWrapper LucideIcon={Info} title="About Page" to="/about">
+      <div>This is the about page</div>
     </MainPageWrapper>
   );
 }

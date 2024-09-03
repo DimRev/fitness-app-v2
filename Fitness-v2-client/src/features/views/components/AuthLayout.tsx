@@ -21,9 +21,9 @@ function AuthLayout() {
   }
 
   return (
-    <MainPageWrapper className="flex flex-col justify-center items-center">
+    <>
       <Outlet />
-    </MainPageWrapper>
+    </>
   );
 }
 

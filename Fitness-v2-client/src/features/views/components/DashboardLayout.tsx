@@ -3,7 +3,6 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import useAuthStore from "~/features/auth/hooks/useAuthStore";
 import SidebarDashboard from "~/features/layout/components/SidebarDashboard";
 import useLayoutStore from "~/features/layout/hooks/useLayoutStore";
-import { ScrollArea } from "~/features/shared/components/ui/scroll-area";
 
 function DashboardLayout() {
   const { user } = useAuthStore();
@@ -30,10 +29,8 @@ function DashboardLayout() {
         <div className="border-e border-foreground bg-sidebar w-dashboardSidebar-sm h-main">
           <SidebarDashboard />
         </div>
-        <div className="w-dashboard-sm h-main">
-          <ScrollArea className="w-dashboard-sm h-main">
-            <Outlet />
-          </ScrollArea>
+        <div className="px-4">
+          <Outlet />
         </div>
       </div>
     );
@@ -44,10 +41,8 @@ function DashboardLayout() {
       <div className="border-e border-foreground bg-sidebar w-dashboardSidebar-md md:w-dashboardSidebar-lg h-main">
         <SidebarDashboard />
       </div>
-      <div className="w-dashboard-md md:w-dashboard-lg h-main">
-        <ScrollArea className="w-dashboard-md md:w-dashboard-lg h-main">
-          <Outlet />
-        </ScrollArea>
+      <div className="px-4">
+        <Outlet />
       </div>
     </div>
   );

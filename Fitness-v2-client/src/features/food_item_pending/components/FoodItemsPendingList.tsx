@@ -8,6 +8,7 @@ import useToggleFoodItemPending from "../hooks/useToggleFoodItemPending";
 import FoodItemPendingPreview, {
   FoodItemPendingPreviewSkeleton,
 } from "./FoodItemPendingPreview";
+import { Input } from "~/features/shared/components/ui/input";
 
 function FoodItemsPendingList() {
   const [page, setPage] = useState(1);
@@ -84,7 +85,8 @@ function FoodItemsPendingList() {
 
   return (
     <DashboardContentCards title="Food Items">
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-2">
+        <Input placeholder="Search..." />
         <Link className={buttonVariants()} to="/dashboard/food_item/add">
           Add Food Item
         </Link>
