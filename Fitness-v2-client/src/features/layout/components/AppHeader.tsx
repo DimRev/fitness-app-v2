@@ -23,7 +23,8 @@ function AppHeader() {
           to="/"
           className={buttonVariants({
             variant: "link",
-            className: parentPath === "/" ? "text-primary" : "",
+            className:
+              parentPath === "/" ? "text-amber-600 dark:text-yellow-500" : "",
           })}
         >
           Home
@@ -32,7 +33,10 @@ function AppHeader() {
           to="/about"
           className={buttonVariants({
             variant: "link",
-            className: parentPath === "/about" ? "text-primary" : "",
+            className:
+              parentPath === "/about"
+                ? "text-amber-600 dark:text-yellow-500"
+                : "",
           })}
         >
           About
@@ -43,7 +47,10 @@ function AppHeader() {
               to="/dashboard"
               className={buttonVariants({
                 variant: "link",
-                className: parentPath === "/dashboard" ? "text-primary" : "",
+                className:
+                  parentPath === "/dashboard"
+                    ? "text-amber-600 dark:text-yellow-500"
+                    : "",
               })}
             >
               Dashboard
@@ -54,7 +61,10 @@ function AppHeader() {
                 to="/admin"
                 className={buttonVariants({
                   variant: "link",
-                  className: parentPath === "/admin" ? "text-primary" : "",
+                  className:
+                    parentPath === "/admin"
+                      ? "text-amber-600 dark:text-yellow-500"
+                      : "",
                 })}
               >
                 Admin

@@ -46,8 +46,16 @@ ENV="development"
 
 3. Create the client `.env` files, which are `.env.development.local` and `.env.production.local`:
 
+`.env.development.local`:
+
 ```bash
-VITE_API_URL="url_to_local_server / production_server"
+VITE_API_URL="http://localhost:1323"
+```
+
+`.env.production.local`:
+
+```bash
+VITE_API_URL="https://fitness-v2-server.fly.dev/api/v1"
 ```
 
 4. Install dependencies:
