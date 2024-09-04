@@ -1,3 +1,4 @@
+import { FoodItemPaginationButtons } from "./FoodItemPaginationButtons";
 import { ChevronLeft, ChevronRight, XCircleIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
@@ -61,6 +62,11 @@ function FoodItemsPendingList() {
           <FoodItemPendingPreviewSkeleton />
           <FoodItemPendingPreviewSkeleton />
         </div>
+        <FoodItemPaginationButtons
+          page={page}
+          onChangePage={onChangePage}
+          foodItemsPending={foodItemsPending}
+        />
       </DashboardContentCards>
     );
   }
@@ -100,35 +106,11 @@ function FoodItemsPendingList() {
           />
         ))}
       </div>
-      <div className="flex items-center gap-2 py-2">
-        <Button
-          size="icon"
-          variant="ghost"
-          disabled={page === 1}
-          onClick={() => onChangePage("prev")}
-        >
-          <ChevronLeft />
-        </Button>
-        <div>
-          <span>{page}</span>
-          <span>
-            {foodItemsPending.total_pages
-              ? ` / ${foodItemsPending.total_pages}`
-              : " / 1"}
-          </span>
-        </div>
-        <Button
-          size="icon"
-          variant="ghost"
-          disabled={
-            page === foodItemsPending.total_pages ||
-            !!foodItemsPending?.total_pages
-          }
-          onClick={() => onChangePage("next")}
-        >
-          <ChevronRight />
-        </Button>
-      </div>
+      <FoodItemPaginationButtons
+        page={page}
+        onChangePage={onChangePage}
+        foodItemsPending={foodItemsPending}
+      />
     </DashboardContentCards>
   );
 }
