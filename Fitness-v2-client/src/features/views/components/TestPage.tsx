@@ -1,9 +1,10 @@
 import { cn } from "~/lib/utils";
 import MainPageWrapper from "./MainPageWrapper";
+import { Info } from "lucide-react";
 
 function TestPage() {
   return (
-    <MainPageWrapper>
+    <MainPageWrapper LucideIcon={Info} title="Test Page" to="/test">
       <TestCard title="Color Palette | Background & Foreground">
         <DarkLightColorCards
           title="Primary"

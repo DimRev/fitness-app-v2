@@ -29,7 +29,7 @@ function DashboardLayout() {
         <div className="border-e border-foreground bg-sidebar w-dashboardSidebar-sm h-main">
           <SidebarDashboard />
         </div>
-        <div className="w-dashboard-sm h-main">
+        <div className="px-4">
           <Outlet />
         </div>
       </div>
@@ -41,7 +41,7 @@ function DashboardLayout() {
       <div className="border-e border-foreground bg-sidebar w-dashboardSidebar-md md:w-dashboardSidebar-lg h-main">
         <SidebarDashboard />
       </div>
-      <div className="w-dashboard-md md:w-dashboard-lg h-main">
+      <div className="px-4">
         <Outlet />
       </div>
     </div>

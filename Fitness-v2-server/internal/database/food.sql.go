@@ -75,7 +75,7 @@ func (q *Queries) CreateFood(ctx context.Context, arg CreateFoodParams) (FoodIte
 
 const getFoods = `-- name: GetFoods :many
 SELECT id, name, description, image_url, food_type, calories, fat, protein, carbs, created_at, updated_at FROM food_items 
-ORDER BY name DESC
+ORDER BY name ASC
 LIMIT $1
 OFFSET $2
 `

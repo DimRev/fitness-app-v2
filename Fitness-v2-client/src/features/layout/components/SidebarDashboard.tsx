@@ -1,4 +1,10 @@
-import { ChevronLeft, ChevronRight, LineChart, Sandwich } from "lucide-react";
+import {
+  Apple,
+  ChevronLeft,
+  ChevronRight,
+  LineChart,
+  Sandwich,
+} from "lucide-react";
 import { H3 } from "~/features/shared/components/Typography";
 import { Button } from "~/features/shared/components/ui/button";
 import { cn } from "~/lib/utils";
@@ -52,6 +58,12 @@ function SidebarDashboard() {
         LucideIcon={Sandwich}
         to="/dashboard/meal"
         title="Meals"
+        onlyIcon={!isSidebarOpen}
+      />
+      <SidebarNavLink
+        LucideIcon={Apple}
+        to="/dashboard/food_item"
+        title="Food Items"
         onlyIcon={!isSidebarOpen}
       />
     </nav>

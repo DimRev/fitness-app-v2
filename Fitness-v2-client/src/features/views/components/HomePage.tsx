@@ -4,10 +4,8 @@ import { Home } from "lucide-react";
 
 function HomePage() {
   return (
-    <MainPageWrapper>
-      <PageHeader to="/" LucideIcon={Home}>
-        Home Page
-      </PageHeader>
+    <MainPageWrapper LucideIcon={Home} title="Home Page" to="/">
+      <div>This is the home page</div>
     </MainPageWrapper>
   );
 }

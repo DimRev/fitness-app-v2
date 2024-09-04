@@ -1,6 +1,6 @@
 -- name: GetFoods :many
 SELECT * FROM food_items 
-ORDER BY name DESC
+ORDER BY name ASC
 LIMIT $1
 OFFSET $2;
 

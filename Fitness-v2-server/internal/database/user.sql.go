@@ -25,7 +25,7 @@ VALUES (
   $3, 
   $4
 ) 
-RETURNING id, email, password_hash, username, image_url, created_at, updated_at
+RETURNING id, email, password_hash, username, image_url, created_at, updated_at, role
 `
 
 type CreateUserParams struct {
@@ -51,12 +51,13 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.ImageUrl,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Role,
 	)
 	return i, err
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, email, password_hash, username, image_url, created_at, updated_at FROM users 
+SELECT id, email, password_hash, username, image_url, created_at, updated_at, role FROM users 
 WHERE email = $1
 `
 
@@ -71,12 +72,13 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.ImageUrl,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Role,
 	)
 	return i, err
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT id, email, password_hash, username, image_url, created_at, updated_at FROM users 
+SELECT id, email, password_hash, username, image_url, created_at, updated_at, role FROM users 
 WHERE id = $1
 `
 
@@ -91,6 +93,7 @@ func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (User, error) {
 		&i.ImageUrl,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Role,
 	)
 	return i, err
 }
@@ -101,7 +104,7 @@ SET image_url = $2,
   username = $3,
   updated_at = NOW()
 WHERE id = $1
-RETURNING id, email, password_hash, username, image_url, created_at, updated_at
+RETURNING id, email, password_hash, username, image_url, created_at, updated_at, role
 `
 
 type UpdateUserParams struct {
@@ -121,6 +124,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.ImageUrl,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Role,
 	)
 	return i, err
 }

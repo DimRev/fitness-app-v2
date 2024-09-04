@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 
+	"github.com/DimRev/Fitness-v2-server/internal/database"
 	"github.com/google/uuid"
 )
 
@@ -15,5 +16,6 @@ type User struct {
 	CreatedAt    time.Time `json:"-"`
 	UpdatedAt    time.Time `json:"-"`
 
-	SessionToken string `json:"session_token"`
+	Role         database.UserRole `json:"role"`
+	SessionToken string            `json:"session_token"`
 }

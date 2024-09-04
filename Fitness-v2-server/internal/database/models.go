@@ -57,6 +57,48 @@ func (ns NullFoodItemType) Value() (driver.Value, error) {
 	return string(ns.FoodItemType), nil
 }
 
+type UserRole string
+
+const (
+	UserRoleAdmin UserRole = "admin"
+	UserRoleUser  UserRole = "user"
+)
+
+func (e *UserRole) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = UserRole(s)
+	case string:
+		*e = UserRole(s)
+	default:
+		return fmt.Errorf("unsupported scan type for UserRole: %T", src)
+	}
+	return nil
+}
+
+type NullUserRole struct {
+	UserRole UserRole
+	Valid    bool // Valid is true if UserRole is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullUserRole) Scan(value interface{}) error {
+	if value == nil {
+		ns.UserRole, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.UserRole.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullUserRole) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.UserRole), nil
+}
+
 type FoodItem struct {
 	ID          uuid.UUID
 	Name        string
@@ -69,6 +111,21 @@ type FoodItem struct {
 	Carbs       string
 	CreatedAt   sql.NullTime
 	UpdatedAt   sql.NullTime
+}
+
+type FoodItemsPending struct {
+	ID          uuid.UUID
+	Name        string
+	Description sql.NullString
+	ImageUrl    sql.NullString
+	FoodType    FoodItemType
+	Calories    string
+	Fat         string
+	Protein     string
+	Carbs       string
+	CreatedAt   sql.NullTime
+	UpdatedAt   sql.NullTime
+	UserID      uuid.UUID
 }
 
 type Meal struct {
@@ -86,6 +143,11 @@ type RelMealFood struct {
 	FoodItemID uuid.UUID
 	UserID     uuid.UUID
 	Amount     sql.NullInt32
+}
+
+type RelUserLikeFoodItemPending struct {
+	UserID     uuid.UUID
+	FoodItemID uuid.UUID
 }
 
 type Session struct {
@@ -106,4 +168,5 @@ type User struct {
 	ImageUrl     sql.NullString
 	CreatedAt    sql.NullTime
 	UpdatedAt    sql.NullTime
+	Role         UserRole
 }

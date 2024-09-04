@@ -90,14 +90,21 @@ export function PageHeader({
     return routesArr.map((path, idx) => ({
       path: routesArr.slice(0, idx + 1).join("/"),
       title:
-        path === "" ? "Home" : path.charAt(0).toUpperCase() + path.slice(1),
+        path === ""
+          ? "Home"
+          : path
+              .split("_")
+              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+              .join(" "),
     }));
   }, [to]);
 
   return (
-    <div className="border-2 border-foreground bg-popover px-5 py-4 rounded-md text-popover-foreground stroke-popover-foreground">
+    <div className="border-2 border-foreground bg-popover mt-4 px-5 py-4 rounded-md text-popover-foreground stroke-popover-foreground">
       <div className="flex justify-between items-center border-b">
-        <H1 {...props}>{children}</H1>
+        <H1 className="truncate" {...props}>
+          {children}
+        </H1>
         <LucideIcon className="size-7" />
       </div>
       <div className="py-2">

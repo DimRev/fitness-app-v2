@@ -14,6 +14,12 @@ import DashboardMealPage from "./features/views/components/DashboardMealPage";
 import useLayoutStore from "./features/layout/hooks/useLayoutStore";
 import { cn } from "./lib/utils";
 import PageNotFound from "./features/views/components/PageNotFound";
+import DashboardMealAddPage from "./features/views/components/DashboardMealAddPage";
+import AdminLayout from "./features/views/components/AdminLayout";
+import AdminOverviewPage from "./features/views/components/AdminOverviewPage";
+import AdminFoodItemPage from "./features/views/components/AdminFoodItemPage";
+import AdminFoodItemAddPage from "./features/views/components/AdminFoodItemAddPage";
+import DashboardFoodItemPending from "./features/views/components/DashboardFoodItemPending";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +47,19 @@ function App() {
               <Route path="/dashboard" element={<DashboardLayout />}>
                 <Route index element={<DashboardOverviewPage />} />
                 <Route path="meal" element={<DashboardMealPage />} />
+                <Route path="meal/add" element={<DashboardMealAddPage />} />
+                <Route
+                  path="food_item"
+                  element={<DashboardFoodItemPending />}
+                />
+              </Route>
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminOverviewPage />} />
+                <Route path="food_item" element={<AdminFoodItemPage />} />
+                <Route
+                  path="food_item/add"
+                  element={<AdminFoodItemAddPage />}
+                />
               </Route>
               <Route path="/auth" element={<AuthLayout />}>
                 <Route path="login" index element={<LoginPage />} />

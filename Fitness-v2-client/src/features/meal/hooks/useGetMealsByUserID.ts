@@ -17,11 +17,8 @@ function useGetMealsByUserID(
 ): UseQueryResult<MealWithNutrition[], Error> {
   return useQuery<MealWithNutrition[], Error>({
     ...USE_QUERY_DEFAULT_OPTIONS,
-    queryKey: [
-      QUERY_KEYS.MEALS.GET_MEALS_BY_USER_ID,
-      params.limit,
-      params.offset,
-    ],
+    queryKey: QUERY_KEYS.MEALS.GET_MEALS_BY_USER_ID,
+
     queryFn: () => getMealsByUserID(params),
     enabled: !!params,
   });
