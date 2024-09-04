@@ -1,8 +1,7 @@
-import { SidebarOpen, type LucideIcon } from "lucide-react";
+import { type LucideIcon } from "lucide-react";
 import React from "react";
 import useLayoutStore from "~/features/layout/hooks/useLayoutStore";
 import { PageHeader } from "~/features/shared/components/Typography";
-import { Card } from "~/features/shared/components/ui/card";
 import { ScrollArea } from "~/features/shared/components/ui/scroll-area";
 import { cn } from "~/lib/utils";
 
@@ -34,10 +33,10 @@ function DashboardPageWrapper({
       <PageHeader to={to} LucideIcon={LucideIcon}>
         {title}
       </PageHeader>
-      <Card className="border-2 border-black">
+      <div className="border border-black/85 rounded-lg">
         <ScrollArea
           className={cn(
-            "h-main-content p-4",
+            "relative h-main-content rounded-lg p-2",
             isSidebarOpen
               ? "w-dashboard-md md:w-dashboard-lg"
               : "w-dashboard-sm",
@@ -45,7 +44,7 @@ function DashboardPageWrapper({
         >
           {children}
         </ScrollArea>
-      </Card>
+      </div>
     </div>
   );
 }

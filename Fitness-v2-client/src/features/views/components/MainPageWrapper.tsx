@@ -1,7 +1,6 @@
 import { type LucideIcon } from "lucide-react";
 import React from "react";
 import { PageHeader } from "~/features/shared/components/Typography";
-import { Card } from "~/features/shared/components/ui/card";
 import { ScrollArea } from "~/features/shared/components/ui/scroll-area";
 import { cn } from "~/lib/utils";
 
@@ -25,9 +24,9 @@ function MainPageWrapper({
       <PageHeader to={to} LucideIcon={LucideIcon}>
         {title}
       </PageHeader>
-      <Card className="border-2 border-black">
+      <div className="border border-black/85 rounded-lg">
         <ScrollArea className="h-main-content container">{children}</ScrollArea>
-      </Card>
+      </div>
     </div>
   );
 }

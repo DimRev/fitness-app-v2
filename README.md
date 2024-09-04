@@ -67,3 +67,7 @@ Merging a branch to main will deploy the client to vercel.
 ```bash
 cd Fitness-v2-server && fly deploy
 ```
+
+## Current DB structure & permissions
+
+![Database Structure](./assets/001.png)

@@ -26,7 +26,9 @@ function AdminLayout() {
         <div className="border-e border-foreground bg-sidebar w-dashboardSidebar-sm h-main">
           <SidebarAdmin />
         </div>
-        <Outlet />
+        <div className="px-4">
+          <Outlet />
+        </div>
       </div>
     );
   }
@@ -36,7 +38,9 @@ function AdminLayout() {
       <div className="border-e border-foreground bg-sidebar w-dashboardSidebar-md md:w-dashboardSidebar-lg h-main">
         <SidebarAdmin />
       </div>
-      <Outlet />
+      <div className="px-4">
+        <Outlet />
+      </div>
     </div>
   );
 }
