@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "concurrently --names \"server,client\" --prefix \"{name}| \" --prefix-colors \"green,blue\" \"pnpm run dev:server\" \"pnpm run dev:client\"",
+    "install:all": "pnpm i && cd Fitness-v2-server && go mod tidy && cd ../Fitness-v2-client && pnpm i",
     "dev:client": "cd Fitness-v2-client && npm run dev",
     "dev:server": "cd Fitness-v2-server && go run ."
   },
