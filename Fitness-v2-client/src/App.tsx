@@ -19,7 +19,8 @@ import AdminLayout from "./features/views/components/AdminLayout";
 import AdminOverviewPage from "./features/views/components/AdminOverviewPage";
 import AdminFoodItemPage from "./features/views/components/AdminFoodItemPage";
 import AdminFoodItemAddPage from "./features/views/components/AdminFoodItemAddPage";
-import DashboardFoodItemPending from "./features/views/components/DashboardFoodItemPending";
+import DashboardFoodItemPendingPage from "./features/views/components/DashboardFoodItemPendingPage";
+import DashboardFoodItemPendingAddPage from "./features/views/components/DashboardFoodItemPendingAddPage";
 
 const queryClient = new QueryClient();
 
@@ -50,7 +51,11 @@ function App() {
                 <Route path="meal/add" element={<DashboardMealAddPage />} />
                 <Route
                   path="food_item"
-                  element={<DashboardFoodItemPending />}
+                  element={<DashboardFoodItemPendingPage />}
+                />
+                <Route
+                  path="food_item/add"
+                  element={<DashboardFoodItemPendingAddPage />}
                 />
               </Route>
               <Route path="/admin" element={<AdminLayout />}>

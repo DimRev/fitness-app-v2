@@ -1,15 +1,15 @@
-import { FoodItemPaginationButtons } from "./FoodItemPaginationButtons";
-import { ChevronLeft, ChevronRight, XCircleIcon } from "lucide-react";
+import { XCircleIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { DashboardContentCards } from "~/features/shared/components/CustomCards";
-import { Button, buttonVariants } from "~/features/shared/components/ui/button";
+import { buttonVariants } from "~/features/shared/components/ui/button";
+import { Input } from "~/features/shared/components/ui/input";
 import useGetFoodItemsPending from "../hooks/useGetFoodItemsPending";
 import useToggleFoodItemPending from "../hooks/useToggleFoodItemPending";
+import { FoodItemPaginationButtons } from "./FoodItemPaginationButtons";
 import FoodItemPendingPreview, {
   FoodItemPendingPreviewSkeleton,
 } from "./FoodItemPendingPreview";
-import { Input } from "~/features/shared/components/ui/input";
 
 function FoodItemsPendingList() {
   const [page, setPage] = useState(1);
@@ -54,7 +54,7 @@ function FoodItemsPendingList() {
             Add Food Item
           </Link>
         </div>
-        <div className="gap-3 grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-2">
+        <div className="mt-2 grid gap-3 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           <FoodItemPendingPreviewSkeleton />
           <FoodItemPendingPreviewSkeleton />
           <FoodItemPendingPreviewSkeleton />
@@ -79,9 +79,8 @@ function FoodItemsPendingList() {
             Add Food Item
           </Link>
         </div>
-
-        <div className="mt-2 font-bold text-center text-destructive text-lg">
-          <span className="flex justify-center items-center gap-2">
+        <div className="mt-2 text-center text-lg font-bold text-destructive">
+          <span className="flex items-center justify-center gap-2">
             <XCircleIcon /> An Error Has Occurred
           </span>
         </div>
@@ -97,7 +96,7 @@ function FoodItemsPendingList() {
           Add Food Item
         </Link>
       </div>
-      <div className="gap-3 grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-2">
+      <div className="mt-2 grid gap-3 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {foodItemsPending.food_items_pending.map((foodItemPending) => (
           <FoodItemPendingPreview
             key={foodItemPending.id}

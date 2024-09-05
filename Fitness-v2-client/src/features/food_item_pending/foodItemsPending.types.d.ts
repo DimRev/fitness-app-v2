@@ -21,7 +21,7 @@ type FoodItemsPending = {
   name: string;
   description?: string;
   image_url?: string;
-  food_type: string;
+  food_type: FoodItemType;
   calories: string;
   fat: string;
   protein: string;
@@ -35,3 +35,5 @@ type FoodItemsPendingWithPages = {
   food_items_pending: FoodItemsPending[];
   total_pages: number;
 };
+
+type FoodItemType = "vegetable" | "fruit" | "grain" | "protein";

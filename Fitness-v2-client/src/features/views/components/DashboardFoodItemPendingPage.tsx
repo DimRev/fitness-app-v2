@@ -2,7 +2,7 @@ import { Apple } from "lucide-react";
 import FoodItemsPendingList from "~/features/food_item_pending/components/FoodItemsPendingList";
 import DashboardPageWrapper from "./DashboardPageWrapper";
 
-function DashboardFoodItemPending() {
+function DashboardFoodItemPendingPage() {
   return (
     <DashboardPageWrapper
       title="Food Items"
@@ -15,4 +15,4 @@ function DashboardFoodItemPending() {
   );
 }
 
-export default DashboardFoodItemPending;
+export default DashboardFoodItemPendingPage;
