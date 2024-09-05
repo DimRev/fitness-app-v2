@@ -14,10 +14,13 @@ import FoodItemPendingAdminTableRow, {
   FoodItemPendingAdminTableRowEmpty,
   FoodItemPendingAdminTableRowSkeleton,
 } from "./FoodItemPendingAdminTableRow";
+import useApproveFoodItemPending from "../hooks/useApproveFoodItemPending";
+import useRejectFoodItemPending from "../hooks/useRejectFoodItemPending";
 
 function FoodItemsPendingAdminTable() {
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(8);
+  const [pendingIds, setPendingIds] = useState<string[]>([]);
   const offset = useMemo(() => page * pageSize - pageSize, [page, pageSize]);
   const {
     data: foodItemsPending,
@@ -27,14 +30,44 @@ function FoodItemsPendingAdminTable() {
     limit: pageSize,
     offset,
   });
-  const { mutateAsync: toggleFoodItemPending } = useToggleFoodItemPending();
 
-  function handleToggleFoodItemPending(foodItemPendingId: string) {
-    void toggleFoodItemPending({
-      food_item_pending_id: foodItemPendingId,
-      limit: pageSize,
-      offset,
-    });
+  const { mutateAsync: approveFoodItemPending } = useApproveFoodItemPending();
+  const { mutateAsync: rejectFoodItemPending } = useRejectFoodItemPending();
+
+  function handleApproveFoodItemPending(foodItemPendingId: string) {
+    setPendingIds((prev) => [...prev, foodItemPendingId]);
+    void approveFoodItemPending(
+      {
+        food_item_pending_id: foodItemPendingId,
+        limit: pageSize,
+        offset,
+      },
+      {
+        onSettled: () => {
+          setPendingIds((prev) =>
+            prev.filter((id) => id !== foodItemPendingId),
+          );
+        },
+      },
+    );
+  }
+
+  function handleRejectFoodItemPending(foodItemPendingId: string) {
+    setPendingIds((prev) => [...prev, foodItemPendingId]);
+    void rejectFoodItemPending(
+      {
+        food_item_pending_id: foodItemPendingId,
+        limit: pageSize,
+        offset,
+      },
+      {
+        onSettled: () => {
+          setPendingIds((prev) =>
+            prev.filter((id) => id !== foodItemPendingId),
+          );
+        },
+      },
+    );
   }
 
   function onChangePage(type: "next" | "prev") {
@@ -59,7 +92,7 @@ function FoodItemsPendingAdminTable() {
   if (foodItemsPendingError || !foodItemsPending?.food_items_pending) {
     return (
       <DashboardContentCards title="Pending Food Items">
-        <div className="border rounded-md">
+        <div className="rounded-md border">
           <Table>
             <TableHeader>
               <TableRow>
@@ -71,11 +104,10 @@ function FoodItemsPendingAdminTable() {
                 <TableHead className="truncate">Protein</TableHead>
                 <TableHead className="truncate">Carbs</TableHead>
                 <TableHead className="truncate">Likes</TableHead>
+                <TableHead className="truncate">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              <FoodItemPendingAdminTableRowSkeleton />
-              <FoodItemPendingAdminTableRowSkeleton />
               <FoodItemPendingAdminTableRowSkeleton />
               <FoodItemPendingAdminTableRowSkeleton />
               <FoodItemPendingAdminTableRowSkeleton />
@@ -98,7 +130,7 @@ function FoodItemsPendingAdminTable() {
 
   return (
     <DashboardContentCards title="Pending Food Items">
-      <div className="border rounded-md">
+      <div className="rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>
@@ -110,13 +142,17 @@ function FoodItemsPendingAdminTable() {
               <TableHead className="truncate">Protein</TableHead>
               <TableHead className="truncate">Carbs</TableHead>
               <TableHead className="truncate">Likes</TableHead>
+              <TableHead className="truncate">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {foodItemsPending.food_items_pending.map((foodItemPending) => (
               <FoodItemPendingAdminTableRow
+                isPending={pendingIds.includes(foodItemPending.id)}
                 key={foodItemPending.id}
                 foodItemPending={foodItemPending}
+                handleApproveFoodItemPending={handleApproveFoodItemPending}
+                handleRejectFoodItemPending={handleRejectFoodItemPending}
               />
             ))}
             {new Array(

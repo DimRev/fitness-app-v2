@@ -339,3 +339,47 @@ func ToggleFoodItemPending(c echo.Context) error {
 		"message": "food item pending unliked",
 	})
 }
+
+func ApproveFoodItemPending(c echo.Context) error {
+	user, ok := c.Get("user").(database.User)
+	if !ok || user.Role != database.UserRoleAdmin {
+		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
+	}
+
+	foodItemPendingID, err := uuid.Parse(c.Param("food_item_pending_id"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid food item pending id")
+	}
+
+	err = config.Queries.ApproveFoodItemPending(c.Request().Context(), foodItemPendingID)
+	if err != nil {
+		log.Println("Failed to approve food item pending: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to approve food item pending")
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{
+		"message": "food item pending approved",
+	})
+}
+
+func RejectFoodItemPending(c echo.Context) error {
+	user, ok := c.Get("user").(database.User)
+	if !ok || user.Role != database.UserRoleAdmin {
+		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
+	}
+
+	foodItemPendingID, err := uuid.Parse(c.Param("food_item_pending_id"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid food item pending id")
+	}
+
+	err = config.Queries.RejectFoodItemPending(c.Request().Context(), foodItemPendingID)
+	if err != nil {
+		log.Println("Failed to reject food item pending: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to reject food item pending")
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{
+		"message": "food item pending rejected",
+	})
+}

@@ -12,7 +12,7 @@ function AppHeader() {
   }, [location]);
 
   return (
-    <div className="flex justify-between items-center border-foreground bg-header px-4 border-b h-header">
+    <div className="flex h-header items-center justify-between border-b border-foreground bg-header px-4">
       <Link to="/">
         <div>Fitness</div>
       </Link>
@@ -22,7 +22,7 @@ function AppHeader() {
           className={buttonVariants({
             variant: "link",
             className:
-              parentPath === "/" ? "text-amber-400 dark:text-yellow-500" : "",
+              parentPath === "/" ? "text-yellow-300 dark:text-yellow-500" : "",
           })}
         >
           Home
@@ -33,7 +33,7 @@ function AppHeader() {
             variant: "link",
             className:
               parentPath === "/about"
-                ? "text-amber-300 dark:text-yellow-500"
+                ? "text-yellow-300 dark:text-yellow-500"
                 : "",
           })}
         >
@@ -47,7 +47,7 @@ function AppHeader() {
                 variant: "link",
                 className:
                   parentPath === "/dashboard"
-                    ? "text-amber-300 dark:text-yellow-500"
+                    ? "text-yellow-300 dark:text-yellow-500"
                     : "",
               })}
             >
@@ -61,7 +61,7 @@ function AppHeader() {
                   variant: "link",
                   className:
                     parentPath === "/admin"
-                      ? "text-amber-300 dark:text-yellow-500"
+                      ? "text-yellow-300 dark:text-yellow-500"
                       : "",
                 })}
               >

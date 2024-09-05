@@ -31,9 +31,10 @@ function SidebarNavLink({ to, title, LucideIcon, onlyIcon }: Props) {
           variant: "outline",
           size: "icon",
           className: cn(
-            "border-foreground bg-sidebar hover:bg-violet-300 dark:hover:bg-violet-800",
-            isActive &&
-              "bg-amber-400 text-muted hover:bg-amber-300 hover:text-muted/90 dark:bg-yellow-500 dark:hover:bg-yellow-400",
+            "border-foreground",
+            isActive
+              ? "!bg-amber-500 text-muted hover:!bg-amber-400 hover:text-muted/90 dark:!bg-yellow-500 dark:hover:!bg-yellow-400"
+              : "!bg-sidebar hover:!bg-violet-300 dark:hover:!bg-violet-800",
           ),
         })}
       >
@@ -48,9 +49,10 @@ function SidebarNavLink({ to, title, LucideIcon, onlyIcon }: Props) {
       className={buttonVariants({
         variant: "outline",
         className: cn(
-          "grid w-full grid-cols-[auto_1fr] border-foreground bg-sidebar hover:bg-violet-300 dark:hover:bg-violet-800",
-          isActive &&
-            "bg-amber-400 text-muted hover:bg-amber-300 hover:text-muted/90 dark:bg-yellow-500 dark:hover:bg-yellow-400",
+          "grid w-full grid-cols-[auto_1fr] border-foreground",
+          isActive
+            ? "!bg-amber-500 text-muted hover:!bg-amber-400 hover:text-muted/90 dark:!bg-yellow-500 dark:hover:!bg-yellow-400"
+            : "!bg-sidebar hover:!bg-violet-300 dark:hover:!bg-violet-800",
         ),
       })}
     >

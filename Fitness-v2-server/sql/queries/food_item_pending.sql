@@ -117,3 +117,7 @@ SELECT
     protein, 
     carbs
 FROM moved_item;
+
+-- name: RejectFoodItemPending :exec
+DELETE FROM food_items_pending
+WHERE food_items_pending.id = $1;
