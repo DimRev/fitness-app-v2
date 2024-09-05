@@ -14,10 +14,14 @@ type Props = {
 function SidebarNavLink({ to, title, LucideIcon, onlyIcon }: Props) {
   const location = useLocation();
   const isActive = useMemo(() => {
-    return location.pathname === to;
-  }, [location]);
-
-  console.log(isActive);
+    const LocationLen = location.pathname.split("/").length;
+    const toLen = to.split("/").length;
+    if (LocationLen === 2 || toLen === 2) {
+      return location.pathname === to;
+    } else {
+      return location.pathname.startsWith(to);
+    }
+  }, [location.pathname, to]);
 
   if (onlyIcon) {
     return (

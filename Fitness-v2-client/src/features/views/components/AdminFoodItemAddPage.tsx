@@ -1,14 +1,15 @@
 import { Plus } from "lucide-react";
 import FoodItemAddForm from "~/features/food_item/components/FoodItemAddForm";
-import { PageHeader } from "~/features/shared/components/Typography";
 import DashboardPageWrapper from "./DashboardPageWrapper";
 
 function AdminFoodItemAddPage() {
   return (
-    <DashboardPageWrapper>
-      <PageHeader to="/admin/food_item/add" LucideIcon={Plus}>
-        Add Food Item
-      </PageHeader>
+    <DashboardPageWrapper
+      title="Add Food Item"
+      LucideIcon={Plus}
+      to="/admin/food_item/add"
+      iconClasses="fill-green-500 dark:fill-green-600"
+    >
       <FoodItemAddForm />
     </DashboardPageWrapper>
   );

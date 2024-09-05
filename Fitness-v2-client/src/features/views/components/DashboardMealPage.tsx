@@ -8,6 +8,7 @@ function DashboardMealPage() {
       title="Meals"
       LucideIcon={Sandwich}
       to="/dashboard/meal"
+      iconClasses="fill-orange-500 dark:fill-orange-700"
     >
       <MealsList />
     </DashboardPageWrapper>
