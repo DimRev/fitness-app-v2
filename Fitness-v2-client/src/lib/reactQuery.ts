@@ -1,9 +1,12 @@
 import { type UseQueryOptions, type UseMutationOptions } from "react-query";
 
 export const USE_MUTATION_DEFAULT_OPTIONS: UseMutationOptions<
-  unknown,
-  unknown,
-  unknown
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  any,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  any,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  any
 > = {
   retry: 3,
   retryDelay: 1000,

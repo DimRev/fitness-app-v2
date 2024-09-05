@@ -10,6 +10,7 @@ type Props = {
   LucideIcon: LucideIcon;
   title: string;
   to: string;
+  iconClasses?: string;
 };
 
 function MainPageWrapper({
@@ -18,10 +19,11 @@ function MainPageWrapper({
   LucideIcon,
   title,
   to,
+  iconClasses,
 }: Props) {
   return (
     <div className={cn("container flex h-main flex-col gap-4", className)}>
-      <PageHeader to={to} LucideIcon={LucideIcon}>
+      <PageHeader to={to} LucideIcon={LucideIcon} iconClasses={iconClasses}>
         {title}
       </PageHeader>
       <div className="border-muted/70 border rounded-lg">

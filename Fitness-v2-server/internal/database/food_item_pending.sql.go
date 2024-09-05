@@ -344,6 +344,16 @@ func (q *Queries) LikeFoodItemPendingForUser(ctx context.Context, arg LikeFoodIt
 	return err
 }
 
+const rejectFoodItemPending = `-- name: RejectFoodItemPending :exec
+DELETE FROM food_items_pending
+WHERE food_items_pending.id = $1
+`
+
+func (q *Queries) RejectFoodItemPending(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, rejectFoodItemPending, id)
+	return err
+}
+
 const unlikeFoodItemPendingForUser = `-- name: UnlikeFoodItemPendingForUser :exec
 DELETE FROM rel_user_like_food_item_pending
 WHERE user_id = $1

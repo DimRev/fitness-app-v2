@@ -11,6 +11,7 @@ type Props = {
   LucideIcon: LucideIcon;
   title: string;
   to: string;
+  iconClasses?: string;
 };
 
 function DashboardPageWrapper({
@@ -18,6 +19,7 @@ function DashboardPageWrapper({
   className,
   LucideIcon,
   title,
+  iconClasses,
   to,
 }: Props) {
   const { isSidebarOpen } = useLayoutStore();
@@ -30,7 +32,7 @@ function DashboardPageWrapper({
         className,
       )}
     >
-      <PageHeader to={to} LucideIcon={LucideIcon}>
+      <PageHeader to={to} LucideIcon={LucideIcon} iconClasses={iconClasses}>
         {title}
       </PageHeader>
       <div className="border-muted/70 border rounded-lg">

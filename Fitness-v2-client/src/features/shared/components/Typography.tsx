@@ -77,12 +77,14 @@ export function P({ children, className, ...props }: Props) {
 interface PageHeaderProps extends Props {
   LucideIcon: LucideIcon;
   to: string;
+  iconClasses?: string;
 }
 
 export function PageHeader({
   children,
   LucideIcon,
   to,
+  iconClasses,
   ...props
 }: PageHeaderProps) {
   const toRoutes = useMemo(() => {
@@ -105,7 +107,7 @@ export function PageHeader({
         <H1 className="truncate" {...props}>
           {children}
         </H1>
-        <LucideIcon className="size-7" />
+        <LucideIcon className={cn("size-7", iconClasses)} />
       </div>
       <div className="py-2">
         <Breadcrumb>

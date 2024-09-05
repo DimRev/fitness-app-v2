@@ -4,7 +4,11 @@ import DashboardPageWrapper from "./DashboardPageWrapper";
 
 function DashboardMealAddPage() {
   return (
-    <DashboardPageWrapper title="Add Meal" LucideIcon={Plus} to="/dashboard">
+    <DashboardPageWrapper
+      title="Add Meal"
+      LucideIcon={Plus}
+      to="/dashboard/meal/add"
+    >
       <MealAddForm />
     </DashboardPageWrapper>
   );

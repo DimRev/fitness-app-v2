@@ -4,7 +4,12 @@ import DashboardPageWrapper from "./DashboardPageWrapper";
 
 function DashboardFoodItemPending() {
   return (
-    <DashboardPageWrapper title="Food Items" LucideIcon={Apple} to="/dashboard">
+    <DashboardPageWrapper
+      title="Food Items"
+      LucideIcon={Apple}
+      to="/dashboard/food_item"
+      iconClasses="fill-green-500 dark:fill-green-700"
+    >
       <FoodItemsPendingList />
     </DashboardPageWrapper>
   );
