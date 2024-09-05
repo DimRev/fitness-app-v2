@@ -11,8 +11,6 @@ function AppHeader() {
     return `/${location.pathname.split("/")[1]}`;
   }, [location]);
 
-  console.log(parentPath);
-
   return (
     <div className="flex justify-between items-center border-foreground bg-header px-4 border-b h-header">
       <Link to="/">
@@ -24,7 +22,7 @@ function AppHeader() {
           className={buttonVariants({
             variant: "link",
             className:
-              parentPath === "/" ? "text-amber-600 dark:text-yellow-500" : "",
+              parentPath === "/" ? "text-amber-400 dark:text-yellow-500" : "",
           })}
         >
           Home
@@ -35,7 +33,7 @@ function AppHeader() {
             variant: "link",
             className:
               parentPath === "/about"
-                ? "text-amber-600 dark:text-yellow-500"
+                ? "text-amber-300 dark:text-yellow-500"
                 : "",
           })}
         >
@@ -49,7 +47,7 @@ function AppHeader() {
                 variant: "link",
                 className:
                   parentPath === "/dashboard"
-                    ? "text-amber-600 dark:text-yellow-500"
+                    ? "text-amber-300 dark:text-yellow-500"
                     : "",
               })}
             >
@@ -63,7 +61,7 @@ function AppHeader() {
                   variant: "link",
                   className:
                     parentPath === "/admin"
-                      ? "text-amber-600 dark:text-yellow-500"
+                      ? "text-amber-300 dark:text-yellow-500"
                       : "",
                 })}
               >
