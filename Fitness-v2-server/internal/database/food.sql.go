@@ -76,10 +76,11 @@ func (q *Queries) CreateFood(ctx context.Context, arg CreateFoodParams) (FoodIte
 const getFoodItemsTotalPages = `-- name: GetFoodItemsTotalPages :one
 SELECT COUNT(*) AS total_pages
 FROM food_items
+WHERE name ILIKE '%' || $1 || '%'
 `
 
-func (q *Queries) GetFoodItemsTotalPages(ctx context.Context) (int64, error) {
-	row := q.db.QueryRowContext(ctx, getFoodItemsTotalPages)
+func (q *Queries) GetFoodItemsTotalPages(ctx context.Context, dollar_1 sql.NullString) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getFoodItemsTotalPages, dollar_1)
 	var total_pages int64
 	err := row.Scan(&total_pages)
 	return total_pages, err
@@ -87,18 +88,20 @@ func (q *Queries) GetFoodItemsTotalPages(ctx context.Context) (int64, error) {
 
 const getFoods = `-- name: GetFoods :many
 SELECT id, name, description, image_url, food_type, calories, fat, protein, carbs, created_at, updated_at FROM food_items 
+WHERE name ILIKE '%' || $3 || '%'
 ORDER BY name ASC
 LIMIT $1
 OFFSET $2
 `
 
 type GetFoodsParams struct {
-	Limit  int32
-	Offset int32
+	Limit   int32
+	Offset  int32
+	Column3 sql.NullString
 }
 
 func (q *Queries) GetFoods(ctx context.Context, arg GetFoodsParams) ([]FoodItem, error) {
-	rows, err := q.db.QueryContext(ctx, getFoods, arg.Limit, arg.Offset)
+	rows, err := q.db.QueryContext(ctx, getFoods, arg.Limit, arg.Offset, arg.Column3)
 	if err != nil {
 		return nil, err
 	}

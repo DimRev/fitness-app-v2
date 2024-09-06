@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useGetFoodItems } from "~/features/food_item/hooks/useGetFoodItems";
 import { Label } from "~/features/shared/components/ui/label";
 import { MultiSelect } from "~/features/shared/components/ui/multi-select";
+import { useDebounce } from "~/features/shared/hooks/useDebounce";
 import { arrayDiff } from "~/lib/utils";
 
 type Props = {
@@ -9,54 +10,68 @@ type Props = {
 };
 
 function MealFoodItemsList({ toggleFoodItems }: Props) {
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10000);
-  const offset = useMemo(() => page * pageSize - pageSize, [page, pageSize]);
-
+  const [pageSize, setPageSize] = useState(10);
   const [selectedFoodItems, setSelectedFoodItems] = useState<string[]>([]);
+  const [textFilter, setTextFilter] = useState<string | null>(null);
+
+  const debounceSetTextFilter = useDebounce(setTextFilter, 500);
 
   const {
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
     data: foodItemsWithPages,
     error: foodItemsWithPagesError,
-    isLoading: isFoodItemsWithPagesLoading,
     isError: isFoodItemsWithPagesError,
+    isLoading: isFoodItemsWithPagesLoading,
+    isFetching,
+    isRefetching,
   } = useGetFoodItems({
     limit: pageSize,
-    offset,
+    offset: 0, // Initial offset
+    text_filter: textFilter,
   });
 
   const foodItemsList = useMemo(() => {
-    if (!foodItemsWithPages?.food_items) return [];
-    return foodItemsWithPages.food_items.map((foodItem) => {
-      return {
-        label: foodItem.name,
-        value: foodItem.id,
-      };
-    });
+    return (
+      foodItemsWithPages?.pages
+        .flatMap((page) => page.food_items)
+        .map((foodItem) => ({
+          label: foodItem.name,
+          value: foodItem.id,
+        })) ?? []
+    );
   }, [foodItemsWithPages]);
 
   function handleValueChange(value: string[]) {
-    if (!foodItemsWithPages || foodItemsWithPages?.food_items.length === 0) {
+    if (!foodItemsWithPages) {
       return;
     }
     setSelectedFoodItems(value);
     const diff = arrayDiff(value, selectedFoodItems);
-    const diffFoodItems = foodItemsWithPages.food_items.filter((foodItem) =>
-      diff.includes(foodItem.id),
+    const diffFoodItems = foodItemsWithPages.pages.flatMap((page) =>
+      page.food_items.filter((foodItem) => diff.includes(foodItem.id)),
     );
+
     toggleFoodItems(diffFoodItems);
   }
 
-  if (isFoodItemsWithPagesLoading) {
-    return <div>Loading...</div>;
+  function handleCommandInputValueChange(value: string) {
+    debounceSetTextFilter(value);
+  }
+
+  function handleCommandScroll(ev: React.UIEvent<HTMLDivElement>) {
+    if (
+      ev.currentTarget.scrollHeight - ev.currentTarget.scrollTop ===
+        ev.currentTarget.clientHeight &&
+      hasNextPage
+    ) {
+      void fetchNextPage();
+    }
   }
 
   if (isFoodItemsWithPagesError && foodItemsWithPagesError) {
     return <div>{foodItemsWithPagesError.message}</div>;
-  }
-
-  if (!foodItemsWithPages?.food_items) {
-    return <div>No food items found</div>;
   }
 
   return (
@@ -68,6 +83,8 @@ function MealFoodItemsList({ toggleFoodItems }: Props) {
         defaultValue={selectedFoodItems}
         animation={2}
         maxCount={3}
+        handleCommandScroll={handleCommandScroll}
+        handleCommandInputValueChange={handleCommandInputValueChange}
         enableSelectAll={false}
       />
     </div>

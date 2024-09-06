@@ -119,6 +119,16 @@ interface MultiSelectProps
    * Optional, defaults to true.
    */
   enableSelectAll?: boolean;
+
+  /**
+   * A callback function that is triggered when the input value changes.
+   */
+  handleCommandInputValueChange?: (value: string) => void;
+
+  /**
+   * A callback function that is triggered when the command list scrolls.
+   */
+  handleCommandScroll?: (event: React.UIEvent<HTMLDivElement>) => void;
 }
 
 export const MultiSelect = React.forwardRef<
@@ -139,6 +149,8 @@ export const MultiSelect = React.forwardRef<
       asChild = false,
       className,
       enableSelectAll = true,
+      handleCommandInputValueChange,
+      handleCommandScroll,
       ...props
     },
     ref,
@@ -296,10 +308,11 @@ export const MultiSelect = React.forwardRef<
         >
           <Command className="bg-card">
             <CommandInput
+              onValueChange={handleCommandInputValueChange}
               placeholder="Search..."
               onKeyDown={handleInputKeyDown}
             />
-            <CommandList>
+            <CommandList onScroll={handleCommandScroll}>
               <CommandEmpty>No results found.</CommandEmpty>
               <CommandGroup>
                 {enableSelectAll && (

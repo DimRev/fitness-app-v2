@@ -39,6 +39,12 @@ func GetFoodItems(c echo.Context) error {
 		}
 		limit = int32(convLimit)
 	}
+	textFilterStr := c.QueryParam("text_filter")
+
+	var textFilter sql.NullString
+	if textFilterStr != "" {
+		textFilter = sql.NullString{String: textFilterStr, Valid: true}
+	}
 
 	if err := config.DB.Ping(); err != nil {
 		log.Println("Connection to database failed: ", err)
@@ -48,8 +54,9 @@ func GetFoodItems(c echo.Context) error {
 	}
 
 	getFoodParams := database.GetFoodsParams{
-		Limit:  limit,
-		Offset: offset,
+		Limit:   limit,
+		Offset:  offset,
+		Column3: textFilter,
 	}
 
 	foods, err := config.Queries.GetFoods(c.Request().Context(), getFoodParams)
@@ -83,7 +90,7 @@ func GetFoodItems(c echo.Context) error {
 		}
 	}
 
-	totalPages, err := config.Queries.GetFoodItemsTotalPages(c.Request().Context())
+	totalPages, err := config.Queries.GetFoodItemsTotalPages(c.Request().Context(), textFilter)
 	if err != nil {
 		log.Println("Failed to get food items: ", err)
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{

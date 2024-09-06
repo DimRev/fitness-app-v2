@@ -1,11 +1,12 @@
 import axios from "axios";
-import { useQuery } from "react-query";
+import { useInfiniteQuery, useQuery } from "react-query";
 import axiosInstance from "~/lib/axios";
 import { QUERY_KEYS } from "~/lib/reactQuery";
 
 type GetFoodItemsRequestBody = {
   limit: number;
   offset: number;
+  text_filter?: string | null;
 };
 
 type ErrorResponseBody = {
@@ -13,23 +14,40 @@ type ErrorResponseBody = {
 };
 
 export function useGetFoodItems(params: GetFoodItemsRequestBody) {
-  return useQuery<FoodItemWithPages, Error>({
-    queryKey: [
+  return useInfiniteQuery<FoodItemWithPages, Error>(
+    [
       QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS,
-      { limit: params.limit, offset: params.offset },
+      { limit: params.limit, text_filter: params.text_filter },
     ],
-    queryFn: () => getFoodItems(params),
-    enabled: !!params,
-  });
+    async ({ pageParam = 0 }: { pageParam?: number }) => {
+      return await getFoodItems({
+        limit: params.limit,
+        offset: pageParam,
+        text_filter: params.text_filter ?? null,
+      });
+    },
+    {
+      getNextPageParam: (lastPage, pages) => {
+        const totalLoadedItems = pages.flatMap(
+          (page) => page.food_items,
+        ).length;
+        if (totalLoadedItems >= lastPage.total_pages) {
+          return undefined; // No more pages
+        }
+        return totalLoadedItems; // Return the next offset
+      },
+    },
+  );
 }
 
 async function getFoodItems({
   limit,
   offset,
+  text_filter,
 }: GetFoodItemsRequestBody): Promise<FoodItemWithPages> {
   try {
     const response = await axiosInstance.get<FoodItemWithPages>("/food_items", {
-      params: { limit, offset },
+      params: { limit, offset, text_filter },
     });
     return response.data;
   } catch (error) {

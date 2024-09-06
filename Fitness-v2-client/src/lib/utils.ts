@@ -6,19 +6,8 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function arrayDiff(a: string[], b: string[]) {
-  const difference: string[] = [];
-  if (a > b) {
-    for (const str of a) {
-      if (b.indexOf(str) === -1) {
-        difference.push(str);
-      }
-    }
-  } else {
-    for (const str of b) {
-      if (a.indexOf(str) === -1) {
-        difference.push(str);
-      }
-    }
-  }
+  const difference = a
+    .filter((str) => !b.includes(str))
+    .concat(b.filter((str) => !a.includes(str)));
   return difference;
 }
