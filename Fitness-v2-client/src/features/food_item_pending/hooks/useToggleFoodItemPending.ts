@@ -1,9 +1,5 @@
 import axios from "axios";
-import {
-  useMutation,
-  useQueryClient,
-  type UseMutationResult,
-} from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import axiosInstance from "~/lib/axios";
 import { QUERY_KEYS, USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
@@ -21,12 +17,7 @@ type OptimisticUpdateContext = {
   previousFoodItemsPending: FoodItemsPendingWithPages | undefined;
 };
 
-function useToggleFoodItemPending(): UseMutationResult<
-  FoodItemsPendingWithPages,
-  Error,
-  ToggleFoodItemPendingRequestParams,
-  OptimisticUpdateContext
-> {
+function useToggleFoodItemPending() {
   const queryClient = useQueryClient();
 
   return useMutation<
@@ -85,7 +76,7 @@ function useToggleFoodItemPending(): UseMutationResult<
       // Return a context with the previous data to rollback on error
       return { previousFoodItemsPending };
     },
-    onError: (err, { limit, offset }, context) => {
+    onError: (_err, { limit, offset }, context) => {
       if (context?.previousFoodItemsPending) {
         queryClient.setQueryData(
           [
@@ -96,7 +87,7 @@ function useToggleFoodItemPending(): UseMutationResult<
         );
       }
     },
-    onSettled: (data, error, { limit, offset }) => {
+    onSettled: (_data, _error, { limit, offset }) => {
       void queryClient.invalidateQueries([
         QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
         { limit, offset },

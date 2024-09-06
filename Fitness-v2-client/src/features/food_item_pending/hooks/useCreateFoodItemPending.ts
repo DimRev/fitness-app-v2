@@ -20,18 +20,17 @@ type ErrorResponseBody = {
 
 function useCreateFoodItemPending() {
   const queryClient = useQueryClient();
-  return useMutation<
-    FoodItemsPending,
-    ErrorResponseBody,
-    CreateFoodItemPendingRequestBody
-  >(createFoodItemPending, {
-    ...USE_MUTATION_DEFAULT_OPTIONS,
-    onSuccess: () => {
-      void queryClient.invalidateQueries([
-        QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
-      ]);
+  return useMutation<FoodItemsPending, Error, CreateFoodItemPendingRequestBody>(
+    createFoodItemPending,
+    {
+      ...USE_MUTATION_DEFAULT_OPTIONS,
+      onSuccess: () => {
+        void queryClient.invalidateQueries([
+          QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
+        ]);
+      },
     },
-  });
+  );
 }
 
 async function createFoodItemPending({

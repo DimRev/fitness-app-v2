@@ -1,9 +1,5 @@
 import axios from "axios";
-import {
-  useMutation,
-  useQueryClient,
-  type UseMutationResult,
-} from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import axiosInstance from "~/lib/axios";
 import { QUERY_KEYS, USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
@@ -21,11 +17,7 @@ type SuccessResponseBody = {
   message: string;
 };
 
-function useRejectFoodItemPending(): UseMutationResult<
-  SuccessResponseBody,
-  Error,
-  RejectFoodItemPendingRequestParams
-> {
+function useRejectFoodItemPending() {
   const queryClient = useQueryClient();
 
   return useMutation<
@@ -34,8 +26,7 @@ function useRejectFoodItemPending(): UseMutationResult<
     RejectFoodItemPendingRequestParams
   >(rejectFoodItemPending, {
     ...USE_MUTATION_DEFAULT_OPTIONS,
-    onSuccess: (data, { limit, offset }) => {
-      console.log(data);
+    onSuccess: (_data, { limit, offset }) => {
       void queryClient.invalidateQueries([
         QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
         { limit, offset },

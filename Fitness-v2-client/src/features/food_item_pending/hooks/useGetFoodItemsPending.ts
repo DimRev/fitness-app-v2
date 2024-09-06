@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useQuery, type UseQueryResult } from "react-query";
+import { useQuery } from "react-query";
 import axiosInstance from "~/lib/axios";
 import { QUERY_KEYS, USE_QUERY_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
@@ -12,9 +12,7 @@ type ErrorResponseBody = {
   message: string;
 };
 
-function useGetFoodItemsPending(
-  params: GetMealsByUserIDRequestBody,
-): UseQueryResult<FoodItemsPendingWithPages, Error> {
+function useGetFoodItemsPending(params: GetMealsByUserIDRequestBody) {
   return useQuery<FoodItemsPendingWithPages, Error>({
     ...USE_QUERY_DEFAULT_OPTIONS,
     queryKey: [

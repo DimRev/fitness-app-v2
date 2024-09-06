@@ -18,6 +18,7 @@ import FoodItemPendingAdminTableRow, {
 
 function FoodItemsPendingAdminTable() {
   const [page, setPage] = useState(1);
+  // TODO: Make dynamic page size changes
   const [pageSize, setPageSize] = useState(8);
   const [pendingIds, setPendingIds] = useState<string[]>([]);
   const offset = useMemo(() => page * pageSize - pageSize, [page, pageSize]);

@@ -12,8 +12,6 @@ export function FoodItemPaginationButtons({
   onChangePage,
   foodItemsPending,
 }: Props) {
-  console.log(page, foodItemsPending?.total_pages);
-
   return (
     <div className="flex justify-end items-center gap-2 py-2">
       <Button

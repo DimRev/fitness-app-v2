@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useMutation, type UseMutationResult } from "react-query";
+import { useMutation } from "react-query";
 import axiosInstance from "~/lib/axios";
 import { USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
@@ -11,11 +11,7 @@ type LoginRequestBody = {
   session_token: string;
 };
 
-function useLoginFromSession(): UseMutationResult<
-  User,
-  Error,
-  LoginRequestBody
-> {
+function useLoginFromSession() {
   return useMutation<User, Error, LoginRequestBody>(loginFromSession, {
     ...USE_MUTATION_DEFAULT_OPTIONS,
     retry: false,

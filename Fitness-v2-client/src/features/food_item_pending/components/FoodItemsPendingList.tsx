@@ -14,6 +14,7 @@ import FoodItemPendingPreview, {
 
 function FoodItemsPendingList() {
   const [page, setPage] = useState(1);
+  // TODO: Make dynamic page size changes
   const [pageSize, setPageSize] = useState(4);
   const offset = useMemo(() => page * pageSize - pageSize, [page, pageSize]);
   const {

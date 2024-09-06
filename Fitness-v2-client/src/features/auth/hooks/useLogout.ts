@@ -1,9 +1,5 @@
 import axios from "axios";
-import {
-  useMutation,
-  useQueryClient,
-  type UseMutationResult,
-} from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import axiosInstance from "~/lib/axios";
 import { USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
@@ -15,7 +11,7 @@ type LogoutResponseBody = {
   message: string;
 };
 
-function useLogout(): UseMutationResult<LogoutResponseBody, Error, void> {
+function useLogout() {
   const queryClient = useQueryClient();
 
   return useMutation<LogoutResponseBody, Error, void>(logout, {
