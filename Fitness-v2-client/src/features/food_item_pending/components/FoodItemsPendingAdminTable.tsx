@@ -34,8 +34,6 @@ function FoodItemsPendingAdminTable() {
   const { mutateAsync: approveFoodItemPending } = useApproveFoodItemPending();
   const { mutateAsync: rejectFoodItemPending } = useRejectFoodItemPending();
 
-  console.log(foodItemsPending);
-
   function handleApproveFoodItemPending(foodItemPendingId: string) {
     setPendingIds((prev) => [...prev, foodItemPendingId]);
     void approveFoodItemPending(
