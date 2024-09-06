@@ -1,6 +1,6 @@
 import { Plus } from "lucide-react";
 import DashboardPageWrapper from "./DashboardPageWrapper";
-import FoodItemPendingForm from "~/features/food_item_pending/components/FoodItemPendingForm";
+import FoodItemPendingAddForm from "~/features/food_item_pending/components/FoodItemPendingAddForm";
 
 function DashboardFoodItemPendingAddPage() {
   return (
@@ -9,7 +9,7 @@ function DashboardFoodItemPendingAddPage() {
       LucideIcon={Plus}
       to="/dashboard/food_item/add"
     >
-      <FoodItemPendingForm />
+      <FoodItemPendingAddForm />
     </DashboardPageWrapper>
   );
 }

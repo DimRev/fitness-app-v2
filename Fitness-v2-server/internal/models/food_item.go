@@ -20,3 +20,8 @@ type FoodItem struct {
 	CreatedAt   time.Time             `json:"-"`
 	UpdatedAt   time.Time             `json:"-"`
 }
+
+type FoodItemsWithPages struct {
+	FoodItemsPending []FoodItem `json:"food_items"`
+	TotalPages       int64      `json:"total_pages"`
+}

@@ -44,7 +44,13 @@ export function H3({ children, className, ...props }: Props) {
 
 export function H4({ children, className, ...props }: Props) {
   return (
-    <h4 className={cn(className)} {...props}>
+    <h4
+      className={cn(
+        className,
+        "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
+      )}
+      {...props}
+    >
       {children}
     </h4>
   );

@@ -21,7 +21,7 @@ type CreateMealRequest struct {
 	FoodItems   []struct {
 		FoodItemID uuid.UUID `json:"food_item_id"`
 		Amount     int       `json:"amount"`
-	}
+	} `json:"food_items"`
 }
 
 func CreateMeal(c echo.Context) error {

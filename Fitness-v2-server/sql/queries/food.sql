@@ -4,6 +4,10 @@ ORDER BY name ASC
 LIMIT $1
 OFFSET $2;
 
+-- name: GetFoodItemsTotalPages :one
+SELECT COUNT(*) AS total_pages
+FROM food_items;
+
 -- name: CreateFood :one
 INSERT INTO food_items (
     name, 

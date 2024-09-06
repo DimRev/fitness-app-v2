@@ -73,6 +73,18 @@ func (q *Queries) CreateFood(ctx context.Context, arg CreateFoodParams) (FoodIte
 	return i, err
 }
 
+const getFoodItemsTotalPages = `-- name: GetFoodItemsTotalPages :one
+SELECT COUNT(*) AS total_pages
+FROM food_items
+`
+
+func (q *Queries) GetFoodItemsTotalPages(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getFoodItemsTotalPages)
+	var total_pages int64
+	err := row.Scan(&total_pages)
+	return total_pages, err
+}
+
 const getFoods = `-- name: GetFoods :many
 SELECT id, name, description, image_url, food_type, calories, fat, protein, carbs, created_at, updated_at FROM food_items 
 ORDER BY name ASC

@@ -27,7 +27,7 @@ import {
 } from "../foodItemsPending.schema";
 import useCreateFoodItemPending from "../hooks/useCreateFoodItemPending";
 
-function FoodItemPendingForm() {
+function FoodItemPendingAddForm() {
   const {
     mutateAsync: createFoodItemPending,
     isLoading: isPending,
@@ -189,4 +189,4 @@ function FoodItemPendingForm() {
   );
 }
 
-export default FoodItemPendingForm;
+export default FoodItemPendingAddForm;

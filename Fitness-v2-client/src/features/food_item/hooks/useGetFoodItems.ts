@@ -1,9 +1,9 @@
 import axios from "axios";
-import { useQuery, type UseQueryResult } from "react-query";
+import { useQuery } from "react-query";
 import axiosInstance from "~/lib/axios";
-import { QUERY_KEYS, USE_QUERY_DEFAULT_OPTIONS } from "~/lib/reactQuery";
+import { QUERY_KEYS } from "~/lib/reactQuery";
 
-type GetMealsByUserIDRequestBody = {
+type GetFoodItemsRequestBody = {
   limit: number;
   offset: number;
 };
@@ -12,27 +12,23 @@ type ErrorResponseBody = {
   message: string;
 };
 
-function useGetMealsByUserID(
-  params: GetMealsByUserIDRequestBody,
-): UseQueryResult<MealWithNutrition[], Error> {
-  return useQuery<MealWithNutrition[], Error>({
-    ...USE_QUERY_DEFAULT_OPTIONS,
+export function useGetFoodItems(params: GetFoodItemsRequestBody) {
+  return useQuery<FoodItemWithPages, Error>({
     queryKey: [
-      QUERY_KEYS.MEALS.GET_MEALS_BY_USER_ID,
+      QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS,
       { limit: params.limit, offset: params.offset },
     ],
-
-    queryFn: () => getMealsByUserID(params),
+    queryFn: () => getFoodItems(params),
     enabled: !!params,
   });
 }
 
-async function getMealsByUserID({
+async function getFoodItems({
   limit,
   offset,
-}: GetMealsByUserIDRequestBody): Promise<MealWithNutrition[]> {
+}: GetFoodItemsRequestBody): Promise<FoodItemWithPages> {
   try {
-    const response = await axiosInstance.get<MealWithNutrition[]>(`/meals`, {
+    const response = await axiosInstance.get<FoodItemWithPages>("/food_items", {
       params: { limit, offset },
     });
     return response.data;
@@ -46,5 +42,3 @@ async function getMealsByUserID({
     }
   }
 }
-
-export default useGetMealsByUserID;
