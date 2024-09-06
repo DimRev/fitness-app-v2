@@ -7,15 +7,14 @@ import {
   TableHeader,
   TableRow,
 } from "~/features/shared/components/ui/table";
+import useApproveFoodItemPending from "../hooks/useApproveFoodItemPending";
 import useGetFoodItemsPending from "../hooks/useGetFoodItemsPending";
-import useToggleFoodItemPending from "../hooks/useToggleFoodItemPending";
+import useRejectFoodItemPending from "../hooks/useRejectFoodItemPending";
 import { FoodItemPaginationButtons } from "./FoodItemPaginationButtons";
 import FoodItemPendingAdminTableRow, {
   FoodItemPendingAdminTableRowEmpty,
   FoodItemPendingAdminTableRowSkeleton,
 } from "./FoodItemPendingAdminTableRow";
-import useApproveFoodItemPending from "../hooks/useApproveFoodItemPending";
-import useRejectFoodItemPending from "../hooks/useRejectFoodItemPending";
 
 function FoodItemsPendingAdminTable() {
   const [page, setPage] = useState(1);
@@ -33,6 +32,8 @@ function FoodItemsPendingAdminTable() {
 
   const { mutateAsync: approveFoodItemPending } = useApproveFoodItemPending();
   const { mutateAsync: rejectFoodItemPending } = useRejectFoodItemPending();
+
+  console.log(foodItemsPending);
 
   function handleApproveFoodItemPending(foodItemPendingId: string) {
     setPendingIds((prev) => [...prev, foodItemPendingId]);
@@ -92,7 +93,7 @@ function FoodItemsPendingAdminTable() {
   if (foodItemsPendingError || !foodItemsPending?.food_items_pending) {
     return (
       <DashboardContentCards title="Pending Food Items">
-        <div className="rounded-md border">
+        <div className="border rounded-md">
           <Table>
             <TableHeader>
               <TableRow>
@@ -130,7 +131,7 @@ function FoodItemsPendingAdminTable() {
 
   return (
     <DashboardContentCards title="Pending Food Items">
-      <div className="rounded-md border">
+      <div className="border rounded-md">
         <Table>
           <TableHeader>
             <TableRow>

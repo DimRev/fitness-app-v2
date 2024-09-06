@@ -11,7 +11,13 @@ export const foodItemPendingFormSchema = z.object({
       const str = String(val);
       return str.trim() === "" ? null : str;
     }),
-  image_url: z.string().optional(),
+  image_url: z
+    .string()
+    .optional()
+    .transform((val) => {
+      const str = String(val);
+      return str.trim() === "" ? null : str;
+    }),
   food_type: z.enum(foodTypes),
   calories: z
     .preprocess(

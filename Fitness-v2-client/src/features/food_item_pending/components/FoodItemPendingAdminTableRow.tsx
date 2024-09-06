@@ -33,9 +33,7 @@ function FoodItemPendingAdminTableRow({
   return (
     <TableRow className={cn(isPending && "opacity-50 hover:bg-transparent")}>
       <TableCell>
-        <div className="line-clamp-1 break-words">
-          {foodItemPending.description}
-        </div>
+        <div className="line-clamp-1 break-words">{foodItemPending.name}</div>
       </TableCell>
       <TableCell>
         <HoverCard>
@@ -72,10 +70,10 @@ function FoodItemPendingAdminTableRow({
         <div className="line-clamp-1 break-words">{foodItemPending.likes}</div>
       </TableCell>
       <TableCell>
-        <div className="line-clamp-1 flex items-center gap-2 break-words">
+        <div className="flex items-center gap-2 line-clamp-1 break-words">
           <Button
             size="icon"
-            className="size-8 rounded-full"
+            className="rounded-full size-8"
             variant="constructive"
             onClick={onApproveFoodItemPending}
             disabled={isPending}
@@ -84,7 +82,7 @@ function FoodItemPendingAdminTableRow({
           </Button>
           <Button
             size="icon"
-            className="size-8 rounded-full"
+            className="rounded-full size-8"
             variant="destructive"
             onClick={onRejectFoodItemPending}
             disabled={isPending}
@@ -101,31 +99,31 @@ export function FoodItemPendingAdminTableRowSkeleton() {
   return (
     <TableRow>
       <TableCell>
-        <Skeleton className="h-[19px] w-full" />
+        <Skeleton className="w-full h-[19px]" />
       </TableCell>
       <TableCell>
-        <Skeleton className="h-[19px] w-full" />
+        <Skeleton className="w-full h-[19px]" />
       </TableCell>
       <TableCell>
-        <Skeleton className="h-[19px] w-full" />
+        <Skeleton className="w-full h-[19px]" />
       </TableCell>
       <TableCell>
-        <Skeleton className="h-[19px] w-full" />
+        <Skeleton className="w-full h-[19px]" />
       </TableCell>
       <TableCell>
-        <Skeleton className="h-[19px] w-full" />
+        <Skeleton className="w-full h-[19px]" />
       </TableCell>
       <TableCell>
-        <Skeleton className="h-[19px] w-full" />
+        <Skeleton className="w-full h-[19px]" />
       </TableCell>
       <TableCell>
-        <Skeleton className="h-[19px] w-full" />
+        <Skeleton className="w-full h-[19px]" />
       </TableCell>
       <TableCell>
-        <Skeleton className="h-[19px] w-full" />
+        <Skeleton className="w-full h-[19px]" />
       </TableCell>
       <TableCell>
-        <Skeleton className="h-[19px] w-full" />
+        <Skeleton className="w-full h-[19px]" />
       </TableCell>
     </TableRow>
   );

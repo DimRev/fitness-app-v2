@@ -1,5 +1,5 @@
 import { H3 } from "~/features/shared/components/Typography";
-import { Apple, Heart } from "lucide-react";
+import { Apple, Heart, Ban } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -148,7 +148,7 @@ export function FoodItemPendingPreviewSkeleton() {
       <CardFooter>
         <div className="flex items-center gap-2">
           <div className="px-4 py-2 border rounded-md">
-            <div className="flex items-center gap-2 cursor-pointer">
+            <div className="flex items-center gap-2">
               <Heart fill={"transparent"} />
               <span className="flex w-4 font-bold">
                 <Skeleton className="w-full h-4" />
@@ -161,6 +161,65 @@ export function FoodItemPendingPreviewSkeleton() {
               <span className="font-bold">
                 <Skeleton className="w-14 h-4" />
               </span>
+            </div>
+          </div>
+        </div>
+      </CardFooter>
+    </Card>
+  );
+}
+
+export function FoodItemPendingPreviewEmpty() {
+  return (
+    <Card className="opacity-70">
+      <CardHeader className="opacity-50">Empty</CardHeader>
+      <CardContent>
+        <div className="gap-2 grid grid-cols-[4fr_2fr]">
+          <div className="px-1 border rounded-md">
+            <div className="flex flex-col gap-1 opacity-50 p-1 h-[50%]">
+              N/A
+            </div>
+
+            <div className="flex justify-center items-center opacity-50 w-full h-[50%]">
+              <Ban className="size-[80%]" />
+            </div>
+          </div>
+          <div className="flex flex-col gap-1">
+            <div className="px-2 border rounded-md">
+              <div className="border-b font-bold text-center">Type</div>
+              <div className="opacity-50 text-center">0.00</div>
+            </div>
+            <div className="px-2 border rounded-md">
+              <div className="border-b font-bold text-center">Calories</div>
+              <div className="opacity-50 text-center">0.00</div>
+            </div>
+            <div className="px-2 border rounded-md">
+              <div className="border-b font-bold text-center">Protein</div>
+              <div className="opacity-50 text-center">0.00</div>
+            </div>
+            <div className="px-2 border rounded-md">
+              <div className="border-b font-bold text-center">Fat</div>
+              <div className="opacity-50 text-center">0.00</div>
+            </div>
+            <div className="px-2 border rounded-md">
+              <div className="border-b font-bold text-center">Carbs</div>
+              <div className="opacity-50 text-center">0.00</div>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+      <CardFooter>
+        <div className="flex items-center gap-2">
+          <div className="px-4 py-2 border rounded-md">
+            <div className="flex items-center gap-2">
+              <Heart fill={"transparent"} className="opacity-50" />
+              <span className="flex opacity-50 w-4 font-bold">0</span>
+            </div>
+          </div>
+          <div className="px-4 py-2 border rounded-md">
+            <div className="flex items-center gap-2 w-20">
+              By:
+              <span className="opacity-50 font-bold">N/A</span>
             </div>
           </div>
         </div>

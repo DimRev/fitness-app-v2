@@ -1,5 +1,9 @@
 import axios from "axios";
-import { useMutation, type UseMutationResult } from "react-query";
+import {
+  useMutation,
+  useQueryClient,
+  type UseMutationResult,
+} from "react-query";
 import axiosInstance from "~/lib/axios";
 import { USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
@@ -13,8 +17,13 @@ type ErrorResponseBody = {
 };
 
 function useLogin(): UseMutationResult<User, Error, LoginRequestBody> {
+  const queryClient = useQueryClient();
+
   return useMutation<User, Error, LoginRequestBody>(login, {
     ...USE_MUTATION_DEFAULT_OPTIONS,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries();
+    },
   });
 }
 

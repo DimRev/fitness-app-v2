@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { DashboardContentCards } from "~/features/shared/components/CustomCards";
 import { Button } from "~/features/shared/components/ui/button";
 import {
@@ -18,14 +19,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/features/shared/components/ui/select";
+import { Textarea } from "~/features/shared/components/ui/textarea";
 import {
   foodItemPendingFormSchema,
   foodTypes,
   type FoodItemPendingFormSchema,
 } from "../foodItemsPending.schema";
-import { Textarea } from "~/features/shared/components/ui/textarea";
+import useCreateFoodItemPending from "../hooks/useCreateFoodItemPending";
 
 function FoodItemPendingForm() {
+  const {
+    mutateAsync: createFoodItemPending,
+    isLoading: isPending,
+    isError,
+    error,
+  } = useCreateFoodItemPending();
+  const navigate = useNavigate();
+
   const form = useForm<FoodItemPendingFormSchema>({
     resolver: zodResolver(foodItemPendingFormSchema),
     defaultValues: {
@@ -40,10 +50,19 @@ function FoodItemPendingForm() {
     },
   });
 
+  function onSubmit(data: FoodItemPendingFormSchema) {
+    void createFoodItemPending(data, {
+      onSuccess: () => {
+        void form.reset();
+        navigate("/dashboard/food_item");
+      },
+    });
+  }
+
   return (
     <DashboardContentCards title="Food Item Form">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(console.log)}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
             control={form.control}
             name="name"
@@ -159,8 +178,11 @@ function FoodItemPendingForm() {
             />
           </div>
           <div className="flex justify-end mt-4">
-            <Button type="submit">Submit</Button>
+            <Button type="submit" disabled={isPending}>
+              {isPending ? "Creating..." : "Create"}
+            </Button>
           </div>
+          {isError && <div className="text-destructive">{error.message}</div>}
         </form>
       </Form>
     </DashboardContentCards>
