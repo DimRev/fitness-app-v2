@@ -76,11 +76,23 @@ func (q *Queries) CreateFood(ctx context.Context, arg CreateFoodParams) (FoodIte
 const getFoodItemsTotalPages = `-- name: GetFoodItemsTotalPages :one
 SELECT COUNT(*) AS total_pages
 FROM food_items
+`
+
+func (q *Queries) GetFoodItemsTotalPages(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getFoodItemsTotalPages)
+	var total_pages int64
+	err := row.Scan(&total_pages)
+	return total_pages, err
+}
+
+const getFoodItemsTotalPagesWithFilter = `-- name: GetFoodItemsTotalPagesWithFilter :one
+SELECT COUNT(*) AS total_pages
+FROM food_items
 WHERE name ILIKE '%' || $1 || '%'
 `
 
-func (q *Queries) GetFoodItemsTotalPages(ctx context.Context, dollar_1 sql.NullString) (int64, error) {
-	row := q.db.QueryRowContext(ctx, getFoodItemsTotalPages, dollar_1)
+func (q *Queries) GetFoodItemsTotalPagesWithFilter(ctx context.Context, dollar_1 sql.NullString) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getFoodItemsTotalPagesWithFilter, dollar_1)
 	var total_pages int64
 	err := row.Scan(&total_pages)
 	return total_pages, err
@@ -88,20 +100,67 @@ func (q *Queries) GetFoodItemsTotalPages(ctx context.Context, dollar_1 sql.NullS
 
 const getFoods = `-- name: GetFoods :many
 SELECT id, name, description, image_url, food_type, calories, fat, protein, carbs, created_at, updated_at FROM food_items 
-WHERE name ILIKE '%' || $3 || '%'
 ORDER BY name ASC
 LIMIT $1
 OFFSET $2
 `
 
 type GetFoodsParams struct {
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) GetFoods(ctx context.Context, arg GetFoodsParams) ([]FoodItem, error) {
+	rows, err := q.db.QueryContext(ctx, getFoods, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []FoodItem
+	for rows.Next() {
+		var i FoodItem
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.ImageUrl,
+			&i.FoodType,
+			&i.Calories,
+			&i.Fat,
+			&i.Protein,
+			&i.Carbs,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getFoodsWithFilter = `-- name: GetFoodsWithFilter :many
+SELECT id, name, description, image_url, food_type, calories, fat, protein, carbs, created_at, updated_at FROM food_items 
+WHERE name ILIKE '%' || $3 || '%'
+ORDER BY name ASC
+LIMIT $1
+OFFSET $2
+`
+
+type GetFoodsWithFilterParams struct {
 	Limit   int32
 	Offset  int32
 	Column3 sql.NullString
 }
 
-func (q *Queries) GetFoods(ctx context.Context, arg GetFoodsParams) ([]FoodItem, error) {
-	rows, err := q.db.QueryContext(ctx, getFoods, arg.Limit, arg.Offset, arg.Column3)
+func (q *Queries) GetFoodsWithFilter(ctx context.Context, arg GetFoodsWithFilterParams) ([]FoodItem, error) {
+	rows, err := q.db.QueryContext(ctx, getFoodsWithFilter, arg.Limit, arg.Offset, arg.Column3)
 	if err != nil {
 		return nil, err
 	}

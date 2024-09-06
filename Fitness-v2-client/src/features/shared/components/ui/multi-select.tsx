@@ -1,7 +1,7 @@
 // src/components/multi-select.tsx
 
 import { cva, type VariantProps } from "class-variance-authority";
-import React from "react";
+import React, { useMemo } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 import { Button } from "./button";
 import { cn } from "~/lib/utils";
@@ -129,6 +129,11 @@ interface MultiSelectProps
    * A callback function that is triggered when the command list scrolls.
    */
   handleCommandScroll?: (event: React.UIEvent<HTMLDivElement>) => void;
+
+  /**
+   * A boolean value indicating whether the food items are being loaded.
+   */
+  isFoodItemsWithPagesLoading?: boolean;
 }
 
 export const MultiSelect = React.forwardRef<
@@ -151,6 +156,7 @@ export const MultiSelect = React.forwardRef<
       enableSelectAll = true,
       handleCommandInputValueChange,
       handleCommandScroll,
+      isFoodItemsWithPagesLoading,
       ...props
     },
     ref,
@@ -162,7 +168,9 @@ export const MultiSelect = React.forwardRef<
     const { isDarkMode } = useLayoutStore();
 
     React.useEffect(() => {
-      setSelectedValues(defaultValue);
+      if (!isFoodItemsWithPagesLoading) {
+        setSelectedValues(defaultValue);
+      }
     }, [defaultValue]);
 
     const handleInputKeyDown = (

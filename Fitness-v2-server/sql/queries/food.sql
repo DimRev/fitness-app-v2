@@ -1,14 +1,24 @@
--- name: GetFoods :many
+-- name: GetFoodsWithFilter :many
 SELECT * FROM food_items 
 WHERE name ILIKE '%' || $3 || '%'
 ORDER BY name ASC
 LIMIT $1
 OFFSET $2;
 
--- name: GetFoodItemsTotalPages :one
+-- name: GetFoods :many
+SELECT * FROM food_items 
+ORDER BY name ASC
+LIMIT $1
+OFFSET $2;
+
+-- name: GetFoodItemsTotalPagesWithFilter :one
 SELECT COUNT(*) AS total_pages
 FROM food_items
 WHERE name ILIKE '%' || $1 || '%';
+
+-- name: GetFoodItemsTotalPages :one
+SELECT COUNT(*) AS total_pages
+FROM food_items;
 
 -- name: CreateFood :one
 INSERT INTO food_items (

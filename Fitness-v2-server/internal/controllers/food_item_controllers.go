@@ -53,57 +53,111 @@ func GetFoodItems(c echo.Context) error {
 		})
 	}
 
-	getFoodParams := database.GetFoodsParams{
-		Limit:   limit,
-		Offset:  offset,
-		Column3: textFilter,
-	}
+	if textFilter.Valid {
 
-	foods, err := config.Queries.GetFoods(c.Request().Context(), getFoodParams)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get foods")
-	}
-
-	foodItems := make([]models.FoodItem, len(foods))
-	for i, food := range foods {
-		var description *string
-		var imageUrl *string
-		if food.Description.Valid {
-			description = &food.Description.String
-		}
-		if food.ImageUrl.Valid {
-			imageUrl = &food.ImageUrl.String
+		getFoodParams := database.GetFoodsWithFilterParams{
+			Limit:   limit,
+			Offset:  offset,
+			Column3: textFilter,
 		}
 
-		foodItems[i] = models.FoodItem{
-			ID:          food.ID,
-			Name:        food.Name,
-			Description: description,
-			ImageUrl:    imageUrl,
-			FoodType:    food.FoodType,
-			Calories:    food.Calories,
-			Fat:         food.Fat,
-			Protein:     food.Protein,
-			Carbs:       food.Carbs,
-			CreatedAt:   food.CreatedAt.Time,
-			UpdatedAt:   food.UpdatedAt.Time,
+		foods, err := config.Queries.GetFoodsWithFilter(c.Request().Context(), getFoodParams)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "failed to get foods")
 		}
-	}
 
-	totalPages, err := config.Queries.GetFoodItemsTotalPages(c.Request().Context(), textFilter)
-	if err != nil {
-		log.Println("Failed to get food items: ", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-			"message": "failed to get food items",
-		})
-	}
+		foodItems := make([]models.FoodItem, len(foods))
+		for i, food := range foods {
+			var description *string
+			var imageUrl *string
+			if food.Description.Valid {
+				description = &food.Description.String
+			}
+			if food.ImageUrl.Valid {
+				imageUrl = &food.ImageUrl.String
+			}
 
-	respFoodItem := models.FoodItemsWithPages{
-		FoodItemsPending: foodItems,
-		TotalPages:       totalPages,
-	}
+			foodItems[i] = models.FoodItem{
+				ID:          food.ID,
+				Name:        food.Name,
+				Description: description,
+				ImageUrl:    imageUrl,
+				FoodType:    food.FoodType,
+				Calories:    food.Calories,
+				Fat:         food.Fat,
+				Protein:     food.Protein,
+				Carbs:       food.Carbs,
+				CreatedAt:   food.CreatedAt.Time,
+				UpdatedAt:   food.UpdatedAt.Time,
+			}
+		}
 
-	return c.JSON(http.StatusOK, respFoodItem)
+		totalPages, err := config.Queries.GetFoodItemsTotalPages(c.Request().Context())
+		if err != nil {
+			log.Println("Failed to get food items: ", err)
+			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+				"message": "failed to get food items",
+			})
+		}
+
+		respFoodItem := models.FoodItemsWithPages{
+			FoodItemsPending: foodItems,
+			TotalPages:       totalPages,
+		}
+
+		return c.JSON(http.StatusOK, respFoodItem)
+	} else {
+		getFoodParams := database.GetFoodsParams{
+			Limit:  limit,
+			Offset: offset,
+		}
+
+		foods, err := config.Queries.GetFoods(c.Request().Context(), getFoodParams)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "failed to get foods")
+		}
+
+		foodItems := make([]models.FoodItem, len(foods))
+		for i, food := range foods {
+			var description *string
+			var imageUrl *string
+			if food.Description.Valid {
+				description = &food.Description.String
+			}
+			if food.ImageUrl.Valid {
+				imageUrl = &food.ImageUrl.String
+			}
+
+			foodItems[i] = models.FoodItem{
+				ID:          food.ID,
+				Name:        food.Name,
+				Description: description,
+				ImageUrl:    imageUrl,
+				FoodType:    food.FoodType,
+				Calories:    food.Calories,
+				Fat:         food.Fat,
+				Protein:     food.Protein,
+				Carbs:       food.Carbs,
+				CreatedAt:   food.CreatedAt.Time,
+				UpdatedAt:   food.UpdatedAt.Time,
+			}
+		}
+
+		totalPages, err := config.Queries.GetFoodItemsTotalPages(c.Request().Context())
+		if err != nil {
+			log.Println("Failed to get food items: ", err)
+			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+				"message": "failed to get food items",
+			})
+		}
+
+		respFoodItem := models.FoodItemsWithPages{
+			FoodItemsPending: foodItems,
+			TotalPages:       totalPages,
+		}
+
+		return c.JSON(http.StatusOK, respFoodItem)
+	}
 }
 
 type CreateFoodItemRequest struct {
