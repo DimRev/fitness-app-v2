@@ -71,7 +71,7 @@ SELECT
 FROM new_meal m
 JOIN inserted_food_items f ON f.meal_id = m.id
 JOIN food_items fi ON fi.id = f.food_item_id
-GROUP BY m.id
+GROUP BY m.id, m.name, m.description, m.image_url, m.created_at, m.updated_at, m.user_id
 `
 
 type CreateMealWithFoodItemsParams struct {

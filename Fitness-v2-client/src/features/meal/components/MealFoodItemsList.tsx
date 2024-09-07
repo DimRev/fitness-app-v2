@@ -86,7 +86,6 @@ function MealFoodItemsList({ toggleFoodItems }: Props) {
 
   return (
     <div className="flex flex-col gap-2 mt-4">
-      <Label>Food Items</Label>
       <Popover>
         <PopoverTrigger>
           <div className="flex flex-wrap justify-start items-center gap-2 bg-input px-1 py-2 border border-black/25 rounded-md min-h-10">
@@ -137,6 +136,12 @@ function MealFoodItemsList({ toggleFoodItems }: Props) {
                       <div>{foodItem.name}</div>
                     </Button>
                   ))}
+                  {foodItemsList.length === 0 && (
+                    <div className="items-center gap-2 grid grid-cols-[1fr_10fr] w-full font-bold">
+                      <X />
+                      <div className="text-center">No food items found</div>
+                    </div>
+                  )}
                   {isFetchingNextPage && <div>Loading...</div>}
                 </div>
               </CardContent>

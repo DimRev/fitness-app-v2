@@ -32,6 +32,11 @@ type MealWithNutrition = {
   total_carbs: number;
 };
 
+type MealWithFoodItems = {
+  meal: Meal;
+  food_items: FoodItem[];
+};
+
 // type FoodItemIdAmount struct {
 // 	FoodItemID uuid.UUID `json:"food_item_id"`
 // 	Amount     int       `json:"amount"`

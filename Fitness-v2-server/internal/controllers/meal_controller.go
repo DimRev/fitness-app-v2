@@ -38,10 +38,19 @@ func CreateMeal(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
 	}
 
+	var description sql.NullString
+	var imageUrl sql.NullString
+	if createMealReq.Description != nil {
+		description = sql.NullString{String: *createMealReq.Description, Valid: createMealReq.Description != nil}
+	}
+	if createMealReq.ImageUrl != nil {
+		imageUrl = sql.NullString{String: *createMealReq.ImageUrl, Valid: createMealReq.ImageUrl != nil}
+	}
+
 	createMealWithFoodItemsParams := database.CreateMealWithFoodItemsParams{
 		Name:        createMealReq.Name,
-		Description: sql.NullString{String: *createMealReq.Description, Valid: createMealReq.Description != nil},
-		ImageUrl:    sql.NullString{String: *createMealReq.ImageUrl, Valid: createMealReq.ImageUrl != nil},
+		Description: description,
+		ImageUrl:    imageUrl,
 		UserID:      user.ID,
 		Column5:     []uuid.UUID{},
 		Column6:     []int32{},
@@ -61,6 +70,7 @@ func CreateMeal(c echo.Context) error {
 
 	mealWithFoodItems, err := config.Queries.CreateMealWithFoodItems(c.Request().Context(), createMealWithFoodItemsParams)
 	if err != nil {
+		log.Println("Failed to create meal: ", err)
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to create meal")
 	}
 
