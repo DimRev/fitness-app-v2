@@ -8,114 +8,10 @@ package database
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 
 	"github.com/google/uuid"
 	"github.com/lib/pq"
 )
-
-const createMealWithFoodItems = `-- name: CreateMealWithFoodItems :one
-WITH new_meal AS (
-  INSERT INTO meals (
-      name, 
-      description, 
-      image_url,
-      user_id
-    ) 
-  VALUES (
-      $1, 
-      $2, 
-      $3,
-      $4
-    ) 
-  RETURNING id, name, description, image_url, created_at, updated_at, user_id
-),
-inserted_food_items AS (
-  INSERT INTO rel_meal_food (
-      meal_id, 
-      food_item_id, 
-      user_id, 
-      amount
-    ) 
-  SELECT 
-    new_meal.id, 
-    unnest($5::uuid[]), -- unnest to expand array into rows
-    $4::uuid,
-    unnest($6::int[]) -- unnest to expand array into rows
-  FROM new_meal
-  RETURNING meal_id, food_item_id
-)
-SELECT 
-  m.id AS meal_id,
-  m.name,
-  m.description,
-  m.image_url,
-  m.created_at,
-  m.updated_at,
-  m.user_id,
-  json_agg(
-    json_build_object(
-      'id', f.food_item_id,
-      'name', fi.name,
-      'description', fi.description,
-      'image_url', fi.image_url,
-      'food_type', fi.food_type,
-      'calories', fi.calories,
-      'fat', fi.fat,
-      'protein', fi.protein,
-      'carbs', fi.carbs,
-      'created_at', fi.created_at,
-      'updated_at', fi.updated_at
-    )
-  ) AS foods
-FROM new_meal m
-JOIN inserted_food_items f ON f.meal_id = m.id
-JOIN food_items fi ON fi.id = f.food_item_id
-GROUP BY m.id, m.name, m.description, m.image_url, m.created_at, m.updated_at, m.user_id
-`
-
-type CreateMealWithFoodItemsParams struct {
-	Name        string
-	Description sql.NullString
-	ImageUrl    sql.NullString
-	UserID      uuid.UUID
-	Column5     []uuid.UUID
-	Column6     []int32
-}
-
-type CreateMealWithFoodItemsRow struct {
-	MealID      uuid.UUID
-	Name        string
-	Description sql.NullString
-	ImageUrl    sql.NullString
-	CreatedAt   sql.NullTime
-	UpdatedAt   sql.NullTime
-	UserID      uuid.UUID
-	Foods       json.RawMessage
-}
-
-func (q *Queries) CreateMealWithFoodItems(ctx context.Context, arg CreateMealWithFoodItemsParams) (CreateMealWithFoodItemsRow, error) {
-	row := q.db.QueryRowContext(ctx, createMealWithFoodItems,
-		arg.Name,
-		arg.Description,
-		arg.ImageUrl,
-		arg.UserID,
-		pq.Array(arg.Column5),
-		pq.Array(arg.Column6),
-	)
-	var i CreateMealWithFoodItemsRow
-	err := row.Scan(
-		&i.MealID,
-		&i.Name,
-		&i.Description,
-		&i.ImageUrl,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.UserID,
-		&i.Foods,
-	)
-	return i, err
-}
 
 const getMealByID = `-- name: GetMealByID :one
 SELECT 
@@ -236,102 +132,69 @@ func (q *Queries) GetMealsByUserID(ctx context.Context, arg GetMealsByUserIDPara
 	return items, nil
 }
 
-const updateMealWithFoodItems = `-- name: UpdateMealWithFoodItems :one
-WITH updated_meal AS (
-  UPDATE meals
-  SET name = $2,
-      description = $3,
-      image_url = $4,
-      updated_at = NOW()
-  WHERE meals.id = $1  -- Explicitly reference meals.id
-  RETURNING id, name, description, image_url, created_at, updated_at, user_id
-),
-deleted_old_relations AS (
-  DELETE FROM rel_meal_food WHERE meal_id = $1
-),
-inserted_food_items AS (
-  INSERT INTO rel_meal_food (
-      meal_id, 
-      food_item_id, 
-      user_id, 
-      amount
-  )
-  SELECT 
-    updated_meal.id, 
-    unnest($5::uuid[]), -- unnest to expand array into rows
-    $4::uuid,           -- user_id (assuming same as meal)
-    unnest($6::int[]) -- unnest to expand array into rows
-  FROM updated_meal
-  RETURNING meal_id, food_item_id
+const insertMeal = `-- name: InsertMeal :one
+INSERT INTO meals (
+  name, 
+  description, 
+  image_url, 
+  user_id
 )
-SELECT 
-  updated_meal.id AS meal_id, -- Explicitly reference updated_meal.id
-  updated_meal.name,
-  updated_meal.description,
-  updated_meal.image_url,
-  updated_meal.created_at,
-  updated_meal.updated_at,
-  updated_meal.user_id,
-  json_agg(
-    json_build_object(
-      'id', f.food_item_id,
-      'name', fi.name,
-      'description', fi.description,
-      'image_url', fi.image_url,
-      'food_type', fi.food_type,
-      'calories', fi.calories,
-      'fat', fi.fat,
-      'protein', fi.protein,
-      'carbs', fi.carbs,
-      'created_at', fi.created_at,
-      'updated_at', fi.updated_at
-    )
-  ) AS foods
-FROM updated_meal
-JOIN inserted_food_items f ON f.meal_id = updated_meal.id -- Explicitly reference updated_meal.id
-JOIN food_items fi ON fi.id = f.food_item_id
-GROUP BY updated_meal.id
+VALUES (
+  $1, $2, $3, $4
+)
+RETURNING id, name, description, image_url, created_at, updated_at, user_id
 `
 
-type UpdateMealWithFoodItemsParams struct {
-	ID          uuid.UUID
+type InsertMealParams struct {
 	Name        string
 	Description sql.NullString
 	ImageUrl    sql.NullString
-	Column5     []uuid.UUID
-	Column6     []int32
-}
-
-type UpdateMealWithFoodItemsRow struct {
-	MealID      uuid.UUID
-	Name        string
-	Description sql.NullString
-	ImageUrl    sql.NullString
-	CreatedAt   sql.NullTime
-	UpdatedAt   sql.NullTime
 	UserID      uuid.UUID
-	Foods       json.RawMessage
 }
 
-func (q *Queries) UpdateMealWithFoodItems(ctx context.Context, arg UpdateMealWithFoodItemsParams) (UpdateMealWithFoodItemsRow, error) {
-	row := q.db.QueryRowContext(ctx, updateMealWithFoodItems,
-		arg.ID,
+func (q *Queries) InsertMeal(ctx context.Context, arg InsertMealParams) (Meal, error) {
+	row := q.db.QueryRowContext(ctx, insertMeal,
 		arg.Name,
 		arg.Description,
 		arg.ImageUrl,
-		pq.Array(arg.Column5),
-		pq.Array(arg.Column6),
+		arg.UserID,
 	)
-	var i UpdateMealWithFoodItemsRow
+	var i Meal
 	err := row.Scan(
-		&i.MealID,
+		&i.ID,
 		&i.Name,
 		&i.Description,
 		&i.ImageUrl,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.UserID,
-		&i.Foods,
 	)
 	return i, err
+}
+
+const insertMealFoodItems = `-- name: InsertMealFoodItems :exec
+INSERT INTO rel_meal_food (
+  meal_id, 
+  food_item_id, 
+  user_id, 
+  amount
+) 
+VALUES ($1, unnest($2::uuid[]), $3, unnest($4::int[]))
+`
+
+type InsertMealFoodItemsParams struct {
+	MealID  uuid.UUID
+	Column2 []uuid.UUID
+	UserID  uuid.UUID
+	Column4 []int32
+}
+
+func (q *Queries) InsertMealFoodItems(ctx context.Context, arg InsertMealFoodItemsParams) error {
+	_, err := q.db.ExecContext(ctx, insertMealFoodItems,
+		arg.MealID,
+		pq.Array(arg.Column2),
+		arg.UserID,
+		pq.Array(arg.Column4),
+	)
+	return err
 }

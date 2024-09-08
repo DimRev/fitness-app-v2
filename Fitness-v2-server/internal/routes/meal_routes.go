@@ -13,6 +13,5 @@ func MealRoutesV1(e *echo.Group) {
 		meal.POST("", controllers.CreateMeal)
 		meal.GET("", controllers.GetMealsByUserID)
 		meal.GET("/:meal_id", controllers.GetMealByID)
-		meal.PUT("/:meal_id", controllers.UpdateMeal)
 	}
 }
