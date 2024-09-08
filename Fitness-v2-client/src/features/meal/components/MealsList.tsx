@@ -12,6 +12,7 @@ function MealsList() {
     limit: 10,
     offset: 0,
   });
+  console.log(mealsWithNutrition);
   if (isLoading) {
     return (
       <DashboardContentCards title="Meals">Loading...</DashboardContentCards>

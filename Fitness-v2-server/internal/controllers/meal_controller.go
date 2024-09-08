@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"database/sql"
-	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
@@ -34,7 +33,7 @@ func CreateMeal(c echo.Context) error {
 
 	user, ok := c.Get("user").(database.User)
 	if !ok {
-		log.Printf("Reached create Meal without user")
+		log.Printf("Reached create meal without user")
 		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
 	}
 
@@ -47,52 +46,81 @@ func CreateMeal(c echo.Context) error {
 		imageUrl = sql.NullString{String: *createMealReq.ImageUrl, Valid: createMealReq.ImageUrl != nil}
 	}
 
-	createMealWithFoodItemsParams := database.CreateMealWithFoodItemsParams{
+	// Step 1: Insert the meal
+	meal, err := config.Queries.InsertMeal(c.Request().Context(), database.InsertMealParams{
 		Name:        createMealReq.Name,
 		Description: description,
 		ImageUrl:    imageUrl,
 		UserID:      user.ID,
-		Column5:     []uuid.UUID{},
-		Column6:     []int32{},
-	}
-
-	for _, foodItem := range createMealReq.FoodItems {
-		createMealWithFoodItemsParams.Column5 = append(createMealWithFoodItemsParams.Column5, foodItem.FoodItemID)
-		createMealWithFoodItemsParams.Column6 = append(createMealWithFoodItemsParams.Column6, int32(foodItem.Amount))
-	}
-
-	if err := config.DB.Ping(); err != nil {
-		log.Println("Connection to database failed: ", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-			"message": "failed to create meal",
-		})
-	}
-
-	mealWithFoodItems, err := config.Queries.CreateMealWithFoodItems(c.Request().Context(), createMealWithFoodItemsParams)
+	})
 	if err != nil {
 		log.Println("Failed to create meal: ", err)
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to create meal")
 	}
 
-	var foodItems []models.FoodItem
-	if err := json.Unmarshal(mealWithFoodItems.Foods, &foodItems); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse food items")
+	// Step 2: Insert food items into rel_meal_food
+	foodItemIDs := make([]uuid.UUID, 0)
+	amounts := make([]int32, 0)
+	for _, foodItem := range createMealReq.FoodItems {
+		foodItemIDs = append(foodItemIDs, foodItem.FoodItemID)
+		amounts = append(amounts, int32(foodItem.Amount))
 	}
 
-	respMealWithFoodItems := models.MealWithFoodItems{
+	err = config.Queries.InsertMealFoodItems(c.Request().Context(), database.InsertMealFoodItemsParams{
+		MealID:  meal.ID,
+		Column2: foodItemIDs, // FoodItemIDs array
+		UserID:  user.ID,
+		Column4: amounts, // Amounts array
+	})
+	if err != nil {
+		log.Println("Failed to insert food items for meal: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to add food items to meal")
+	}
+
+	// Step 3: Retrieve the meal with the summed food item nutritional values
+	mealWithNutrients, err := config.Queries.GetMealByID(c.Request().Context(), meal.ID)
+	if err != nil {
+		log.Println("Failed to retrieve meal with food items: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to retrieve meal with food items")
+	}
+	totalCalories, err := strconv.ParseFloat(mealWithNutrients.TotalCalories.(string), 64)
+	if err != nil {
+		log.Println("Failed to parse total calories: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total calories")
+	}
+	totalFat, err := strconv.ParseFloat(mealWithNutrients.TotalFat.(string), 64)
+	if err != nil {
+		log.Println("Failed to parse total fat: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total fat")
+	}
+	totalProtein, err := strconv.ParseFloat(mealWithNutrients.TotalProtein.(string), 64)
+	if err != nil {
+		log.Println("Failed to parse total protein: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total protein")
+	}
+	totalCarbs, err := strconv.ParseFloat(mealWithNutrients.TotalCarbs.(string), 64)
+	if err != nil {
+		log.Println("Failed to parse total carbs: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total carbs")
+	}
+	// Step 4: Return the response
+	respMeal := models.MealWithNutrition{
 		Meal: models.Meal{
-			ID:          mealWithFoodItems.MealID,
-			Name:        mealWithFoodItems.Name,
-			Description: mealWithFoodItems.Description,
-			ImageUrl:    mealWithFoodItems.ImageUrl,
-			CreatedAt:   mealWithFoodItems.CreatedAt,
-			UpdatedAt:   mealWithFoodItems.UpdatedAt,
-			UserID:      mealWithFoodItems.UserID,
+			ID:          mealWithNutrients.ID,
+			Name:        mealWithNutrients.Name,
+			Description: mealWithNutrients.Description,
+			ImageUrl:    mealWithNutrients.ImageUrl,
+			CreatedAt:   mealWithNutrients.CreatedAt,
+			UpdatedAt:   mealWithNutrients.UpdatedAt,
+			UserID:      mealWithNutrients.UserID,
 		},
-		FoodItems: foodItems,
+		TotalCalories: totalCalories,
+		TotalFat:      totalFat,
+		TotalProtein:  totalProtein,
+		TotalCarbs:    totalCarbs,
 	}
 
-	return c.JSON(http.StatusOK, respMealWithFoodItems)
+	return c.JSON(http.StatusOK, respMeal)
 }
 
 type GetMealsByUserIDRequest struct {
@@ -139,27 +167,47 @@ func GetMealsByUserID(c echo.Context) error {
 		})
 	}
 
-	mealWithSums, err := config.Queries.GetMealsByUserID(c.Request().Context(), getMealsByUserIdParams)
+	mealsWithNut, err := config.Queries.GetMealsByUserID(c.Request().Context(), getMealsByUserIdParams)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get meals")
 	}
 
-	respMealsWithNutrition := make([]models.MealWithNutrition, len(mealWithSums))
-	for i, mealWithSum := range mealWithSums {
+	respMealsWithNutrition := make([]models.MealWithNutrition, len(mealsWithNut))
+	for i, mealWithNut := range mealsWithNut {
+		totalCalories, err := strconv.ParseFloat(mealWithNut.TotalCalories.(string), 64)
+		if err != nil {
+			log.Println("Failed to parse total calories: ", err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total calories")
+		}
+		totalFat, err := strconv.ParseFloat(mealWithNut.TotalFat.(string), 64)
+		if err != nil {
+			log.Println("Failed to parse total fat: ", err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total fat")
+		}
+		totalProtein, err := strconv.ParseFloat(mealWithNut.TotalProtein.(string), 64)
+		if err != nil {
+			log.Println("Failed to parse total protein: ", err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total protein")
+		}
+		totalCarbs, err := strconv.ParseFloat(mealWithNut.TotalCarbs.(string), 64)
+		if err != nil {
+			log.Println("Failed to parse total carbs: ", err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total carbs")
+		}
 		respMealsWithNutrition[i] = models.MealWithNutrition{
 			Meal: models.Meal{
-				ID:          mealWithSum.ID,
-				Name:        mealWithSum.Name,
-				Description: mealWithSum.Description,
-				ImageUrl:    mealWithSum.ImageUrl,
-				CreatedAt:   mealWithSum.CreatedAt,
-				UpdatedAt:   mealWithSum.UpdatedAt,
-				UserID:      mealWithSum.UserID,
+				ID:          mealWithNut.ID,
+				Name:        mealWithNut.Name,
+				Description: mealWithNut.Description,
+				ImageUrl:    mealWithNut.ImageUrl,
+				CreatedAt:   mealWithNut.CreatedAt,
+				UpdatedAt:   mealWithNut.UpdatedAt,
+				UserID:      mealWithNut.UserID,
 			},
-			TotalCalories: mealWithSum.TotalCalories.(float64),
-			TotalFat:      mealWithSum.TotalFat.(float64),
-			TotalProtein:  mealWithSum.TotalProtein.(float64),
-			TotalCarbs:    mealWithSum.TotalCarbs.(float64),
+			TotalCalories: totalCalories,
+			TotalFat:      totalFat,
+			TotalProtein:  totalProtein,
+			TotalCarbs:    totalCarbs,
 		}
 	}
 
@@ -178,25 +226,46 @@ func GetMealByID(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
 	}
 
-	meal, err := config.Queries.GetMealByID(c.Request().Context(), mealID)
+	mealWithNut, err := config.Queries.GetMealByID(c.Request().Context(), mealID)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, "failed to get meal")
 	}
 
+	totalCalories, err := strconv.ParseFloat(mealWithNut.TotalCalories.(string), 64)
+	if err != nil {
+		log.Println("Failed to parse total calories: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total calories")
+	}
+	totalFat, err := strconv.ParseFloat(mealWithNut.TotalFat.(string), 64)
+	if err != nil {
+		log.Println("Failed to parse total fat: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total fat")
+	}
+	totalProtein, err := strconv.ParseFloat(mealWithNut.TotalProtein.(string), 64)
+	if err != nil {
+		log.Println("Failed to parse total protein: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total protein")
+	}
+	totalCarbs, err := strconv.ParseFloat(mealWithNut.TotalCarbs.(string), 64)
+	if err != nil {
+		log.Println("Failed to parse total carbs: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total carbs")
+	}
+
 	respMeal := models.MealWithNutrition{
 		Meal: models.Meal{
-			ID:          meal.ID,
-			Name:        meal.Name,
-			Description: meal.Description,
-			ImageUrl:    meal.ImageUrl,
-			CreatedAt:   meal.CreatedAt,
-			UpdatedAt:   meal.UpdatedAt,
-			UserID:      meal.UserID,
+			ID:          mealWithNut.ID,
+			Name:        mealWithNut.Name,
+			Description: mealWithNut.Description,
+			ImageUrl:    mealWithNut.ImageUrl,
+			CreatedAt:   mealWithNut.CreatedAt,
+			UpdatedAt:   mealWithNut.UpdatedAt,
+			UserID:      mealWithNut.UserID,
 		},
-		TotalCalories: meal.TotalCalories.(float64),
-		TotalFat:      meal.TotalFat.(float64),
-		TotalProtein:  meal.TotalProtein.(float64),
-		TotalCarbs:    meal.TotalCarbs.(float64),
+		TotalCalories: totalCalories,
+		TotalFat:      totalFat,
+		TotalProtein:  totalProtein,
+		TotalCarbs:    totalCarbs,
 	}
 
 	return c.JSON(http.StatusOK, respMeal)
@@ -210,63 +279,4 @@ type UpdateMealRequest struct {
 		FoodItemID uuid.UUID `json:"food_item_id"`
 		Amount     int       `json:"amount"`
 	}
-}
-
-func UpdateMeal(c echo.Context) error {
-	mealID, err := uuid.Parse(c.Param("meal_id"))
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "invalid meal id")
-	}
-
-	_, ok := c.Get("user").(database.User)
-	if !ok {
-		log.Printf("Reached create Meal without user")
-		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
-	}
-
-	updateMealReq := UpdateMealRequest{}
-	if err := c.Bind(&updateMealReq); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
-			"message": "malformed request",
-		})
-	}
-
-	updateMealWithFoodItemsParams := database.UpdateMealWithFoodItemsParams{
-		ID:          mealID,
-		Name:        updateMealReq.Name,
-		Description: sql.NullString{String: *updateMealReq.Description, Valid: updateMealReq.Description != nil},
-		ImageUrl:    sql.NullString{String: *updateMealReq.ImageUrl, Valid: updateMealReq.ImageUrl != nil},
-		Column5:     []uuid.UUID{},
-		Column6:     []int32{},
-	}
-
-	for _, foodItem := range updateMealReq.FoodItems {
-		updateMealWithFoodItemsParams.Column5 = append(updateMealWithFoodItemsParams.Column5, foodItem.FoodItemID)
-		updateMealWithFoodItemsParams.Column6 = append(updateMealWithFoodItemsParams.Column6, int32(foodItem.Amount))
-	}
-
-	mealWithFoodItems, err := config.Queries.UpdateMealWithFoodItems(c.Request().Context(), updateMealWithFoodItemsParams)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to update meal")
-	}
-
-	var foodItems []models.FoodItem
-	if err := json.Unmarshal(mealWithFoodItems.Foods, &foodItems); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse food items")
-	}
-
-	respMealWithFoodItems := models.MealWithFoodItems{
-		Meal: models.Meal{
-			ID:          mealWithFoodItems.MealID,
-			Name:        mealWithFoodItems.Name,
-			Description: mealWithFoodItems.Description,
-			ImageUrl:    mealWithFoodItems.ImageUrl,
-			CreatedAt:   mealWithFoodItems.CreatedAt,
-			UpdatedAt:   mealWithFoodItems.UpdatedAt,
-			UserID:      mealWithFoodItems.UserID,
-		},
-		FoodItems: foodItems,
-	}
-
-	return c.JSON(http.StatusOK, respMealWithFoodItems)
 }

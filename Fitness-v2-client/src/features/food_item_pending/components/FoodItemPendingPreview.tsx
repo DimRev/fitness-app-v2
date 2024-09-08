@@ -67,7 +67,7 @@ function FoodItemPendingPreview({
         </div>
       </CardContent>
       <CardFooter>
-        <div className="flex items-center gap-2">
+        <div className="flex justify-between items-center gap-2 w-full">
           <div className="px-4 py-2 border rounded-md">
             <div
               className="flex gap-2 cursor-pointer"
@@ -146,7 +146,7 @@ export function FoodItemPendingPreviewSkeleton() {
         </div>
       </CardContent>
       <CardFooter>
-        <div className="flex items-center gap-2">
+        <div className="flex justify-between items-center gap-2 w-full">
           <div className="px-4 py-2 border rounded-md">
             <div className="flex items-center gap-2">
               <Heart fill={"transparent"} />
@@ -209,7 +209,7 @@ export function FoodItemPendingPreviewEmpty() {
         </div>
       </CardContent>
       <CardFooter>
-        <div className="flex items-center gap-2">
+        <div className="flex justify-between items-center gap-2 w-full">
           <div className="px-4 py-2 border rounded-md">
             <div className="flex items-center gap-2">
               <Heart fill={"transparent"} className="opacity-50" />
