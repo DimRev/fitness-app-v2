@@ -19,6 +19,7 @@ import { Textarea } from "~/features/shared/components/ui/textarea";
 import { mealFormSchema, type MealFormSchema } from "../meal.schema";
 import MealFoodItemsList from "./MealFoodItemsList";
 import useCreateMeal from "../hooks/useCreateMeal";
+import { useNavigate } from "react-router-dom";
 
 function MealAddForm() {
   const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
@@ -28,6 +29,7 @@ function MealAddForm() {
     isError,
     error,
   } = useCreateMeal();
+  const navigate = useNavigate();
   const form = useForm<MealFormSchema>({
     resolver: zodResolver(mealFormSchema),
     defaultValues: {
@@ -56,8 +58,9 @@ function MealAddForm() {
         food_items: data.food_items,
       },
       {
-        onSuccess: (data) => {
-          console.log(data);
+        onSuccess: () => {
+          void form.reset();
+          navigate("/dashboard/meal");
         },
       },
     );

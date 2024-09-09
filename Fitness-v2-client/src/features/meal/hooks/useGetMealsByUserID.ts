@@ -14,8 +14,8 @@ type ErrorResponseBody = {
 
 function useGetMealsByUserID(
   params: GetMealsByUserIDRequestBody,
-): UseQueryResult<MealWithNutrition[], Error> {
-  return useQuery<MealWithNutrition[], Error>({
+): UseQueryResult<MealWithNutritionWithPages, Error> {
+  return useQuery<MealWithNutritionWithPages, Error>({
     ...USE_QUERY_DEFAULT_OPTIONS,
     queryKey: [
       QUERY_KEYS.MEALS.GET_MEALS_BY_USER_ID,
@@ -30,11 +30,14 @@ function useGetMealsByUserID(
 async function getMealsByUserID({
   limit,
   offset,
-}: GetMealsByUserIDRequestBody): Promise<MealWithNutrition[]> {
+}: GetMealsByUserIDRequestBody): Promise<MealWithNutritionWithPages> {
   try {
-    const response = await axiosInstance.get<MealWithNutrition[]>(`/meals`, {
-      params: { limit, offset },
-    });
+    const response = await axiosInstance.get<MealWithNutritionWithPages>(
+      `/meals`,
+      {
+        params: { limit, offset },
+      },
+    );
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {

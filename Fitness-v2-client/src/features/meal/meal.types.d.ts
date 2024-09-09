@@ -32,6 +32,11 @@ type MealWithNutrition = {
   total_carbs: number;
 };
 
+type MealWithNutritionWithPages = {
+  meals: MealWithNutrition[];
+  total_pages: number;
+};
+
 type MealWithFoodItems = {
   meal: Meal;
   food_items: FoodItem[];

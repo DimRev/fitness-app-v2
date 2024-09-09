@@ -49,3 +49,8 @@ GROUP BY m.id
 ORDER BY m.created_at DESC
 LIMIT $2
 OFFSET $3;
+
+-- name: GetMealsCountByUserID :one
+SELECT COUNT(*) AS total_rows
+FROM meals
+WHERE user_id = $1;

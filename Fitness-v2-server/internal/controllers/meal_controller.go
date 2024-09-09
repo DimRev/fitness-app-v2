@@ -3,6 +3,7 @@ package controllers
 import (
 	"database/sql"
 	"log"
+	"math"
 	"net/http"
 	"strconv"
 
@@ -103,15 +104,25 @@ func CreateMeal(c echo.Context) error {
 		log.Println("Failed to parse total carbs: ", err)
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total carbs")
 	}
+
+	var descriptionResp *string
+	if mealWithNutrients.Description.Valid {
+		descriptionResp = &mealWithNutrients.Description.String
+	}
+	var imageUrlResp *string
+	if mealWithNutrients.ImageUrl.Valid {
+		imageUrlResp = &mealWithNutrients.ImageUrl.String
+	}
 	// Step 4: Return the response
+
 	respMeal := models.MealWithNutrition{
 		Meal: models.Meal{
 			ID:          mealWithNutrients.ID,
 			Name:        mealWithNutrients.Name,
-			Description: mealWithNutrients.Description,
-			ImageUrl:    mealWithNutrients.ImageUrl,
-			CreatedAt:   mealWithNutrients.CreatedAt,
-			UpdatedAt:   mealWithNutrients.UpdatedAt,
+			Description: descriptionResp,
+			ImageUrl:    imageUrlResp,
+			CreatedAt:   mealWithNutrients.CreatedAt.Time,
+			UpdatedAt:   mealWithNutrients.UpdatedAt.Time,
 			UserID:      mealWithNutrients.UserID,
 		},
 		TotalCalories: totalCalories,
@@ -172,7 +183,15 @@ func GetMealsByUserID(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get meals")
 	}
 
-	respMealsWithNutrition := make([]models.MealWithNutrition, len(mealsWithNut))
+	totalRows, err := config.Queries.GetMealsCountByUserID(c.Request().Context(), user.ID)
+	if err != nil {
+		log.Println("Failed to get meals count: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "failed to get meals count",
+		})
+	}
+
+	mealsWithNutrition := make([]models.MealWithNutrition, len(mealsWithNut))
 	for i, mealWithNut := range mealsWithNut {
 		totalCalories, err := strconv.ParseFloat(mealWithNut.TotalCalories.(string), 64)
 		if err != nil {
@@ -194,14 +213,24 @@ func GetMealsByUserID(c echo.Context) error {
 			log.Println("Failed to parse total carbs: ", err)
 			return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total carbs")
 		}
-		respMealsWithNutrition[i] = models.MealWithNutrition{
+
+		var descriptionResp *string
+		if mealWithNut.Description.Valid {
+			descriptionResp = &mealWithNut.Description.String
+		}
+		var imageUrlResp *string
+		if mealWithNut.ImageUrl.Valid {
+			imageUrlResp = &mealWithNut.ImageUrl.String
+		}
+
+		mealsWithNutrition[i] = models.MealWithNutrition{
 			Meal: models.Meal{
 				ID:          mealWithNut.ID,
 				Name:        mealWithNut.Name,
-				Description: mealWithNut.Description,
-				ImageUrl:    mealWithNut.ImageUrl,
-				CreatedAt:   mealWithNut.CreatedAt,
-				UpdatedAt:   mealWithNut.UpdatedAt,
+				Description: descriptionResp,
+				ImageUrl:    imageUrlResp,
+				CreatedAt:   mealWithNut.CreatedAt.Time,
+				UpdatedAt:   mealWithNut.UpdatedAt.Time,
 				UserID:      mealWithNut.UserID,
 			},
 			TotalCalories: totalCalories,
@@ -211,7 +240,12 @@ func GetMealsByUserID(c echo.Context) error {
 		}
 	}
 
-	return c.JSON(http.StatusOK, respMealsWithNutrition)
+	respMealsWithNutationTotalPages := models.MealWithNutritionWithPages{
+		Meals:      mealsWithNutrition,
+		TotalPages: int64(math.Ceil(float64(totalRows) / float64(limit))),
+	}
+
+	return c.JSON(http.StatusOK, respMealsWithNutationTotalPages)
 }
 
 func GetMealByID(c echo.Context) error {
@@ -252,14 +286,23 @@ func GetMealByID(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total carbs")
 	}
 
+	var descriptionResp *string
+	if mealWithNut.Description.Valid {
+		descriptionResp = &mealWithNut.Description.String
+	}
+	var imageUrlResp *string
+	if mealWithNut.ImageUrl.Valid {
+		imageUrlResp = &mealWithNut.ImageUrl.String
+	}
+
 	respMeal := models.MealWithNutrition{
 		Meal: models.Meal{
 			ID:          mealWithNut.ID,
 			Name:        mealWithNut.Name,
-			Description: mealWithNut.Description,
-			ImageUrl:    mealWithNut.ImageUrl,
-			CreatedAt:   mealWithNut.CreatedAt,
-			UpdatedAt:   mealWithNut.UpdatedAt,
+			Description: descriptionResp,
+			ImageUrl:    imageUrlResp,
+			CreatedAt:   mealWithNut.CreatedAt.Time,
+			UpdatedAt:   mealWithNut.UpdatedAt.Time,
 			UserID:      mealWithNut.UserID,
 		},
 		TotalCalories: totalCalories,

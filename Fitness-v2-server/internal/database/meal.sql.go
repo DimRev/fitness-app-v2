@@ -132,6 +132,19 @@ func (q *Queries) GetMealsByUserID(ctx context.Context, arg GetMealsByUserIDPara
 	return items, nil
 }
 
+const getMealsCountByUserID = `-- name: GetMealsCountByUserID :one
+SELECT COUNT(*) AS total_rows
+FROM meals
+WHERE user_id = $1
+`
+
+func (q *Queries) GetMealsCountByUserID(ctx context.Context, userID uuid.UUID) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getMealsCountByUserID, userID)
+	var total_rows int64
+	err := row.Scan(&total_rows)
+	return total_rows, err
+}
+
 const insertMeal = `-- name: InsertMeal :one
 INSERT INTO meals (
   name, 

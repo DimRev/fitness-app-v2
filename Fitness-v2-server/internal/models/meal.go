@@ -1,19 +1,19 @@
 package models
 
 import (
-	"database/sql"
+	"time"
 
 	"github.com/google/uuid"
 )
 
 type Meal struct {
-	ID          uuid.UUID      `json:"id"`
-	Name        string         `json:"name"`
-	Description sql.NullString `json:"description"`
-	ImageUrl    sql.NullString `json:"image_url"`
-	CreatedAt   sql.NullTime   `json:"created_at"`
-	UpdatedAt   sql.NullTime   `json:"updated_at"`
-	UserID      uuid.UUID      `json:"-"`
+	ID          uuid.UUID `json:"id"`
+	Name        string    `json:"name"`
+	Description *string   `json:"description"`
+	ImageUrl    *string   `json:"image_url"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+	UserID      uuid.UUID `json:"-"`
 }
 
 type MealWithNutrition struct {
@@ -29,12 +29,7 @@ type FoodItemIdAmount struct {
 	Amount     int       `json:"amount"`
 }
 
-type MealWithFoodItemIds struct {
-	Meal             `json:"meal"`
-	FoodItemIdAmount `json:"food_items"`
-}
-
-type MealWithFoodItems struct {
-	Meal      `json:"meal"`
-	FoodItems []FoodItem `json:"food_items"`
+type MealWithNutritionWithPages struct {
+	Meals      []MealWithNutrition `json:"meals"`
+	TotalPages int64               `json:"total_pages"`
 }
