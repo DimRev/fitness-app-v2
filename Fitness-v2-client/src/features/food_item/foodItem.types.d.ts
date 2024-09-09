@@ -1,15 +1,3 @@
-/*
-  ID          uuid.UUID             `json:"id"`
-	Name        string                `json:"name"`
-	Description *string               `json:"description"`
-	ImageUrl    *string               `json:"image_url"`
-	FoodType    database.FoodItemType `json:"food_type"`
-	Calories    string                `json:"calories"`
-	Fat         string                `json:"fat"`
-	Protein     string                `json:"protein"`
-	Carbs       string                `json:"carbs"`
-*/
-
 type FoodItem = {
   id: string;
   name: string;

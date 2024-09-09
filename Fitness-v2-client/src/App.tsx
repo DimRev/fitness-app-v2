@@ -22,11 +22,26 @@ import AdminFoodItemAddPage from "./features/views/components/AdminFoodItemAddPa
 import DashboardFoodItemPendingPage from "./features/views/components/DashboardFoodItemPendingPage";
 import DashboardFoodItemPendingAddPage from "./features/views/components/DashboardFoodItemPendingAddPage";
 import DashboardMealDetailsPage from "./features/views/components/DashboardMealDetailsPage";
+import { useLayoutEffect } from "react";
 
 const queryClient = new QueryClient();
 
 function App() {
-  const { isDarkMode } = useLayoutStore();
+  const { isDarkMode, setIsDarkMode } = useLayoutStore();
+
+  // Set the initial theme based on the user's preferences
+  useLayoutEffect(() => {
+    const storedConfig = localStorage.getItem("fitness_app_config");
+    if (storedConfig) {
+      const layoutConfig = JSON.parse(storedConfig) as LayoutConfig;
+      setIsDarkMode(layoutConfig.isDarkMode);
+    } else {
+      const prefersDarkMode = window.matchMedia(
+        "(prefers-color-scheme: dark)",
+      ).matches;
+      setIsDarkMode(prefersDarkMode);
+    }
+  }, []);
 
   console.log(
     `App is running in ${import.meta.env.MODE} connected to ${import.meta.env.VITE_API_URL}`,

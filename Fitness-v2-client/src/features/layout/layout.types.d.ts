@@ -1,0 +1,3 @@
+type LayoutConfig = {
+  isDarkMode: boolean;
+};

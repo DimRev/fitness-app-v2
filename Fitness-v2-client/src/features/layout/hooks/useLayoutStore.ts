@@ -17,7 +17,22 @@ const useLayoutStore = create<LayoutStore>((set) => ({
   isDarkMode: false,
   setIsSidebarOpen: () =>
     set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
-  setIsDarkMode: (newIsDarkMode) => set(() => ({ isDarkMode: newIsDarkMode })),
+  setIsDarkMode: (newIsDarkMode) => {
+    const currentConfig = localStorage.getItem("fitness_app_config");
+    if (currentConfig) {
+      const layoutConfig = JSON.parse(currentConfig) as LayoutConfig;
+      localStorage.setItem(
+        "fitness_app_config",
+        JSON.stringify({ ...layoutConfig, isDarkMode: newIsDarkMode }),
+      );
+    } else {
+      localStorage.setItem(
+        "fitness_app_config",
+        JSON.stringify({ isDarkMode: newIsDarkMode }),
+      );
+    }
+    return set(() => ({ isDarkMode: newIsDarkMode }));
+  },
 }));
 
 export default useLayoutStore;
