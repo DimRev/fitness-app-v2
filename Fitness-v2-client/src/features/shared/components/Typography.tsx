@@ -36,7 +36,7 @@ export function H2({ children, className, ...props }: Props) {
 
 export function H3({ children, className, ...props }: Props) {
   return (
-    <h3 className={cn("text-xl font-bold", className)} {...props}>
+    <h3 className={cn("text-lg font-bold", className)} {...props}>
       {children}
     </h3>
   );
@@ -118,20 +118,33 @@ export function PageHeader({
       <div className="py-2">
         <Breadcrumb>
           <BreadcrumbList>
-            {toRoutes.map((route, idx) => (
-              <React.Fragment key={route.path + idx}>
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link to={`/${route.path}`}>{route.title}</Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                {idx !== toRoutes.length - 1 && (
-                  <BreadcrumbSeparator>
-                    <Slash />
-                  </BreadcrumbSeparator>
-                )}
-              </React.Fragment>
-            ))}
+            {toRoutes.map((route, idx) => {
+              if (idx < toRoutes.length - 1)
+                return (
+                  <React.Fragment key={route.path + idx}>
+                    <BreadcrumbItem>
+                      <BreadcrumbLink asChild>
+                        <Link
+                          className="font-semibold text-blue-500 hover:text-blue-700"
+                          to={`/${route.path}`}
+                        >
+                          {route.title}
+                        </Link>
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator>
+                      <Slash />
+                    </BreadcrumbSeparator>
+                  </React.Fragment>
+                );
+              else {
+                return (
+                  <React.Fragment key={route.path + idx}>
+                    <BreadcrumbItem>{route.title}</BreadcrumbItem>
+                  </React.Fragment>
+                );
+              }
+            })}
           </BreadcrumbList>
         </Breadcrumb>
       </div>

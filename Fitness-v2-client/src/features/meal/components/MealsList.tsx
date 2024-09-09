@@ -8,6 +8,7 @@ import MealPreview, {
 } from "./MealPreview";
 import ListPaginationButtons from "~/features/shared/components/ListPaginationButtons";
 import { useMemo, useState } from "react";
+import { Input } from "~/features/shared/components/ui/input";
 
 function MealsList() {
   const [page, setPage] = useState(1);
@@ -38,7 +39,8 @@ function MealsList() {
   if (isLoading) {
     return (
       <DashboardContentCards title="Meals">
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-2">
+          <Input placeholder="Search..." />
           <Link className={buttonVariants()} to="/dashboard/meal/add">
             Add Meal
           </Link>
@@ -60,7 +62,8 @@ function MealsList() {
   if (isError || !mealsWithNutrition) {
     return (
       <DashboardContentCards title="Meals">
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-2">
+          <Input placeholder="Search..." />
           <Link className={buttonVariants()} to="/dashboard/meal/add">
             Add Meal
           </Link>
@@ -74,7 +77,8 @@ function MealsList() {
 
   return (
     <DashboardContentCards title="Meals">
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-2">
+        <Input placeholder="Search..." />
         <Link className={buttonVariants()} to="/dashboard/meal/add">
           Add Meal
         </Link>
