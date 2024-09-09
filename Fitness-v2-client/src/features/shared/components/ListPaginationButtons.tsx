@@ -4,14 +4,10 @@ import { Button } from "~/features/shared/components/ui/button";
 type Props = {
   page: number;
   onChangePage: (type: "next" | "prev") => void;
-  foodItemsPending: FoodItemsPendingWithPages | undefined;
+  totalPages: number | undefined;
 };
 
-export function FoodItemPaginationButtons({
-  page,
-  onChangePage,
-  foodItemsPending,
-}: Props) {
+function ListPaginationButtons({ page, onChangePage, totalPages }: Props) {
   return (
     <div className="flex justify-end items-center gap-2 py-2">
       <Button
@@ -24,20 +20,12 @@ export function FoodItemPaginationButtons({
       </Button>
       <div>
         <span>{page}</span>
-        <span>
-          {foodItemsPending?.total_pages
-            ? ` / ${foodItemsPending.total_pages}`
-            : " / 1"}
-        </span>
+        <span>{totalPages ? ` / ${totalPages}` : " / 1"}</span>
       </div>
       <Button
         size="icon"
         variant="ghost"
-        disabled={
-          foodItemsPending &&
-          page !== foodItemsPending.total_pages &&
-          foodItemsPending.total_pages === 0
-        }
+        disabled={!totalPages || page === totalPages}
         onClick={() => onChangePage("next")}
       >
         <ChevronRight />
@@ -45,3 +33,5 @@ export function FoodItemPaginationButtons({
     </div>
   );
 }
+
+export default ListPaginationButtons;

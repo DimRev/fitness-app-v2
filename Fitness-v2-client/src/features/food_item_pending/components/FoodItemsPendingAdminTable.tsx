@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { DashboardContentCards } from "~/features/shared/components/CustomCards";
+import ListPaginationButtons from "~/features/shared/components/ListPaginationButtons";
 import {
   Table,
   TableBody,
@@ -10,7 +11,6 @@ import {
 import useApproveFoodItemPending from "../hooks/useApproveFoodItemPending";
 import useGetFoodItemsPending from "../hooks/useGetFoodItemsPending";
 import useRejectFoodItemPending from "../hooks/useRejectFoodItemPending";
-import { FoodItemPaginationButtons } from "./FoodItemPaginationButtons";
 import FoodItemPendingAdminTableRow, {
   FoodItemPendingAdminTableRowEmpty,
   FoodItemPendingAdminTableRowSkeleton,
@@ -119,10 +119,10 @@ function FoodItemsPendingAdminTable() {
             </TableBody>
           </Table>
         </div>
-        <FoodItemPaginationButtons
+        <ListPaginationButtons
           page={page}
           onChangePage={onChangePage}
-          foodItemsPending={foodItemsPending}
+          totalPages={foodItemsPending?.total_pages}
         />
       </DashboardContentCards>
     );
@@ -161,10 +161,10 @@ function FoodItemsPendingAdminTable() {
           </TableBody>
         </Table>
       </div>
-      <FoodItemPaginationButtons
+      <ListPaginationButtons
         page={page}
         onChangePage={onChangePage}
-        foodItemsPending={foodItemsPending}
+        totalPages={foodItemsPending?.total_pages}
       />
     </DashboardContentCards>
   );

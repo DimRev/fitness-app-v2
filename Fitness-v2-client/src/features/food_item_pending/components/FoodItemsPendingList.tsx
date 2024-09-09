@@ -2,11 +2,11 @@ import { XCircleIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { DashboardContentCards } from "~/features/shared/components/CustomCards";
+import ListPaginationButtons from "~/features/shared/components/ListPaginationButtons";
 import { buttonVariants } from "~/features/shared/components/ui/button";
 import { Input } from "~/features/shared/components/ui/input";
 import useGetFoodItemsPending from "../hooks/useGetFoodItemsPending";
 import useToggleFoodItemPending from "../hooks/useToggleFoodItemPending";
-import { FoodItemPaginationButtons } from "./FoodItemPaginationButtons";
 import FoodItemPendingPreview, {
   FoodItemPendingPreviewEmpty,
   FoodItemPendingPreviewSkeleton,
@@ -62,10 +62,10 @@ function FoodItemsPendingList() {
           <FoodItemPendingPreviewSkeleton />
           <FoodItemPendingPreviewSkeleton />
         </div>
-        <FoodItemPaginationButtons
+        <ListPaginationButtons
           page={page}
           onChangePage={onChangePage}
-          foodItemsPending={foodItemsPending}
+          totalPages={foodItemsPending}
         />
       </DashboardContentCards>
     );
@@ -110,10 +110,10 @@ function FoodItemsPendingList() {
             <FoodItemPendingPreviewEmpty key={idx} />
           ))}
       </div>
-      <FoodItemPaginationButtons
+      <ListPaginationButtons
         page={page}
         onChangePage={onChangePage}
-        foodItemsPending={foodItemsPending}
+        totalPages={foodItemsPending?.total_pages}
       />
     </DashboardContentCards>
   );
