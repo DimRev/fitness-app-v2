@@ -23,6 +23,7 @@ export const USE_QUERY_DEFAULT_OPTIONS: UseQueryOptions<any, any> = {
 export const QUERY_KEYS = {
   MEALS: {
     GET_MEALS_BY_USER_ID: "getMealsByUserID",
+    GET_MEAL_BY_ID: "getMealByID",
   },
   FOOD_ITEMS: {
     GET_FOOD_ITEMS: "getFoodItems",

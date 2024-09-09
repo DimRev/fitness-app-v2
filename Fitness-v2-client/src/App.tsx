@@ -21,6 +21,7 @@ import AdminFoodItemPage from "./features/views/components/AdminFoodItemPage";
 import AdminFoodItemAddPage from "./features/views/components/AdminFoodItemAddPage";
 import DashboardFoodItemPendingPage from "./features/views/components/DashboardFoodItemPendingPage";
 import DashboardFoodItemPendingAddPage from "./features/views/components/DashboardFoodItemPendingAddPage";
+import DashboardMealDetailsPage from "./features/views/components/DashboardMealDetailsPage";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +50,10 @@ function App() {
                 <Route index element={<DashboardOverviewPage />} />
                 <Route path="meal" element={<DashboardMealPage />} />
                 <Route path="meal/add" element={<DashboardMealAddPage />} />
+                <Route
+                  path="meal/details/:mealId"
+                  element={<DashboardMealDetailsPage />}
+                />
                 <Route
                   path="food_item"
                   element={<DashboardFoodItemPendingPage />}

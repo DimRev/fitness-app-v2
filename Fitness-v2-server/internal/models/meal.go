@@ -33,3 +33,8 @@ type MealWithNutritionWithPages struct {
 	Meals      []MealWithNutrition `json:"meals"`
 	TotalPages int64               `json:"total_pages"`
 }
+
+type MealWithNutritionAndFoodItems struct {
+	Meal      MealWithNutrition    `json:"meal"`
+	FoodItems []FoodItemWithAmount `json:"food_items"`
+}

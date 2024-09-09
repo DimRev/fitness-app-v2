@@ -8,6 +8,8 @@ package database
 import (
 	"context"
 	"database/sql"
+
+	"github.com/google/uuid"
 )
 
 const createFood = `-- name: CreateFood :one
@@ -71,6 +73,76 @@ func (q *Queries) CreateFood(ctx context.Context, arg CreateFoodParams) (FoodIte
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const getFoodItemsByMealID = `-- name: GetFoodItemsByMealID :many
+SELECT rmf.meal_id, rmf.food_item_id, rmf.user_id, rmf.amount, fi.id, fi.name, fi.description, fi.image_url, fi.food_type, fi.calories, fi.fat, fi.protein, fi.carbs, fi.created_at, fi.updated_at
+FROM rel_meal_food rmf
+LEFT JOIN food_items fi ON fi.id = rmf.food_item_id
+WHERE rmf.meal_id = $1
+AND rmf.user_id = $2
+`
+
+type GetFoodItemsByMealIDParams struct {
+	MealID uuid.UUID
+	UserID uuid.UUID
+}
+
+type GetFoodItemsByMealIDRow struct {
+	MealID      uuid.UUID
+	FoodItemID  uuid.UUID
+	UserID      uuid.UUID
+	Amount      sql.NullInt32
+	ID          uuid.NullUUID
+	Name        sql.NullString
+	Description sql.NullString
+	ImageUrl    sql.NullString
+	FoodType    NullFoodItemType
+	Calories    sql.NullString
+	Fat         sql.NullString
+	Protein     sql.NullString
+	Carbs       sql.NullString
+	CreatedAt   sql.NullTime
+	UpdatedAt   sql.NullTime
+}
+
+func (q *Queries) GetFoodItemsByMealID(ctx context.Context, arg GetFoodItemsByMealIDParams) ([]GetFoodItemsByMealIDRow, error) {
+	rows, err := q.db.QueryContext(ctx, getFoodItemsByMealID, arg.MealID, arg.UserID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetFoodItemsByMealIDRow
+	for rows.Next() {
+		var i GetFoodItemsByMealIDRow
+		if err := rows.Scan(
+			&i.MealID,
+			&i.FoodItemID,
+			&i.UserID,
+			&i.Amount,
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.ImageUrl,
+			&i.FoodType,
+			&i.Calories,
+			&i.Fat,
+			&i.Protein,
+			&i.Carbs,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getFoodItemsTotalPages = `-- name: GetFoodItemsTotalPages :one

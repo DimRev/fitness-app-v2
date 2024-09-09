@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { H2 } from "~/features/shared/components/Typography";
 import {
   Card,
@@ -12,8 +13,14 @@ type Props = {
 };
 
 function MealPreview({ mealWithNutrition }: Props) {
+  const navigate = useNavigate();
   return (
-    <Card>
+    <Card
+      className="hover:shadow-sm antialiased transition-all duration-500 cursor-pointer hover:scale-[1.03]"
+      onClick={() =>
+        navigate(`/dashboard/meal/details/${mealWithNutrition.meal.id}`)
+      }
+    >
       <CardHeader>
         <H2>{mealWithNutrition.meal.name}</H2>
       </CardHeader>

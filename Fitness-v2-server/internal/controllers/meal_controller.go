@@ -47,7 +47,6 @@ func CreateMeal(c echo.Context) error {
 		imageUrl = sql.NullString{String: *createMealReq.ImageUrl, Valid: createMealReq.ImageUrl != nil}
 	}
 
-	// Step 1: Insert the meal
 	meal, err := config.Queries.InsertMeal(c.Request().Context(), database.InsertMealParams{
 		Name:        createMealReq.Name,
 		Description: description,
@@ -59,7 +58,6 @@ func CreateMeal(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to create meal")
 	}
 
-	// Step 2: Insert food items into rel_meal_food
 	foodItemIDs := make([]uuid.UUID, 0)
 	amounts := make([]int32, 0)
 	for _, foodItem := range createMealReq.FoodItems {
@@ -78,7 +76,6 @@ func CreateMeal(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to add food items to meal")
 	}
 
-	// Step 3: Retrieve the meal with the summed food item nutritional values
 	mealWithNutrients, err := config.Queries.GetMealByID(c.Request().Context(), meal.ID)
 	if err != nil {
 		log.Println("Failed to retrieve meal with food items: ", err)
@@ -113,7 +110,6 @@ func CreateMeal(c echo.Context) error {
 	if mealWithNutrients.ImageUrl.Valid {
 		imageUrlResp = &mealWithNutrients.ImageUrl.String
 	}
-	// Step 4: Return the response
 
 	respMeal := models.MealWithNutrition{
 		Meal: models.Meal{
@@ -295,7 +291,49 @@ func GetMealByID(c echo.Context) error {
 		imageUrlResp = &mealWithNut.ImageUrl.String
 	}
 
-	respMeal := models.MealWithNutrition{
+	getFoodItemsByMealIDParams := database.GetFoodItemsByMealIDParams{
+		MealID: mealWithNut.ID,
+		UserID: mealWithNut.UserID,
+	}
+
+	foodItems, err := config.Queries.GetFoodItemsByMealID(c.Request().Context(), getFoodItemsByMealIDParams)
+	if err != nil {
+		log.Println("Failed to get food items by meal id: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "failed to get food items by meal id",
+		})
+	}
+
+	respFoodItems := make([]models.FoodItemWithAmount, len(foodItems))
+	for i, foodItem := range foodItems {
+		var descriptionResp *string
+		if foodItem.Description.Valid {
+			descriptionResp = &foodItem.Description.String
+		}
+		var imageUrlResp *string
+		if foodItem.ImageUrl.Valid {
+			imageUrlResp = &foodItem.ImageUrl.String
+		}
+
+		respFoodItems[i] = models.FoodItemWithAmount{
+			FoodItem: models.FoodItem{
+				ID:          foodItem.ID.UUID,
+				Name:        foodItem.Name.String,
+				Description: descriptionResp,
+				ImageUrl:    imageUrlResp,
+				FoodType:    foodItem.FoodType.FoodItemType,
+				Calories:    foodItem.Calories.String,
+				Fat:         foodItem.Fat.String,
+				Protein:     foodItem.Protein.String,
+				Carbs:       foodItem.Carbs.String,
+				CreatedAt:   foodItem.CreatedAt.Time,
+				UpdatedAt:   foodItem.UpdatedAt.Time,
+			},
+			Amount: int(foodItem.Amount.Int32),
+		}
+	}
+
+	mealWithNutrition := models.MealWithNutrition{
 		Meal: models.Meal{
 			ID:          mealWithNut.ID,
 			Name:        mealWithNut.Name,
@@ -311,15 +349,10 @@ func GetMealByID(c echo.Context) error {
 		TotalCarbs:    totalCarbs,
 	}
 
-	return c.JSON(http.StatusOK, respMeal)
-}
-
-type UpdateMealRequest struct {
-	Name        string  `json:"name"`
-	Description *string `json:"description"`
-	ImageUrl    *string `json:"image_url"`
-	FoodItems   []struct {
-		FoodItemID uuid.UUID `json:"food_item_id"`
-		Amount     int       `json:"amount"`
+	respMeal := models.MealWithNutritionAndFoodItems{
+		Meal:      mealWithNutrition,
+		FoodItems: respFoodItems,
 	}
+
+	return c.JSON(http.StatusOK, respMeal)
 }

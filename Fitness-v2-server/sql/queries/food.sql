@@ -42,3 +42,10 @@ VALUES (
   $8
 ) 
 RETURNING *;
+
+-- name: GetFoodItemsByMealID :many
+SELECT rmf.*, fi.*
+FROM rel_meal_food rmf
+LEFT JOIN food_items fi ON fi.id = rmf.food_item_id
+WHERE rmf.meal_id = $1
+AND rmf.user_id = $2;
