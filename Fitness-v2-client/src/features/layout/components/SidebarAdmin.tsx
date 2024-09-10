@@ -1,4 +1,10 @@
-import { Apple, ChevronLeft, ChevronRight, LineChart } from "lucide-react";
+import {
+  Apple,
+  ChevronLeft,
+  ChevronRight,
+  LineChart,
+  User,
+} from "lucide-react";
 import { H3 } from "~/features/shared/components/Typography";
 import { Button } from "~/features/shared/components/ui/button";
 import { cn } from "~/lib/utils";
@@ -17,7 +23,7 @@ function SidebarAdmin() {
     >
       {isSidebarOpen ? (
         <>
-          <div className="flex justify-between items-center gap-2 w-full">
+          <div className="flex w-full items-center justify-between gap-2">
             <H3 className="truncate">Admin</H3>
             <Button
               className="border-foreground bg-sidebar"
@@ -41,11 +47,17 @@ function SidebarAdmin() {
           </Button>
         </>
       )}
-      <div className="border-foreground border-b w-full"></div>
+      <div className="w-full border-b border-foreground"></div>
       <SidebarNavLink
         LucideIcon={LineChart}
         to="/admin"
         title="Overview"
+        onlyIcon={!isSidebarOpen}
+      />
+      <SidebarNavLink
+        LucideIcon={User}
+        to="/admin/user"
+        title="Users"
         onlyIcon={!isSidebarOpen}
       />
       <SidebarNavLink

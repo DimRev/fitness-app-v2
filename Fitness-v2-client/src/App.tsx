@@ -22,7 +22,11 @@ import AdminFoodItemAddPage from "./features/views/components/AdminFoodItemAddPa
 import DashboardFoodItemPendingPage from "./features/views/components/DashboardFoodItemPendingPage";
 import DashboardFoodItemPendingAddPage from "./features/views/components/DashboardFoodItemPendingAddPage";
 import DashboardMealDetailsPage from "./features/views/components/DashboardMealDetailsPage";
+<<<<<<< HEAD
 import { useLayoutEffect } from "react";
+=======
+import AdminUserPage from "./features/views/components/AdminUserPage";
+>>>>>>> 2b07cd3 (Scuffold users admin page)
 
 const queryClient = new QueryClient();
 
@@ -80,6 +84,7 @@ function App() {
               </Route>
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminOverviewPage />} />
+                <Route path="user" element={<AdminUserPage />} />
                 <Route path="food_item" element={<AdminFoodItemPage />} />
                 <Route
                   path="food_item/add"
