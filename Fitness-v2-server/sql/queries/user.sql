@@ -21,6 +21,14 @@ VALUES (
 ) 
 RETURNING *;
 
+-- name: GetUsers :many
+SELECT * FROM users
+LIMIT $1
+OFFSET $2;
+
+-- name: GetUsersCount :one
+SELECT COUNT(*) AS total_rows
+FROM users;
 
 -- name: UpdateUser :one
 UPDATE users

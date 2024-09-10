@@ -3,13 +3,89 @@ package controllers
 import (
 	"database/sql"
 	"log"
+	"math"
 	"net/http"
+	"strconv"
 
 	"github.com/DimRev/Fitness-v2-server/internal/config"
 	"github.com/DimRev/Fitness-v2-server/internal/database"
 	"github.com/DimRev/Fitness-v2-server/internal/models"
 	"github.com/labstack/echo"
 )
+
+func GetUsers(c echo.Context) error {
+	offset := int32(0)
+	limit := int32(10)
+	offsetStr := c.QueryParam("offset")
+	if offsetStr != "" {
+		convOffset, err := strconv.Atoi(offsetStr)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "invalid offset")
+		}
+		offset = int32(convOffset)
+	}
+	limitStr := c.QueryParam("limit")
+	if limitStr != "" {
+		convLimit, err := strconv.Atoi(limitStr)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "invalid limit")
+		}
+		limit = int32(convLimit)
+	}
+
+	if err := config.DB.Ping(); err != nil {
+		log.Println("Connection to database failed: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "failed to get users",
+		})
+	}
+
+	getUsersParams := database.GetUsersParams{
+		Limit:  limit,
+		Offset: offset,
+	}
+
+	users, err := config.Queries.GetUsers(c.Request().Context(), getUsersParams)
+	if err != nil {
+		log.Println("Failed to get users: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "failed to get users",
+		})
+	}
+
+	respUsers := make([]models.User, len(users))
+	for i, user := range users {
+		var imageUrlResp *string
+		if user.ImageUrl.Valid {
+			imageUrlResp = &user.ImageUrl.String
+		}
+
+		respUsers[i] = models.User{
+			ID:        user.ID,
+			Email:     user.Email,
+			Username:  user.Username,
+			ImageUrl:  imageUrlResp,
+			CreatedAt: user.CreatedAt.Time,
+			UpdatedAt: user.UpdatedAt.Time,
+			Role:      user.Role,
+		}
+	}
+
+	totalRows, err := config.Queries.GetUsersCount(c.Request().Context())
+	if err != nil {
+		log.Println("Failed to get users count: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "failed to get users count",
+		})
+	}
+
+	respUsersWithPages := models.UsersWithPages{
+		Users:      respUsers,
+		TotalPages: int64(math.Ceil(float64(totalRows) / float64(limit))),
+	}
+
+	return c.JSON(http.StatusOK, respUsersWithPages)
+}
 
 type UpdateUserRequest struct {
 	ImageUrl *string `json:"image_url"`
@@ -68,7 +144,7 @@ func UpdateUser(c echo.Context) error {
 		updatedUserImageUrl = &updatedUser.ImageUrl.String
 	}
 
-	respUser := models.User{
+	respUser := models.AuthUser{
 		ID:           updatedUser.ID,
 		Email:        updatedUser.Email,
 		PasswordHash: updatedUser.PasswordHash,

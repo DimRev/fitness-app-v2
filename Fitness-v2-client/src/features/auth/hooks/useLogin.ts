@@ -16,10 +16,10 @@ type ErrorResponseBody = {
   message: string;
 };
 
-function useLogin(): UseMutationResult<User, Error, LoginRequestBody> {
+function useLogin(): UseMutationResult<AuthUser, Error, LoginRequestBody> {
   const queryClient = useQueryClient();
 
-  return useMutation<User, Error, LoginRequestBody>(login, {
+  return useMutation<AuthUser, Error, LoginRequestBody>(login, {
     ...USE_MUTATION_DEFAULT_OPTIONS,
     onSuccess: async () => {
       await queryClient.invalidateQueries();
@@ -27,9 +27,9 @@ function useLogin(): UseMutationResult<User, Error, LoginRequestBody> {
   });
 }
 
-async function login({ email, password }: LoginRequestBody): Promise<User> {
+async function login({ email, password }: LoginRequestBody): Promise<AuthUser> {
   try {
-    const response = await axiosInstance.post<User>("/auth/login", {
+    const response = await axiosInstance.post<AuthUser>("/auth/login", {
       email,
       password,
     });

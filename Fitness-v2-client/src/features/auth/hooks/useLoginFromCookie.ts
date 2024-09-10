@@ -7,16 +7,18 @@ type ErrorResponseBody = {
   message: string;
 };
 
-function useLoginFromCookie(): UseMutationResult<User, Error, void> {
-  return useMutation<User, Error, void>(loginFromCookie, {
+function useLoginFromCookie(): UseMutationResult<AuthUser, Error, void> {
+  return useMutation<AuthUser, Error, void>(loginFromCookie, {
     ...USE_MUTATION_DEFAULT_OPTIONS,
     retry: false,
   });
 }
 
-async function loginFromCookie(): Promise<User> {
+async function loginFromCookie(): Promise<AuthUser> {
   try {
-    const response = await axiosInstance.post<User>("/auth/loginFromCookie");
+    const response = await axiosInstance.post<AuthUser>(
+      "/auth/loginFromCookie",
+    );
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {

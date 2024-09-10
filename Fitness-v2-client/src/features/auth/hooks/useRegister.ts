@@ -14,7 +14,7 @@ type ErrorResponseBody = {
 };
 
 function useRegister() {
-  return useMutation<User, Error, RegisterRequestBody>(register, {
+  return useMutation<AuthUser, Error, RegisterRequestBody>(register, {
     ...USE_MUTATION_DEFAULT_OPTIONS,
   });
 }
@@ -23,9 +23,9 @@ async function register({
   email,
   password,
   username,
-}: RegisterRequestBody): Promise<User> {
+}: RegisterRequestBody): Promise<AuthUser> {
   try {
-    const response = await axiosInstance.post<User>("/auth/register", {
+    const response = await axiosInstance.post<AuthUser>("/auth/register", {
       email,
       password,
       username,

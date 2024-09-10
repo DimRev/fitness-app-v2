@@ -1,17 +1,22 @@
+import { Button } from "~/features/shared/components/ui/button";
 import { TableCell, TableRow } from "~/features/shared/components/ui/table";
 
-function UsersTableRow() {
+type Props = {
+  user: User;
+};
+
+function UsersTableRow({ user }: Props) {
   return (
     <TableRow>
-      <TableCell>DimaR</TableCell>
-      <TableCell>dimrev444@gamil.com</TableCell>
-      <TableCell>admin</TableCell>
-      <TableCell>{new Date().toLocaleString()}</TableCell>
-      <TableCell>{new Date().toLocaleString()}</TableCell>
+      <TableCell>{user.username}</TableCell>
+      <TableCell>{user.email}</TableCell>
+      <TableCell>{user.role}</TableCell>
+      <TableCell>{new Date(user.created_at).toLocaleString()}</TableCell>
+      <TableCell>{new Date(user.updated_at).toLocaleString()}</TableCell>
       <TableCell>
         <div className="flex items-center gap-2">
-          <div>Edit</div>
-          <div>Delete</div>
+          <Button variant="ghost">Edit</Button>
+          <Button variant="ghost">Delete</Button>
         </div>
       </TableCell>
     </TableRow>

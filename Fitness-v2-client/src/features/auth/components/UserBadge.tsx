@@ -17,7 +17,7 @@ import useLayoutStore from "~/features/layout/hooks/useLayoutStore";
 import { cn } from "~/lib/utils";
 
 type Props = {
-  user: User;
+  user: AuthUser;
 };
 
 function UserBadge({ user }: Props) {

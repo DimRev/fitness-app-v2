@@ -1,6 +1,6 @@
 type UserRole = "admin" | "user";
 
-type User = {
+type AuthUser = {
   email: string;
   username: string;
   image_url: null | string;

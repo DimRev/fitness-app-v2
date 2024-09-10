@@ -1,11 +1,11 @@
 import { create } from "zustand";
 
 type AuthState = {
-  user: User | null;
+  user: AuthUser | null;
 };
 
 type AuthActions = {
-  setUser: (user: User | null) => void;
+  setUser: (user: AuthUser | null) => void;
 };
 
 type AuthStore = AuthState & AuthActions;

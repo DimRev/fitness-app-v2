@@ -76,7 +76,7 @@ func Login(c echo.Context) error {
 		imageUrl = &user.ImageUrl.String
 	}
 
-	respUser := models.User{
+	respUser := models.AuthUser{
 		ID:           user.ID,
 		Email:        user.Email,
 		PasswordHash: user.PasswordHash,
@@ -208,7 +208,7 @@ func Register(c echo.Context) error {
 		imageUrl = &user.ImageUrl.String
 	}
 
-	respUser := models.User{
+	respUser := models.AuthUser{
 		ID:           user.ID,
 		Email:        user.Email,
 		PasswordHash: user.PasswordHash,
@@ -243,7 +243,7 @@ func LoginFromCookie(c echo.Context) error {
 		imageUrl = &user.ImageUrl.String
 	}
 
-	respUser := models.User{
+	respUser := models.AuthUser{
 		ID:           user.ID,
 		Email:        user.Email,
 		PasswordHash: user.PasswordHash,
@@ -296,7 +296,7 @@ func LoginWithSession(c echo.Context) error {
 		imageUrl = &user.ImageUrl.String
 	}
 
-	respUser := models.User{
+	respUser := models.AuthUser{
 		ID:           user.ID,
 		Email:        user.Email,
 		PasswordHash: user.PasswordHash,

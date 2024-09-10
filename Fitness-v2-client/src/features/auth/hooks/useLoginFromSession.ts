@@ -12,7 +12,7 @@ type LoginRequestBody = {
 };
 
 function useLoginFromSession() {
-  return useMutation<User, Error, LoginRequestBody>(loginFromSession, {
+  return useMutation<AuthUser, Error, LoginRequestBody>(loginFromSession, {
     ...USE_MUTATION_DEFAULT_OPTIONS,
     retry: false,
   });
@@ -20,11 +20,14 @@ function useLoginFromSession() {
 
 async function loginFromSession({
   session_token,
-}: LoginRequestBody): Promise<User> {
+}: LoginRequestBody): Promise<AuthUser> {
   try {
-    const response = await axiosInstance.post<User>("/auth/loginFromSession", {
-      session_token,
-    });
+    const response = await axiosInstance.post<AuthUser>(
+      "/auth/loginFromSession",
+      {
+        session_token,
+      },
+    );
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
