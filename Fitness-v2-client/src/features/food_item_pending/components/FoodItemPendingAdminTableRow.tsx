@@ -32,10 +32,10 @@ function FoodItemPendingAdminTableRow({
 
   return (
     <TableRow className={cn(isPending && "opacity-50 hover:bg-transparent")}>
-      <TableCell>
+      <TableCell className="py-2">
         <div className="line-clamp-1 break-words">{foodItemPending.name}</div>
       </TableCell>
-      <TableCell>
+      <TableCell className="py-2">
         <HoverCard>
           <HoverCardTrigger asChild>
             <div className="line-clamp-1 break-words">
@@ -45,31 +45,31 @@ function FoodItemPendingAdminTableRow({
           <HoverCardContent>{foodItemPending.description}</HoverCardContent>
         </HoverCard>
       </TableCell>
-      <TableCell>
+      <TableCell className="py-2">
         <div className="line-clamp-1 break-words">
           {foodItemPending.food_type}
         </div>
       </TableCell>
-      <TableCell>
+      <TableCell className="py-2">
         <div className="line-clamp-1 break-words">
           {foodItemPending.calories}
         </div>
       </TableCell>
-      <TableCell>
+      <TableCell className="py-2">
         <div className="line-clamp-1 break-words">{foodItemPending.fat}</div>
       </TableCell>
-      <TableCell>
+      <TableCell className="py-2">
         <div className="line-clamp-1 break-words">
           {foodItemPending.protein}
         </div>
       </TableCell>
-      <TableCell>
+      <TableCell className="py-2">
         <div className="line-clamp-1 break-words">{foodItemPending.carbs}</div>
       </TableCell>
-      <TableCell>
+      <TableCell className="py-2">
         <div className="line-clamp-1 break-words">{foodItemPending.likes}</div>
       </TableCell>
-      <TableCell>
+      <TableCell className="py-2">
         <div className="flex items-center gap-2 line-clamp-1 break-words">
           <Button
             size="icon"
@@ -99,31 +99,31 @@ export function FoodItemPendingAdminTableRowSkeleton() {
   return (
     <TableRow>
       <TableCell>
-        <Skeleton className="w-full h-[19px]" />
+        <Skeleton className="w-full h-[16px]" />
       </TableCell>
       <TableCell>
-        <Skeleton className="w-full h-[19px]" />
+        <Skeleton className="w-full h-[16px]" />
       </TableCell>
       <TableCell>
-        <Skeleton className="w-full h-[19px]" />
+        <Skeleton className="w-full h-[16px]" />
       </TableCell>
       <TableCell>
-        <Skeleton className="w-full h-[19px]" />
+        <Skeleton className="w-full h-[16px]" />
       </TableCell>
       <TableCell>
-        <Skeleton className="w-full h-[19px]" />
+        <Skeleton className="w-full h-[16px]" />
       </TableCell>
       <TableCell>
-        <Skeleton className="w-full h-[19px]" />
+        <Skeleton className="w-full h-[16px]" />
       </TableCell>
       <TableCell>
-        <Skeleton className="w-full h-[19px]" />
+        <Skeleton className="w-full h-[16px]" />
       </TableCell>
       <TableCell>
-        <Skeleton className="w-full h-[19px]" />
+        <Skeleton className="w-full h-[16px]" />
       </TableCell>
       <TableCell>
-        <Skeleton className="w-full h-[19px]" />
+        <Skeleton className="w-full h-[16px]" />
       </TableCell>
     </TableRow>
   );
@@ -133,31 +133,31 @@ export function FoodItemPendingAdminTableRowEmpty() {
   return (
     <TableRow>
       <TableCell>
-        <div className="py-[10px]"></div>
+        <div className="py-[8px]"></div>
       </TableCell>
       <TableCell>
-        <div className="py-[10px]"></div>
+        <div className="py-[8px]"></div>
       </TableCell>
       <TableCell>
-        <div className="py-[10px]"></div>
+        <div className="py-[8px]"></div>
       </TableCell>
       <TableCell>
-        <div className="py-[10px]"></div>
+        <div className="py-[8px]"></div>
       </TableCell>
       <TableCell>
-        <div className="py-[10px]"></div>
+        <div className="py-[8px]"></div>
       </TableCell>
       <TableCell>
-        <div className="py-2"></div>
+        <div className="py-[8px]"></div>
       </TableCell>
       <TableCell>
-        <div className="py-2"></div>
+        <div className="py-[8px]"></div>
       </TableCell>
       <TableCell>
-        <div className="py-2"></div>
+        <div className="py-[8px]"></div>
       </TableCell>
       <TableCell>
-        <div className="py-2"></div>
+        <div className="py-[8px]"></div>
       </TableCell>
     </TableRow>
   );

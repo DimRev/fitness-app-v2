@@ -6,13 +6,17 @@ import {
   TableHeader,
   TableRow,
 } from "~/features/shared/components/ui/table";
-import UsersTableRow from "./UsersTableRow";
+import UsersTableRow, {
+  UsersTableRowEmpty,
+  UsersTableRowSkeleton,
+} from "./UsersTableRow";
 import { useMemo, useState } from "react";
 import useGetUsers from "../hooks/useGetUsers";
+import ListPaginationButtons from "~/features/shared/components/ListPaginationButtons";
 
 function UsersTable() {
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(8);
   const offset = useMemo(() => page * pageSize - pageSize, [page, pageSize]);
 
   const {
@@ -25,12 +29,61 @@ function UsersTable() {
     offset,
   });
 
+  function onChangePage(type: "next" | "prev") {
+    if (
+      type === "next" &&
+      usersWithPages?.total_pages &&
+      page < usersWithPages.total_pages
+    ) {
+      setPage((prev) => prev + 1);
+    }
+    if (type === "prev" && usersWithPages?.total_pages && page > 1) {
+      setPage((prev) => prev - 1);
+    }
+  }
+
   if (isUsersWithPagesLoading) {
-    return <div>Loading...</div>;
+    return (
+      <DashboardContentCards title="User Table">
+        <div className="border rounded-md">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="truncate">Name</TableHead>
+                <TableHead className="truncate">Email</TableHead>
+                <TableHead className="truncate">Role</TableHead>
+                <TableHead className="truncate">Created At</TableHead>
+                <TableHead className="truncate">Updated At</TableHead>
+                <TableHead className="truncate">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <UsersTableRowSkeleton />
+              <UsersTableRowSkeleton />
+              <UsersTableRowSkeleton />
+              <UsersTableRowSkeleton />
+              <UsersTableRowSkeleton />
+              <UsersTableRowSkeleton />
+              <UsersTableRowSkeleton />
+              <UsersTableRowSkeleton />
+            </TableBody>
+          </Table>
+          <ListPaginationButtons
+            page={page}
+            onChangePage={onChangePage}
+            totalPages={usersWithPages}
+          />
+        </div>
+      </DashboardContentCards>
+    );
   }
 
   if (isUsersWithPagesError && usersWithPagesError) {
-    return <div>{usersWithPagesError.message}</div>;
+    return (
+      <DashboardContentCards title="User Table">
+        {usersWithPagesError.message}
+      </DashboardContentCards>
+    );
   }
 
   if (!usersWithPages?.users) {
@@ -55,8 +108,18 @@ function UsersTable() {
             {usersWithPages.users.map((user) => (
               <UsersTableRow key={user.id} user={user} />
             ))}
+            {new Array(pageSize - usersWithPages.users.length)
+              .fill("")
+              .map((_, idx) => (
+                <UsersTableRowEmpty key={idx} />
+              ))}
           </TableBody>
         </Table>
+        <ListPaginationButtons
+          page={page}
+          onChangePage={onChangePage}
+          totalPages={usersWithPages.total_pages}
+        />
       </div>
     </DashboardContentCards>
   );

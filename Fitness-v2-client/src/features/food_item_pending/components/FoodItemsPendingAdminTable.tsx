@@ -25,7 +25,8 @@ function FoodItemsPendingAdminTable() {
   const {
     data: foodItemsPending,
     isLoading: foodItemsPendingLoading,
-    isError: foodItemsPendingError,
+    isError: isFoodItemsPendingError,
+    error: foodItemsPendingError,
   } = useGetFoodItemsPending({
     limit: pageSize,
     offset,
@@ -85,12 +86,6 @@ function FoodItemsPendingAdminTable() {
 
   if (foodItemsPendingLoading) {
     return (
-      <DashboardContentCards title="Pending Food Items"></DashboardContentCards>
-    );
-  }
-
-  if (foodItemsPendingError || !foodItemsPending?.food_items_pending) {
-    return (
       <DashboardContentCards title="Pending Food Items">
         <div className="border rounded-md">
           <Table>
@@ -119,11 +114,14 @@ function FoodItemsPendingAdminTable() {
             </TableBody>
           </Table>
         </div>
-        <ListPaginationButtons
-          page={page}
-          onChangePage={onChangePage}
-          totalPages={foodItemsPending?.total_pages}
-        />
+      </DashboardContentCards>
+    );
+  }
+
+  if (isFoodItemsPendingError || !foodItemsPending?.food_items_pending) {
+    return (
+      <DashboardContentCards title="Pending Food Items">
+        {foodItemsPendingError?.message}
       </DashboardContentCards>
     );
   }
