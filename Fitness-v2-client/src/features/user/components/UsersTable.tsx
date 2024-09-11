@@ -1,4 +1,6 @@
+import { useMemo, useState } from "react";
 import { DashboardContentCards } from "~/features/shared/components/CustomCards";
+import ListPaginationButtons from "~/features/shared/components/ListPaginationButtons";
 import {
   Table,
   TableBody,
@@ -6,13 +8,11 @@ import {
   TableHeader,
   TableRow,
 } from "~/features/shared/components/ui/table";
+import useGetUsers from "../hooks/useGetUsers";
 import UsersTableRow, {
   UsersTableRowEmpty,
   UsersTableRowSkeleton,
 } from "./UsersTableRow";
-import { useMemo, useState } from "react";
-import useGetUsers from "../hooks/useGetUsers";
-import ListPaginationButtons from "~/features/shared/components/ListPaginationButtons";
 
 function UsersTable() {
   const [page, setPage] = useState(1);
@@ -45,7 +45,7 @@ function UsersTable() {
   if (isUsersWithPagesLoading) {
     return (
       <DashboardContentCards title="User Table">
-        <div className="border rounded-md">
+        <div className="rounded-md border">
           <Table>
             <TableHeader>
               <TableRow>
@@ -68,12 +68,12 @@ function UsersTable() {
               <UsersTableRowSkeleton />
             </TableBody>
           </Table>
-          <ListPaginationButtons
-            page={page}
-            onChangePage={onChangePage}
-            totalPages={usersWithPages}
-          />
         </div>
+        <ListPaginationButtons
+          page={page}
+          onChangePage={onChangePage}
+          totalPages={usersWithPages}
+        />
       </DashboardContentCards>
     );
   }
@@ -92,7 +92,7 @@ function UsersTable() {
 
   return (
     <DashboardContentCards title="User Table">
-      <div className="border rounded-md">
+      <div className="rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>
@@ -115,12 +115,12 @@ function UsersTable() {
               ))}
           </TableBody>
         </Table>
-        <ListPaginationButtons
-          page={page}
-          onChangePage={onChangePage}
-          totalPages={usersWithPages.total_pages}
-        />
       </div>
+      <ListPaginationButtons
+        page={page}
+        onChangePage={onChangePage}
+        totalPages={usersWithPages.total_pages}
+      />
     </DashboardContentCards>
   );
 }

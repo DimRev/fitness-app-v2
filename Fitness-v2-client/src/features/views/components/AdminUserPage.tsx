@@ -1,6 +1,6 @@
 import { LineChart } from "lucide-react";
-import DashboardPageWrapper from "./DashboardPageWrapper";
 import UsersTable from "~/features/user/components/UsersTable";
+import DashboardPageWrapper from "./DashboardPageWrapper";
 
 function AdminUserPage() {
   return (

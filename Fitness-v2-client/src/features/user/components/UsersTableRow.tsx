@@ -57,22 +57,22 @@ export function UsersTableRowSkeleton() {
   return (
     <TableRow>
       <TableCell>
-        <Skeleton className="w-full h-[24px]" />
+        <Skeleton className="h-[24px] w-full" />
       </TableCell>
       <TableCell>
-        <Skeleton className="w-full h-[24px]" />
+        <Skeleton className="h-[24px] w-full" />
       </TableCell>
       <TableCell>
-        <Skeleton className="w-full h-[24px]" />
+        <Skeleton className="h-[24px] w-full" />
       </TableCell>
       <TableCell>
-        <Skeleton className="w-full h-[24px]" />
+        <Skeleton className="h-[24px] w-full" />
       </TableCell>
       <TableCell>
-        <Skeleton className="w-full h-[24px]" />
+        <Skeleton className="h-[24px] w-full" />
       </TableCell>
       <TableCell>
-        <Skeleton className="w-full h-[24px]" />
+        <Skeleton className="h-[24px] w-full" />
       </TableCell>
     </TableRow>
   );

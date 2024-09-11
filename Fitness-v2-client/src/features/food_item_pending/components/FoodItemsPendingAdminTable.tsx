@@ -114,6 +114,11 @@ function FoodItemsPendingAdminTable() {
             </TableBody>
           </Table>
         </div>
+        <ListPaginationButtons
+        page={page}
+        onChangePage={onChangePage}
+        totalPages={foodItemsPending}
+      />
       </DashboardContentCards>
     );
   }
