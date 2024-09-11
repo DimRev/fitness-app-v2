@@ -30,7 +30,12 @@ type Props = {
 };
 
 function UserEditForm({ user }: Props) {
-  const { mutateAsync: updateUser } = useUpdateUser();
+  const {
+    mutateAsync: updateUser,
+    isLoading: isUpdateUserLoading,
+    isError,
+    error,
+  } = useUpdateUser();
   const { setUserEditDialogOpen } = useUserStore();
   const form = useForm<UserEditFormSchema>({
     resolver: zodResolver(userEditFormSchema),
@@ -135,8 +140,13 @@ function UserEditForm({ user }: Props) {
             </FormItem>
           )}
         />
+        {isError && (
+          <div className="font-bold text-destructive">{error.message}</div>
+        )}
         <div className="flex justify-end mt-4">
-          <Button type="submit">Submit</Button>
+          <Button type="submit">
+            {isUpdateUserLoading ? "Submitting..." : "Submit"}
+          </Button>
         </div>
       </form>
     </Form>

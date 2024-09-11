@@ -14,6 +14,7 @@ function useUpdateUser() {
     updateUser,
     {
       ...USE_MUTATION_DEFAULT_OPTIONS,
+      retry: false,
       onSuccess: () => {
         void queryClient.invalidateQueries([QUERY_KEYS.USERS.GET_USERS]);
       },

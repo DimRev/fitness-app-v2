@@ -173,16 +173,54 @@ func UpdateUserByAdmin(c echo.Context) error {
 		})
 	}
 
-	_, err := uuid.Parse(c.Param("userId"))
+	userToUpdateId, err := uuid.Parse(c.Param("userId"))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid user id")
 	}
 
 	user, ok := c.Get("user").(database.User)
 	if !ok {
-		log.Printf("Reached create Meal without user")
+		log.Printf("Reached update user by admin without user")
 		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
 	}
 
-	return c.JSON(http.StatusOK, user)
+	if user.ID == userToUpdateId {
+		return echo.NewHTTPError(http.StatusBadRequest, "Can not update self")
+	}
+
+	var imageUrl sql.NullString
+	if updateUserReq.ImageUrl != nil {
+		imageUrl = sql.NullString{String: *updateUserReq.ImageUrl, Valid: updateUserReq.ImageUrl != nil}
+	}
+
+	updateUserParams := database.UpdateUserByAdminParams{
+		ID:       userToUpdateId,
+		ImageUrl: imageUrl,
+		Username: updateUserReq.Username,
+		Role:     updateUserReq.Role,
+		Email:    updateUserReq.Email,
+	}
+	updatedUser, err := config.Queries.UpdateUserByAdmin(c.Request().Context(), updateUserParams)
+	if err != nil {
+		log.Println("Failed to update user: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to update user")
+	}
+
+	var updatedImageUrl *string
+	if updatedUser.ImageUrl.Valid {
+		updatedImageUrl = &updatedUser.ImageUrl.String
+	}
+
+	userResp := models.User{
+		ID:           updatedUser.ID,
+		Email:        updatedUser.Email,
+		PasswordHash: updatedUser.PasswordHash,
+		Username:     updatedUser.Username,
+		ImageUrl:     updatedImageUrl,
+		CreatedAt:    updatedUser.CreatedAt.Time,
+		UpdatedAt:    updatedUser.UpdatedAt.Time,
+		Role:         updatedUser.Role,
+	}
+
+	return c.JSON(http.StatusOK, userResp)
 }

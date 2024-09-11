@@ -183,3 +183,44 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 	)
 	return i, err
 }
+
+const updateUserByAdmin = `-- name: UpdateUserByAdmin :one
+UPDATE users
+SET image_url = $2,
+  username = $3,
+  role = $4,
+  email = $5,
+  updated_at = NOW()
+WHERE id = $1
+RETURNING id, email, password_hash, username, image_url, created_at, updated_at, role
+`
+
+type UpdateUserByAdminParams struct {
+	ID       uuid.UUID
+	ImageUrl sql.NullString
+	Username string
+	Role     UserRole
+	Email    string
+}
+
+func (q *Queries) UpdateUserByAdmin(ctx context.Context, arg UpdateUserByAdminParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, updateUserByAdmin,
+		arg.ID,
+		arg.ImageUrl,
+		arg.Username,
+		arg.Role,
+		arg.Email,
+	)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.PasswordHash,
+		&i.Username,
+		&i.ImageUrl,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Role,
+	)
+	return i, err
+}
