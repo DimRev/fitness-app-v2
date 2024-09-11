@@ -1,4 +1,4 @@
-name: Test Server
+name: Server CI
 
 on:
   pull_request:
@@ -7,11 +7,11 @@ on:
 
 jobs:
   test:
-    name: Test Server
+    name: Run Server Tests
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./fitness-v2-server
+        working-directory: ./Fitness-v2-server
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -29,11 +29,11 @@ jobs:
         run: go test -v ./...
 
   security:
-    name: Go Security Check (gosec)
+    name: Run Go Security Check (gosec)
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./fitness-v2-server
+        working-directory: ./Fitness-v2-server
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -50,11 +50,11 @@ jobs:
         run: gosec ./...
 
   lint:
-    name: Go Linting (golangci-lint)
+    name: Run Go Linting (golangci-lint)
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./fitness-v2-server
+        working-directory: ./Fitness-v2-server
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
