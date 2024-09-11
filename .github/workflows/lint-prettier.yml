@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./fitness-v2-client
+        working-directory: ./Fitness-v2-client
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./fitness-v2-client
+        working-directory: ./Fitness-v2-client
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
