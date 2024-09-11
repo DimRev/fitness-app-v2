@@ -1,0 +1,55 @@
+name: Lint and Prettier on Pull Request
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    name: Lint Client (ESLint)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./fitness-v2-client
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run ESLint
+        run: pnpm run lint
+
+  prettier:
+    name: Check Formatting with Prettier
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./fitness-v2-client
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run Prettier check
+        run: pnpm run prettier -- --check .
