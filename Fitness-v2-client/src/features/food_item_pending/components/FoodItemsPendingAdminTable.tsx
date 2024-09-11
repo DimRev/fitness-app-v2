@@ -19,7 +19,7 @@ import FoodItemPendingAdminTableRow, {
 function FoodItemsPendingAdminTable() {
   const [page, setPage] = useState(1);
   // TODO: Make dynamic page size changes
-  const [pageSize, setPageSize] = useState(8);
+  const [pageSize] = useState(8);
   const [pendingIds, setPendingIds] = useState<string[]>([]);
   const offset = useMemo(() => page * pageSize - pageSize, [page, pageSize]);
   const {
@@ -87,7 +87,7 @@ function FoodItemsPendingAdminTable() {
   if (foodItemsPendingLoading) {
     return (
       <DashboardContentCards title="Pending Food Items">
-        <div className="border rounded-md">
+        <div className="rounded-md border">
           <Table>
             <TableHeader>
               <TableRow>
@@ -115,10 +115,10 @@ function FoodItemsPendingAdminTable() {
           </Table>
         </div>
         <ListPaginationButtons
-        page={page}
-        onChangePage={onChangePage}
-        totalPages={foodItemsPending}
-      />
+          page={page}
+          onChangePage={onChangePage}
+          totalPages={foodItemsPending}
+        />
       </DashboardContentCards>
     );
   }
@@ -133,7 +133,7 @@ function FoodItemsPendingAdminTable() {
 
   return (
     <DashboardContentCards title="Pending Food Items">
-      <div className="border rounded-md">
+      <div className="rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>

@@ -31,31 +31,31 @@ function MealDetails({ mealId }: Props) {
       </CardHeader>
       <CardContent>
         <Separator className="mb-2" />
-        <div className="gap-2 grid grid-cols-[3fr_2fr]">
-          <div className="border-e line-clamp-3 break-words">
+        <div className="grid grid-cols-[3fr_2fr] gap-2">
+          <div className="line-clamp-3 break-words border-e">
             {mealWithNutritionAndFoodItems?.meal.meal.description ??
               "No description"}
           </div>
           <div className="truncate">
-            <div className="flex justify-between items-center gap-2">
+            <div className="flex items-center justify-between gap-2">
               <div>Total Calories:</div>
               <div>
                 {mealWithNutritionAndFoodItems?.meal.total_calories.toFixed(2)}
               </div>
             </div>
-            <div className="flex justify-between items-center gap-2">
+            <div className="flex items-center justify-between gap-2">
               <div>Total Fat:</div>
               <div>
                 {mealWithNutritionAndFoodItems?.meal.total_fat.toFixed(2)}
               </div>
             </div>
-            <div className="flex justify-between items-center gap-2">
+            <div className="flex items-center justify-between gap-2">
               <div>Total Carbs:</div>
               <div>
                 {mealWithNutritionAndFoodItems?.meal.total_carbs.toFixed(2)}
               </div>
             </div>
-            <div className="flex justify-between items-center gap-2">
+            <div className="flex items-center justify-between gap-2">
               <div>Total Protein:</div>
               <div>
                 {mealWithNutritionAndFoodItems?.meal.total_protein.toFixed(2)}
@@ -65,7 +65,7 @@ function MealDetails({ mealId }: Props) {
         </div>
         <Separator className="mt-2" />
         <H2>Food Items:</H2>
-        <div className="gap-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-2">
+        <div className="mt-2 grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
           {mealWithNutritionAndFoodItems?.food_items.map((foodItem) => (
             <Card key={foodItem.food_item.id} className="border-2 px-2 py-1">
               <H3>

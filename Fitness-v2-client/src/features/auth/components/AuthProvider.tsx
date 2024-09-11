@@ -1,9 +1,9 @@
+import { LoaderCircle } from "lucide-react";
 import { useEffect, useState } from "react";
-import useLoginFromCookie from "../hooks/useLoginFromCookie";
-import useAuthStore from "../hooks/useAuthStore";
-import useLoginFromSession from "../hooks/useLoginFromSession";
 import { useNavigate } from "react-router-dom";
-import { Loader, LoaderCircle, LoaderPinwheel } from "lucide-react";
+import useAuthStore from "../hooks/useAuthStore";
+import useLoginFromCookie from "../hooks/useLoginFromCookie";
+import useLoginFromSession from "../hooks/useLoginFromSession";
 
 type Props = {
   children: React.ReactNode;
@@ -53,13 +53,14 @@ function AuthProvider({ children }: Props) {
         }
       },
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (isAuthingUser) {
     // Show a consistent loading screen or skeleton component
     return (
-      <div className="flex justify-center items-center w-dvw h-dvh">
-        <LoaderCircle className="text-blue-700 animate-spin size-24" />
+      <div className="flex h-dvh w-dvw items-center justify-center">
+        <LoaderCircle className="size-24 animate-spin text-blue-700" />
       </div>
     );
   }

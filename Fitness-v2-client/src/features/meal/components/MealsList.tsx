@@ -12,7 +12,7 @@ import { Input } from "~/features/shared/components/ui/input";
 
 function MealsList() {
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(4);
+  const [pageSize] = useState(4);
   const offset = useMemo(() => page * pageSize - pageSize, [page, pageSize]);
   const {
     data: mealsWithNutrition,
@@ -45,7 +45,7 @@ function MealsList() {
             Add Meal
           </Link>
         </div>
-        <div className="gap-3 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 mt-2">
+        <div className="mt-2 grid grid-cols-1 gap-3 lg:grid-cols-2 xl:grid-cols-4">
           <MealPreviewSkeleton />
           <MealPreviewSkeleton />
           <MealPreviewSkeleton />
@@ -68,7 +68,7 @@ function MealsList() {
             Add Meal
           </Link>
         </div>
-        <div className="gap-3 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 mt-2">
+        <div className="mt-2 grid grid-cols-1 gap-3 lg:grid-cols-2 xl:grid-cols-4">
           <div>An error occurred</div>
         </div>
       </DashboardContentCards>
@@ -83,7 +83,7 @@ function MealsList() {
           Add Meal
         </Link>
       </div>
-      <div className="gap-3 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 mt-2">
+      <div className="mt-2 grid grid-cols-1 gap-3 lg:grid-cols-2 xl:grid-cols-4">
         {mealsWithNutrition.meals.map((mealWithNutrition) => (
           <MealPreview
             key={mealWithNutrition.meal.id}

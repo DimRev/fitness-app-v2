@@ -26,8 +26,8 @@ function MainPageWrapper({
       <PageHeader to={to} LucideIcon={LucideIcon} iconClasses={iconClasses}>
         {title}
       </PageHeader>
-      <div className="border-muted/70 border rounded-lg">
-        <ScrollArea className="h-main-content container">{children}</ScrollArea>
+      <div className="rounded-lg border border-muted/70">
+        <ScrollArea className="container h-main-content">{children}</ScrollArea>
       </div>
     </div>
   );

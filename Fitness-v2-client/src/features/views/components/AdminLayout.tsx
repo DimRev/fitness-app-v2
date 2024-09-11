@@ -23,7 +23,7 @@ function AdminLayout() {
   if (!isSidebarOpen) {
     return (
       <div className="flex">
-        <div className="border-e border-foreground bg-sidebar w-dashboardSidebar-sm h-main">
+        <div className="h-main w-dashboardSidebar-sm border-e border-foreground bg-sidebar">
           <SidebarAdmin />
         </div>
         <div className="px-4">
@@ -35,7 +35,7 @@ function AdminLayout() {
 
   return (
     <div className="flex">
-      <div className="border-e border-foreground bg-sidebar w-dashboardSidebar-md md:w-dashboardSidebar-lg h-main">
+      <div className="h-main w-dashboardSidebar-md border-e border-foreground bg-sidebar md:w-dashboardSidebar-lg">
         <SidebarAdmin />
       </div>
       <div className="px-4">

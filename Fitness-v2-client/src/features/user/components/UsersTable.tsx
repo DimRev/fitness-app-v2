@@ -1,6 +1,12 @@
 import { useMemo, useState } from "react";
 import { DashboardContentCards } from "~/features/shared/components/CustomCards";
 import ListPaginationButtons from "~/features/shared/components/ListPaginationButtons";
+import { Button } from "~/features/shared/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "~/features/shared/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -16,7 +22,8 @@ import UsersTableRow, {
 
 function UsersTable() {
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(8);
+  const [pageSize] = useState(8);
+  const [isOpenUserEditDialog, setIsOpenUserEditDialog] = useState(false);
   const offset = useMemo(() => page * pageSize - pageSize, [page, pageSize]);
 
   const {
@@ -40,6 +47,11 @@ function UsersTable() {
     if (type === "prev" && usersWithPages?.total_pages && page > 1) {
       setPage((prev) => prev - 1);
     }
+  }
+
+  function onOpenEditUser(user: User) {
+    console.log(user);
+    setIsOpenUserEditDialog(true);
   }
 
   if (isUsersWithPagesLoading) {
@@ -69,6 +81,17 @@ function UsersTable() {
             </TableBody>
           </Table>
         </div>
+        <Dialog
+          open={isOpenUserEditDialog}
+          onOpenChange={setIsOpenUserEditDialog}
+        >
+          <DialogTrigger>
+            <Button>Add User</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <div>Add User</div>
+          </DialogContent>
+        </Dialog>
         <ListPaginationButtons
           page={page}
           onChangePage={onChangePage}
@@ -106,7 +129,11 @@ function UsersTable() {
           </TableHeader>
           <TableBody>
             {usersWithPages.users.map((user) => (
-              <UsersTableRow key={user.id} user={user} />
+              <UsersTableRow
+                key={user.id}
+                user={user}
+                onOpenEditUser={onOpenEditUser}
+              />
             ))}
             {new Array(pageSize - usersWithPages.users.length)
               .fill("")
@@ -116,6 +143,14 @@ function UsersTable() {
           </TableBody>
         </Table>
       </div>
+      <Dialog>
+        <DialogTrigger>
+          <Button>Add User</Button>
+        </DialogTrigger>
+        <DialogContent>
+          <div>Add User</div>
+        </DialogContent>
+      </Dialog>
       <ListPaginationButtons
         page={page}
         onChangePage={onChangePage}
