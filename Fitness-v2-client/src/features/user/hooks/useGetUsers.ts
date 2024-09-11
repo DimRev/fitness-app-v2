@@ -18,7 +18,7 @@ function useGetUsers(
   return useQuery<UserWithPages, Error>({
     ...USE_QUERY_DEFAULT_OPTIONS,
     queryKey: [
-      QUERY_KEYS.MEALS.GET_MEALS_BY_USER_ID,
+      QUERY_KEYS.USERS.GET_USERS,
       { limit: params.limit, offset: params.offset },
     ],
 
@@ -32,7 +32,7 @@ async function getUsers({
   offset,
 }: GetUsersRequestBody): Promise<UserWithPages> {
   try {
-    const response = await axiosInstance.get<UserWithPages>(`/users`, {
+    const response = await axiosInstance.get<UserWithPages>(`/users/admin`, {
       params: { limit, offset },
     });
     return response.data;

@@ -10,6 +10,7 @@ import (
 	"github.com/DimRev/Fitness-v2-server/internal/config"
 	"github.com/DimRev/Fitness-v2-server/internal/database"
 	"github.com/DimRev/Fitness-v2-server/internal/models"
+	"github.com/google/uuid"
 	"github.com/labstack/echo"
 )
 
@@ -155,4 +156,33 @@ func UpdateUser(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, respUser)
+}
+
+type UpdateUserByAdminRequest struct {
+	Username string            `json:"username"`
+	Email    string            `json:"email"`
+	ImageUrl *string           `json:"image_url"`
+	Role     database.UserRole `json:"role"`
+}
+
+func UpdateUserByAdmin(c echo.Context) error {
+	updateUserReq := UpdateUserByAdminRequest{}
+	if err := c.Bind(&updateUserReq); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "malformed request",
+		})
+	}
+
+	_, err := uuid.Parse(c.Param("userId"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid user id")
+	}
+
+	user, ok := c.Get("user").(database.User)
+	if !ok {
+		log.Printf("Reached create Meal without user")
+		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
+	}
+
+	return c.JSON(http.StatusOK, user)
 }
