@@ -42,6 +42,7 @@ function App() {
       ).matches;
       setIsDarkMode(prefersDarkMode);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   console.log(

@@ -1,4 +1,5 @@
 /** @type {import("eslint").Linter.Config} */
+const path = require("path");
 const config = {
   root: true,
   env: { browser: true, es2020: true },
@@ -9,7 +10,7 @@ const config = {
     ecmaFeatures: {
       jsx: true,
     },
-    project: "./Fitness-v2-client/tsconfig.app.json", // Ensure it points to your tsconfig file
+    project: path.resolve(__dirname, "tsconfig.app.json"), // Ensure it points to your tsconfig file
   },
   settings: {
     react: {

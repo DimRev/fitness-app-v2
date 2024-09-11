@@ -9,7 +9,7 @@ type Props = {
 
 function ListPaginationButtons({ page, onChangePage, totalPages }: Props) {
   return (
-    <div className="flex justify-end items-center gap-2 py-2">
+    <div className="flex items-center justify-end gap-2 py-2">
       <Button
         size="icon"
         variant="ghost"

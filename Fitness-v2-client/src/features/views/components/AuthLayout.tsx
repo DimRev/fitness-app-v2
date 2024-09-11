@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import useAuthStore from "~/features/auth/hooks/useAuthStore";
-import MainPageWrapper from "./MainPageWrapper";
 
 function AuthLayout() {
   const navigate = useNavigate();

@@ -8,6 +8,7 @@
     "build:dev": "tsc -b && NODE_ENV=development vite build --mode development",
     "build:prod": "tsc -b && NODE_ENV=production vite build --mode production",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "prettier": "prettier --write .",
     "preview": "vite preview"
   },
   "dependencies": {

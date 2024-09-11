@@ -1,6 +1,5 @@
-import { PageHeader } from "~/features/shared/components/Typography";
-import MainPageWrapper from "./MainPageWrapper";
 import { Home } from "lucide-react";
+import MainPageWrapper from "./MainPageWrapper";
 
 function HomePage() {
   return (

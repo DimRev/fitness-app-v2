@@ -1,6 +1,12 @@
 import { useMemo, useState } from "react";
 import { DashboardContentCards } from "~/features/shared/components/CustomCards";
 import ListPaginationButtons from "~/features/shared/components/ListPaginationButtons";
+import { Button } from "~/features/shared/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "~/features/shared/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -13,17 +19,10 @@ import UsersTableRow, {
   UsersTableRowEmpty,
   UsersTableRowSkeleton,
 } from "./UsersTableRow";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-} from "~/features/shared/components/ui/dialog";
-import { Button } from "~/features/shared/components/ui/button";
-import { set } from "react-hook-form";
 
 function UsersTable() {
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(8);
+  const [pageSize] = useState(8);
   const [isOpenUserEditDialog, setIsOpenUserEditDialog] = useState(false);
   const offset = useMemo(() => page * pageSize - pageSize, [page, pageSize]);
 
@@ -51,7 +50,7 @@ function UsersTable() {
   }
 
   function onOpenEditUser(user: User) {
-    console.log("test 123 123 ");
+    console.log(user);
     setIsOpenUserEditDialog(true);
   }
 

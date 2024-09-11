@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useInfiniteQuery, useQuery } from "react-query";
+import { useInfiniteQuery } from "react-query";
 import axiosInstance from "~/lib/axios";
 import { QUERY_KEYS } from "~/lib/reactQuery";
 

@@ -77,7 +77,7 @@ function TestCard({ title, children }: TestCardProps) {
   return (
     <div className="flex flex-col gap-2 border-t font-bold">
       <h2 className="text-center text-lg">{title}</h2>
-      <div className="flex flex-wrap justify-center gap-4 py-2 border-b font-bold">
+      <div className="flex flex-wrap justify-center gap-4 border-b py-2 font-bold">
         {children}
       </div>
     </div>
@@ -91,7 +91,7 @@ type DuelColorCardProps = {
 
 function DarkLightColorCards({ title, colorClasses }: DuelColorCardProps) {
   return (
-    <div className="flex gap-2 border-2 p-1 border-black">
+    <div className="flex gap-2 border-2 border-black p-1">
       <div
         className={cn("flex size-36 items-center justify-center", colorClasses)}
       >
