@@ -1,4 +1,4 @@
-name: Lint and Prettier on Pull Request
+name: Client CI
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   lint:
-    name: Lint Client (ESLint)
+    name: Run Lint Client (ESLint)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -31,7 +31,7 @@ jobs:
         run: pnpm run lint
 
   prettier:
-    name: Check Formatting with Prettier
+    name: Run Prettier Write and Check
     runs-on: ubuntu-latest
     defaults:
       run:
