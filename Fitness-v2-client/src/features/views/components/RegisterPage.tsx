@@ -12,6 +12,7 @@ function RegisterPage() {
         <CardHeader className="flex items-center justify-center text-xl font-bold">
           Register
         </CardHeader>
+
         <CardContent>
           <RegisterForm />
         </CardContent>
