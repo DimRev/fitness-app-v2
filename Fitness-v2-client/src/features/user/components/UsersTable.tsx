@@ -45,7 +45,7 @@ function UsersTable() {
   if (isUsersWithPagesLoading) {
     return (
       <DashboardContentCards title="User Table">
-        <div className="border rounded-md">
+        <div className="rounded-md border">
           <Table>
             <TableHeader>
               <TableRow>
@@ -92,7 +92,7 @@ function UsersTable() {
 
   return (
     <DashboardContentCards title="User Table">
-      <div className="border rounded-md">
+      <div className="rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>

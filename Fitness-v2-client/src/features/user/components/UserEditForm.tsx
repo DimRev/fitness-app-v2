@@ -143,7 +143,7 @@ function UserEditForm({ user }: Props) {
         {isError && (
           <div className="font-bold text-destructive">{error.message}</div>
         )}
-        <div className="flex justify-end mt-4">
+        <div className="mt-4 flex justify-end">
           <Button type="submit">
             {isUpdateUserLoading ? "Submitting..." : "Submit"}
           </Button>
