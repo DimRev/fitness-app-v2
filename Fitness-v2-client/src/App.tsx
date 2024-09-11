@@ -24,6 +24,7 @@ import DashboardFoodItemPendingAddPage from "./features/views/components/Dashboa
 import DashboardMealDetailsPage from "./features/views/components/DashboardMealDetailsPage";
 import { useLayoutEffect } from "react";
 import AdminUserPage from "./features/views/components/AdminUserPage";
+import UserEditDialog from "./features/user/components/UserEditDialog";
 
 const queryClient = new QueryClient();
 
@@ -97,6 +98,7 @@ function App() {
 
               <Route path="*" element={<PageNotFound />} />
             </Routes>
+            <UserEditDialog />
           </div>
         </AuthProvider>
       </BrowserRouter>

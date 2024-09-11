@@ -1,13 +1,19 @@
 import { Button } from "~/features/shared/components/ui/button";
 import { Skeleton } from "~/features/shared/components/ui/skeleton";
 import { TableCell, TableRow } from "~/features/shared/components/ui/table";
+import useUserStore from "../hooks/useUserStore";
 
 type Props = {
   user: User;
-  onOpenEditUser: (user: User) => void;
 };
 
-function UsersTableRow({ user, onOpenEditUser }: Props) {
+function UsersTableRow({ user }: Props) {
+  const { setUserEditDialogOpen } = useUserStore();
+
+  function onOpenEditUser() {
+    setUserEditDialogOpen(true, user);
+  }
+
   return (
     <TableRow>
       <TableCell className="py-2">{user.username}</TableCell>
@@ -21,7 +27,7 @@ function UsersTableRow({ user, onOpenEditUser }: Props) {
       </TableCell>
       <TableCell className="py-2">
         <div className="flex items-center gap-2">
-          <Button variant="ghost" onClick={() => onOpenEditUser(user)}>
+          <Button variant="ghost" onClick={onOpenEditUser}>
             Edit
           </Button>
           <Button variant="ghost">Delete</Button>

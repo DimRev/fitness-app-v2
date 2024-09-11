@@ -10,6 +10,7 @@ import (
 	"github.com/DimRev/Fitness-v2-server/internal/config"
 	"github.com/DimRev/Fitness-v2-server/internal/database"
 	"github.com/DimRev/Fitness-v2-server/internal/models"
+	"github.com/google/uuid"
 	"github.com/labstack/echo"
 )
 
@@ -155,4 +156,71 @@ func UpdateUser(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, respUser)
+}
+
+type UpdateUserByAdminRequest struct {
+	Username string            `json:"username"`
+	Email    string            `json:"email"`
+	ImageUrl *string           `json:"image_url"`
+	Role     database.UserRole `json:"role"`
+}
+
+func UpdateUserByAdmin(c echo.Context) error {
+	updateUserReq := UpdateUserByAdminRequest{}
+	if err := c.Bind(&updateUserReq); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "malformed request",
+		})
+	}
+
+	userToUpdateId, err := uuid.Parse(c.Param("userId"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid user id")
+	}
+
+	user, ok := c.Get("user").(database.User)
+	if !ok {
+		log.Printf("Reached update user by admin without user")
+		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
+	}
+
+	if user.ID == userToUpdateId {
+		return echo.NewHTTPError(http.StatusBadRequest, "Can not update self")
+	}
+
+	var imageUrl sql.NullString
+	if updateUserReq.ImageUrl != nil {
+		imageUrl = sql.NullString{String: *updateUserReq.ImageUrl, Valid: updateUserReq.ImageUrl != nil}
+	}
+
+	updateUserParams := database.UpdateUserByAdminParams{
+		ID:       userToUpdateId,
+		ImageUrl: imageUrl,
+		Username: updateUserReq.Username,
+		Role:     updateUserReq.Role,
+		Email:    updateUserReq.Email,
+	}
+	updatedUser, err := config.Queries.UpdateUserByAdmin(c.Request().Context(), updateUserParams)
+	if err != nil {
+		log.Println("Failed to update user: ", err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to update user")
+	}
+
+	var updatedImageUrl *string
+	if updatedUser.ImageUrl.Valid {
+		updatedImageUrl = &updatedUser.ImageUrl.String
+	}
+
+	userResp := models.User{
+		ID:           updatedUser.ID,
+		Email:        updatedUser.Email,
+		PasswordHash: updatedUser.PasswordHash,
+		Username:     updatedUser.Username,
+		ImageUrl:     updatedImageUrl,
+		CreatedAt:    updatedUser.CreatedAt.Time,
+		UpdatedAt:    updatedUser.UpdatedAt.Time,
+		Role:         updatedUser.Role,
+	}
+
+	return c.JSON(http.StatusOK, userResp)
 }

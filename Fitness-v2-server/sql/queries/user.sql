@@ -37,3 +37,13 @@ SET image_url = $2,
   updated_at = NOW()
 WHERE id = $1
 RETURNING *;
+
+-- name: UpdateUserByAdmin :one
+UPDATE users
+SET image_url = $2,
+  username = $3,
+  role = $4,
+  email = $5,
+  updated_at = NOW()
+WHERE id = $1
+RETURNING *;
