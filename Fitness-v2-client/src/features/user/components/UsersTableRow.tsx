@@ -4,9 +4,10 @@ import { TableCell, TableRow } from "~/features/shared/components/ui/table";
 
 type Props = {
   user: User;
+  onOpenEditUser: (user: User) => void;
 };
 
-function UsersTableRow({ user }: Props) {
+function UsersTableRow({ user, onOpenEditUser }: Props) {
   return (
     <TableRow>
       <TableCell className="py-2">{user.username}</TableCell>
@@ -20,7 +21,9 @@ function UsersTableRow({ user }: Props) {
       </TableCell>
       <TableCell className="py-2">
         <div className="flex items-center gap-2">
-          <Button variant="ghost">Edit</Button>
+          <Button variant="ghost" onClick={() => onOpenEditUser(user)}>
+            Edit
+          </Button>
           <Button variant="ghost">Delete</Button>
         </div>
       </TableCell>
