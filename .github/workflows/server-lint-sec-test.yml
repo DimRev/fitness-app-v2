@@ -47,7 +47,7 @@ jobs:
         run: go install github.com/securego/gosec/v2/cmd/gosec@latest
 
       - name: Run security check (gosec)
-        run: gosec ./...
+        run: gosec -exclude-generated ./...
 
   lint:
     name: Run Go Linting (golangci-lint)

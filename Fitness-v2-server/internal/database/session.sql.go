@@ -107,28 +107,26 @@ func (q *Queries) GetSessionByID(ctx context.Context, id uuid.UUID) (GetSessionB
 }
 
 const getSessionByToken = `-- name: GetSessionByToken :one
-SELECT sessions.id, sessions.user_id, sessions.created_at, sessions.updated_at, sessions.expires_at, sessions.session_token, sessions.session_data, users.id, users.email, users.password_hash, users.username, users.image_url, users.created_at, users.updated_at, users.role
+SELECT sessions.id, sessions.user_id, sessions.created_at, sessions.updated_at, sessions.expires_at, sessions.session_data, users.id, users.email, users.username, users.image_url, users.created_at, users.updated_at, users.role
 FROM sessions
 LEFT JOIN users ON users.id = sessions.user_id
 WHERE sessions.session_token = $1
 `
 
 type GetSessionByTokenRow struct {
-	ID           uuid.UUID
-	UserID       uuid.UUID
-	CreatedAt    sql.NullTime
-	UpdatedAt    sql.NullTime
-	ExpiresAt    sql.NullTime
-	SessionToken string
-	SessionData  json.RawMessage
-	ID_2         uuid.NullUUID
-	Email        sql.NullString
-	PasswordHash []byte
-	Username     sql.NullString
-	ImageUrl     sql.NullString
-	CreatedAt_2  sql.NullTime
-	UpdatedAt_2  sql.NullTime
-	Role         NullUserRole
+	ID          uuid.UUID
+	UserID      uuid.UUID
+	CreatedAt   sql.NullTime
+	UpdatedAt   sql.NullTime
+	ExpiresAt   sql.NullTime
+	SessionData json.RawMessage
+	ID_2        uuid.NullUUID
+	Email       sql.NullString
+	Username    sql.NullString
+	ImageUrl    sql.NullString
+	CreatedAt_2 sql.NullTime
+	UpdatedAt_2 sql.NullTime
+	Role        NullUserRole
 }
 
 func (q *Queries) GetSessionByToken(ctx context.Context, sessionToken string) (GetSessionByTokenRow, error) {
@@ -140,11 +138,9 @@ func (q *Queries) GetSessionByToken(ctx context.Context, sessionToken string) (G
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.ExpiresAt,
-		&i.SessionToken,
 		&i.SessionData,
 		&i.ID_2,
 		&i.Email,
-		&i.PasswordHash,
 		&i.Username,
 		&i.ImageUrl,
 		&i.CreatedAt_2,

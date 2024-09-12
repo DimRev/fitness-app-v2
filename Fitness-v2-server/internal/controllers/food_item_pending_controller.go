@@ -5,11 +5,11 @@ import (
 	"log"
 	"math"
 	"net/http"
-	"strconv"
 
 	"github.com/DimRev/Fitness-v2-server/internal/config"
 	"github.com/DimRev/Fitness-v2-server/internal/database"
 	"github.com/DimRev/Fitness-v2-server/internal/models"
+	"github.com/DimRev/Fitness-v2-server/internal/utils"
 	"github.com/google/uuid"
 	"github.com/labstack/echo"
 )
@@ -24,23 +24,21 @@ func GetFoodItemsPending(c echo.Context) error {
 
 	limit := int32(10)
 	offset := int32(0)
-	if limitStr := c.QueryParam("limit"); limitStr != "" {
-		convLimit, err := strconv.Atoi(limitStr)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
-				"message": "invalid limit",
-			})
-		}
-		limit = int32(convLimit)
-	}
 	if offsetStr := c.QueryParam("offset"); offsetStr != "" {
-		convOffset, err := strconv.Atoi(offsetStr)
+		convOffset, err := utils.SafeParseStrToInt32(offsetStr, 0, math.MaxInt32)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
-				"message": "invalid offset",
-			})
+			log.Println("Failed to parse offset: ", err)
+			echo.NewHTTPError(http.StatusBadRequest, "invalid offset")
 		}
 		offset = int32(convOffset)
+	}
+	if limitStr := c.QueryParam("limit"); limitStr != "" {
+		convLimit, err := utils.SafeParseStrToInt32(limitStr, 1, 100)
+		if err != nil {
+			log.Println("Failed to parse limit: ", err)
+			return echo.NewHTTPError(http.StatusBadRequest, "invalid limit")
+		}
+		limit = int32(convLimit)
 	}
 
 	getFoodItemsPendingParams := database.GetFoodItemsPendingParams{
@@ -115,23 +113,21 @@ func GetFoodItemsPendingByUserID(c echo.Context) error {
 
 	limit := int32(10)
 	offset := int32(0)
-	if limitStr := c.QueryParam("limit"); limitStr != "" {
-		convLimit, err := strconv.Atoi(limitStr)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
-				"message": "invalid limit",
-			})
-		}
-		limit = int32(convLimit)
-	}
 	if offsetStr := c.QueryParam("offset"); offsetStr != "" {
-		convOffset, err := strconv.Atoi(offsetStr)
+		convOffset, err := utils.SafeParseStrToInt32(offsetStr, 0, math.MaxInt32)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
-				"message": "invalid offset",
-			})
+			log.Println("Failed to parse offset: ", err)
+			echo.NewHTTPError(http.StatusBadRequest, "invalid offset")
 		}
 		offset = int32(convOffset)
+	}
+	if limitStr := c.QueryParam("limit"); limitStr != "" {
+		convLimit, err := utils.SafeParseStrToInt32(limitStr, 1, 100)
+		if err != nil {
+			log.Println("Failed to parse limit: ", err)
+			return echo.NewHTTPError(http.StatusBadRequest, "invalid limit")
+		}
+		limit = int32(convLimit)
 	}
 
 	getFoodItemsPendingByUserIDParams := database.GetFoodItemsPendingByUserIDParams{
