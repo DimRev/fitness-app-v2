@@ -11,6 +11,9 @@ func FoodItemRoutesV1(e *echo.Group) {
 	foodItem := e.Group("/food_items", middleware.ProtectedRoute)
 	{
 		foodItem.GET("", controllers.GetFoodItems)
-		foodItem.POST("", middleware.ProtectedRouteWithRoles(controllers.CreateFoodItem, []database.UserRole{database.UserRoleAdmin}))
+		foodItem.POST("", middleware.ProtectedRouteWithRoles(
+			controllers.CreateFoodItem,
+			[]database.UserRole{database.UserRoleAdmin},
+		))
 	}
 }

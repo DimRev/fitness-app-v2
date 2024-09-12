@@ -11,7 +11,13 @@ func UserRoutesV1(e *echo.Group) {
 	user := e.Group("/users", middleware.ProtectedRoute)
 	{
 		user.PUT("", controllers.UpdateUser)
-		user.GET("/admin", middleware.ProtectedRouteWithRoles(controllers.GetUsers, []database.UserRole{database.UserRoleAdmin}))
-		user.PUT("/admin/:userId", middleware.ProtectedRouteWithRoles(controllers.UpdateUserByAdmin, []database.UserRole{database.UserRoleAdmin}))
+		user.GET("/admin", middleware.ProtectedRouteWithRoles(
+			controllers.GetUsers,
+			[]database.UserRole{database.UserRoleAdmin},
+		))
+		user.PUT("/admin/:userId", middleware.ProtectedRouteWithRoles(
+			controllers.UpdateUserByAdmin,
+			[]database.UserRole{database.UserRoleAdmin},
+		))
 	}
 }
