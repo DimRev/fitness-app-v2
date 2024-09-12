@@ -17,9 +17,35 @@ ORDER BY likes DESC
 LIMIT $2
 OFFSET $3;
 
+-- name: GetFoodItemsPendingByUserIDWithTextFilter :many
+SELECT 
+  fip.*, 
+  COUNT(rufip.user_id) AS likes,
+  EXISTS (
+    SELECT 1 
+    FROM rel_user_like_food_item_pending rufip_check
+    WHERE rufip_check.food_item_id = fip.id 
+    AND rufip_check.user_id = $1
+  ) AS liked,
+  u.username
+FROM food_items_pending fip
+LEFT JOIN rel_user_like_food_item_pending rufip ON rufip.food_item_id = fip.id
+LEFT JOIN users u ON u.id = fip.user_id
+WHERE fip.user_id = $1
+AND fip.name ILIKE '%' || $2 || '%'
+GROUP BY fip.id, u.username
+ORDER BY likes DESC
+LIMIT $3
+OFFSET $4;
+
 -- name: GetFoodItemsPendingTotalPages :one
 SELECT COUNT(*) AS total_pages
 FROM food_items_pending;
+
+-- name: GetFoodItemsPendingTotalPagesWithTextFilter :one
+SELECT COUNT(*) AS total_pages
+FROM food_items_pending
+WHERE name ILIKE '%' || $1 || '%';
 
 -- name: GetFoodItemsPendingByUserID :many
 SELECT 

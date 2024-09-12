@@ -24,6 +24,7 @@ func GetFoodItemsPending(c echo.Context) error {
 
 	limit := int32(10)
 	offset := int32(0)
+	textFilter := ""
 	if offsetStr := c.QueryParam("offset"); offsetStr != "" {
 		convOffset, err := utils.SafeParseStrToInt32(offsetStr, 0, math.MaxInt32)
 		if err != nil {
@@ -40,67 +41,143 @@ func GetFoodItemsPending(c echo.Context) error {
 		}
 		limit = int32(convLimit)
 	}
-
-	getFoodItemsPendingParams := database.GetFoodItemsPendingParams{
-		UserID: user.ID,
-		Limit:  limit,
-		Offset: offset,
+	if textFilterStr := c.QueryParam("text_filter"); textFilterStr != "" {
+		textFilter = textFilterStr
 	}
 
-	foodItemsPending, err := config.Queries.GetFoodItemsPending(c.Request().Context(), getFoodItemsPendingParams)
-	if err != nil {
-		log.Println("Failed to get food items: ", err)
+	if err := config.DB.Ping(); err != nil {
+		log.Println("Connection to database failed: ", err)
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 			"message": "failed to get food items",
 		})
 	}
 
-	rowCount, err := config.Queries.GetFoodItemsPendingTotalPages(c.Request().Context())
-	if err != nil {
-		log.Println("Failed to get food items: ", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-			"message": "failed to get food items",
-		})
-	}
-
-	mFoodItemsPending := make([]models.FoodItemsPending, len(foodItemsPending))
-	for i, foodItemPending := range foodItemsPending {
-		var description *string
-		var imageUrl *string
-		if foodItemPending.Description.Valid {
-			description = &foodItemPending.Description.String
-		}
-		if foodItemPending.ImageUrl.Valid {
-			imageUrl = &foodItemPending.ImageUrl.String
+	if textFilter == "" {
+		getFoodItemsPendingParams := database.GetFoodItemsPendingParams{
+			UserID: user.ID,
+			Limit:  limit,
+			Offset: offset,
 		}
 
-		mFoodItemsPending[i] = models.FoodItemsPending{
-			ID:          foodItemPending.ID,
-			Name:        foodItemPending.Name,
-			Description: description,
-			ImageUrl:    imageUrl,
-			FoodType:    foodItemPending.FoodType,
-			Calories:    foodItemPending.Calories,
-			Fat:         foodItemPending.Fat,
-			Protein:     foodItemPending.Protein,
-			Carbs:       foodItemPending.Carbs,
-			CreatedAt:   foodItemPending.CreatedAt.Time,
-			UpdatedAt:   foodItemPending.UpdatedAt.Time,
-			UserID:      foodItemPending.UserID,
-			Likes:       foodItemPending.Likes,
-			Liked:       foodItemPending.Liked,
-			Author:      foodItemPending.Username.String,
+		foodItemsPending, err := config.Queries.GetFoodItemsPending(c.Request().Context(), getFoodItemsPendingParams)
+		if err != nil {
+			log.Println("Failed to get food items: ", err)
+			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+				"message": "failed to get food items",
+			})
 		}
+
+		rowCount, err := config.Queries.GetFoodItemsPendingTotalPages(c.Request().Context())
+		if err != nil {
+			log.Println("Failed to get food items: ", err)
+			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+				"message": "failed to get food items",
+			})
+		}
+
+		mFoodItemsPending := make([]models.FoodItemsPending, len(foodItemsPending))
+		for i, foodItemPending := range foodItemsPending {
+			var description *string
+			var imageUrl *string
+			if foodItemPending.Description.Valid {
+				description = &foodItemPending.Description.String
+			}
+			if foodItemPending.ImageUrl.Valid {
+				imageUrl = &foodItemPending.ImageUrl.String
+			}
+
+			mFoodItemsPending[i] = models.FoodItemsPending{
+				ID:          foodItemPending.ID,
+				Name:        foodItemPending.Name,
+				Description: description,
+				ImageUrl:    imageUrl,
+				FoodType:    foodItemPending.FoodType,
+				Calories:    foodItemPending.Calories,
+				Fat:         foodItemPending.Fat,
+				Protein:     foodItemPending.Protein,
+				Carbs:       foodItemPending.Carbs,
+				CreatedAt:   foodItemPending.CreatedAt.Time,
+				UpdatedAt:   foodItemPending.UpdatedAt.Time,
+				UserID:      foodItemPending.UserID,
+				Likes:       foodItemPending.Likes,
+				Liked:       foodItemPending.Liked,
+				Author:      foodItemPending.Username.String,
+			}
+		}
+
+		totalPages := int64(math.Ceil(float64(rowCount) / float64(limit)))
+
+		respFoodItemsPending := models.FoodItemsPendingWithPages{
+			FoodItemsPending: mFoodItemsPending,
+			TotalPages:       totalPages,
+		}
+
+		return c.JSON(http.StatusOK, respFoodItemsPending)
+	} else {
+		textFilterNullString := sql.NullString{String: textFilter, Valid: true}
+
+		getFoodItemsPendingParams := database.GetFoodItemsPendingByUserIDWithTextFilterParams{
+			UserID:  user.ID,
+			Limit:   limit,
+			Offset:  offset,
+			Column2: textFilterNullString,
+		}
+
+		foodItemsPending, err := config.Queries.GetFoodItemsPendingByUserIDWithTextFilter(c.Request().Context(), getFoodItemsPendingParams)
+		if err != nil {
+			log.Println("Failed to get food items: ", err)
+			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+				"message": "failed to get food items",
+			})
+		}
+
+		rowCount, err := config.Queries.GetFoodItemsPendingTotalPagesWithTextFilter(c.Request().Context(), textFilterNullString)
+		if err != nil {
+			log.Println("Failed to get food items: ", err)
+			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+				"message": "failed to get food items",
+			})
+		}
+
+		mFoodItemsPending := make([]models.FoodItemsPending, len(foodItemsPending))
+		for i, foodItemPending := range foodItemsPending {
+			var description *string
+			var imageUrl *string
+			if foodItemPending.Description.Valid {
+				description = &foodItemPending.Description.String
+			}
+			if foodItemPending.ImageUrl.Valid {
+				imageUrl = &foodItemPending.ImageUrl.String
+			}
+
+			mFoodItemsPending[i] = models.FoodItemsPending{
+				ID:          foodItemPending.ID,
+				Name:        foodItemPending.Name,
+				Description: description,
+				ImageUrl:    imageUrl,
+				FoodType:    foodItemPending.FoodType,
+				Calories:    foodItemPending.Calories,
+				Fat:         foodItemPending.Fat,
+				Protein:     foodItemPending.Protein,
+				Carbs:       foodItemPending.Carbs,
+				CreatedAt:   foodItemPending.CreatedAt.Time,
+				UpdatedAt:   foodItemPending.UpdatedAt.Time,
+				UserID:      foodItemPending.UserID,
+				Likes:       foodItemPending.Likes,
+				Liked:       foodItemPending.Liked,
+				Author:      foodItemPending.Username.String,
+			}
+		}
+
+		totalPages := int64(math.Ceil(float64(rowCount) / float64(limit)))
+
+		respFoodItemsPending := models.FoodItemsPendingWithPages{
+			FoodItemsPending: mFoodItemsPending,
+			TotalPages:       totalPages,
+		}
+
+		return c.JSON(http.StatusOK, respFoodItemsPending)
 	}
-
-	totalPages := int64(math.Ceil(float64(rowCount) / float64(limit)))
-
-	respFoodItemsPending := models.FoodItemsPendingWithPages{
-		FoodItemsPending: mFoodItemsPending,
-		TotalPages:       totalPages,
-	}
-
-	return c.JSON(http.StatusOK, respFoodItemsPending)
 }
 
 func GetFoodItemsPendingByUserID(c echo.Context) error {
