@@ -10,6 +10,7 @@ import (
 	"github.com/DimRev/Fitness-v2-server/internal/config"
 	"github.com/DimRev/Fitness-v2-server/internal/database"
 	"github.com/DimRev/Fitness-v2-server/internal/models"
+	"github.com/DimRev/Fitness-v2-server/internal/utils"
 	"github.com/google/uuid"
 	"github.com/labstack/echo"
 )
@@ -61,8 +62,14 @@ func CreateMeal(c echo.Context) error {
 	foodItemIDs := make([]uuid.UUID, 0)
 	amounts := make([]int32, 0)
 	for _, foodItem := range createMealReq.FoodItems {
+		foodItemAmountI32, err := utils.SafeParseIntToInt32(foodItem.Amount, 1, math.MaxInt32)
+		if err != nil {
+			log.Println("Failed to parse food item amount: ", err)
+			return echo.NewHTTPError(http.StatusBadRequest, "invalid food item amount")
+		}
+
 		foodItemIDs = append(foodItemIDs, foodItem.FoodItemID)
-		amounts = append(amounts, int32(foodItem.Amount))
+		amounts = append(amounts, foodItemAmountI32)
 	}
 
 	err = config.Queries.InsertMealFoodItems(c.Request().Context(), database.InsertMealFoodItemsParams{
@@ -138,18 +145,18 @@ type GetMealsByUserIDRequest struct {
 func GetMealsByUserID(c echo.Context) error {
 	offset := int32(0)
 	limit := int32(10)
-	offsetStr := c.QueryParam("offset")
-	if offsetStr != "" {
-		convOffset, err := strconv.Atoi(offsetStr)
+	if offsetStr := c.QueryParam("offset"); offsetStr != "" {
+		convOffset, err := utils.SafeParseStrToInt32(offsetStr, 0, math.MaxInt32)
 		if err != nil {
+			log.Println("Failed to parse offset: ", err)
 			return echo.NewHTTPError(http.StatusBadRequest, "invalid offset")
 		}
 		offset = int32(convOffset)
 	}
-	limitStr := c.QueryParam("limit")
-	if limitStr != "" {
-		convLimit, err := strconv.Atoi(limitStr)
+	if limitStr := c.QueryParam("limit"); limitStr != "" {
+		convLimit, err := utils.SafeParseStrToInt32(limitStr, 1, 100)
 		if err != nil {
+			log.Println("Failed to parse limit: ", err)
 			return echo.NewHTTPError(http.StatusBadRequest, "invalid limit")
 		}
 		limit = int32(convLimit)

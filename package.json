@@ -11,7 +11,7 @@
     "dev:client": "cd Fitness-v2-client && npm run dev",
     "dev:server": "cd Fitness-v2-server && go run .",
     "lint:client": "cd Fitness-v2-client && pnpm run lint",
-    "lint:server": "cd Fitness-v2-server && gosec ./...",
+    "lint:server": "cd Fitness-v2-server && gosec -exclude-generated ./...",
     "prettier:client": "cd Fitness-v2-client && pnpm run prettier:write && pnpm run prettier:check",
     "test:client": "cd Fitness-v2-client && pnpm run test",
     "test:server": "cd Fitness-v2-server && go test -v ./..."
