@@ -1,3 +1,10 @@
+## [0.1.2](https://github.com/DimRev/fitness-app-v2/compare/v0.1.1...v0.1.2) (2024-09-12)
+
+
+### Bug Fixes
+
+* setup deploy script based on fly's docs ([0659997](https://github.com/DimRev/fitness-app-v2/commit/06599975cc16ca933f0740612e0643c8af146356))
+
 ## [0.1.1](https://github.com/DimRev/fitness-app-v2/compare/v0.1.0...v0.1.1) (2024-09-12)
 
 
