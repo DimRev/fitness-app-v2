@@ -21,8 +21,8 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install pnpm
-        run: npm install -g pnpm
+      - name: Install pnpm 9.0.4
+        run: npm install -g pnpm@9.0.4
 
       - name: Install dependencies
         run: pnpm install
@@ -45,8 +45,8 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install pnpm
-        run: npm install -g pnpm
+      - name: Install pnpm 9.0.4
+        run: npm install -g pnpm@9.0.4
 
       - name: Install dependencies
         run: pnpm install
