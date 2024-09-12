@@ -1,3 +1,16 @@
+# [0.1.0](https://github.com/DimRev/fitness-app-v2/compare/v0.0.2...v0.1.0) (2024-09-12)
+
+
+### Bug Fixes
+
+* Rework Release and Deploy ([df99b46](https://github.com/DimRev/fitness-app-v2/commit/df99b461677ff4d1d07ea42bf75e1567a1766b04))
+* two runs in a single block ([5a3da16](https://github.com/DimRev/fitness-app-v2/commit/5a3da167b889d74652702ec6bf23bdaecad8875d))
+
+
+### Features
+
+* deploy to fly though cd ([11089db](https://github.com/DimRev/fitness-app-v2/commit/11089dbb4c71806eb33d9923a8114fea50618459))
+
 ## [0.0.2](https://github.com/DimRev/fitness-app-v2/compare/v0.0.1...v0.0.2) (2024-09-12)
 
 
