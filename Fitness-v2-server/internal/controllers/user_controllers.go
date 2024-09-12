@@ -21,7 +21,7 @@ func GetUsers(c echo.Context) error {
 		convOffset, err := utils.SafeParseStrToInt32(offsetStr, 0, math.MaxInt32)
 		if err != nil {
 			log.Println("Failed to parse offset: ", err)
-			echo.NewHTTPError(http.StatusBadRequest, "invalid offset")
+			return echo.NewHTTPError(http.StatusBadRequest, "invalid offset")
 		}
 		offset = int32(convOffset)
 	}
