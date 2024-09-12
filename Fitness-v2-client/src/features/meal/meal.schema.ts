@@ -4,11 +4,11 @@ export const mealFormSchema = z.object({
   name: z.string().min(1, "Name must be at least 1 character"),
   description: z
     .string()
-    .optional()
     .transform((val) => {
       const str = String(val);
       return str.trim() === "" ? null : str;
-    }),
+    })
+    .nullable(),
   food_items: z
     .array(
       z.object({

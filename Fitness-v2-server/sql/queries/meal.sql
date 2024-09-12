@@ -54,3 +54,16 @@ OFFSET $3;
 SELECT COUNT(*) AS total_rows
 FROM meals
 WHERE user_id = $1;
+
+-- name: UpdateMeal :one
+UPDATE meals
+SET name = $2,
+  description = $3,
+  image_url = $4
+WHERE id = $1
+RETURNING *;
+
+-- name: DeleteFoodItemsByMealID :exec
+DELETE FROM rel_meal_food
+WHERE meal_id = $1
+AND user_id = $2;

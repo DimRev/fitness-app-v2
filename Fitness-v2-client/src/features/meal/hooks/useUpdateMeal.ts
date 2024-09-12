@@ -23,9 +23,13 @@ function useUpdateMeal() {
   return useMutation<MealWithFoodItems, Error, UpdateMealRequestBody>(
     updateMeal,
     {
-      onSuccess: () => {
+      onSuccess: (_data, { meal_id }) => {
         void queryClient.invalidateQueries([
           QUERY_KEYS.MEALS.GET_MEALS_BY_USER_ID,
+        ]);
+        void queryClient.invalidateQueries([
+          QUERY_KEYS.MEALS.GET_MEAL_BY_ID,
+          { mealId: meal_id },
         ]);
       },
     },
