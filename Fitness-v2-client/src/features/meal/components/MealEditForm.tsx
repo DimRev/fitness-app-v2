@@ -91,7 +91,7 @@ function MealEditForm({ mealId }: Props) {
       {
         onSuccess: () => {
           void form.reset();
-          navigate("/dashboard/meal");
+          navigate(`/dashboard/meal/details/${mealId}`);
         },
       },
     );

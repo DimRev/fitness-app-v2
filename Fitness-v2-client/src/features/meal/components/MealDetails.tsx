@@ -1,11 +1,14 @@
 import {
   Card,
   CardContent,
+  CardFooter,
   CardHeader,
 } from "~/features/shared/components/ui/card";
 import useGetMealByID from "../hooks/useGetMealByID";
 import { H2, H3 } from "~/features/shared/components/Typography";
 import { Separator } from "~/features/shared/components/ui/separator";
+import { Button } from "~/features/shared/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   mealId: string;
@@ -15,6 +18,8 @@ function MealDetails({ mealId }: Props) {
   const { data: mealWithNutritionAndFoodItems, isLoading } = useGetMealByID({
     mealId,
   });
+
+  const navigate = useNavigate();
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -31,31 +36,31 @@ function MealDetails({ mealId }: Props) {
       </CardHeader>
       <CardContent>
         <Separator className="mb-2" />
-        <div className="grid grid-cols-[3fr_2fr] gap-2">
-          <div className="line-clamp-3 break-words border-e">
+        <div className="gap-2 grid grid-cols-[3fr_2fr]">
+          <div className="border-e line-clamp-3 break-words">
             {mealWithNutritionAndFoodItems?.meal.meal.description ??
               "No description"}
           </div>
           <div className="truncate">
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex justify-between items-center gap-2">
               <div>Total Calories:</div>
               <div>
                 {mealWithNutritionAndFoodItems?.meal.total_calories.toFixed(2)}
               </div>
             </div>
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex justify-between items-center gap-2">
               <div>Total Fat:</div>
               <div>
                 {mealWithNutritionAndFoodItems?.meal.total_fat.toFixed(2)}
               </div>
             </div>
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex justify-between items-center gap-2">
               <div>Total Carbs:</div>
               <div>
                 {mealWithNutritionAndFoodItems?.meal.total_carbs.toFixed(2)}
               </div>
             </div>
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex justify-between items-center gap-2">
               <div>Total Protein:</div>
               <div>
                 {mealWithNutritionAndFoodItems?.meal.total_protein.toFixed(2)}
@@ -65,7 +70,7 @@ function MealDetails({ mealId }: Props) {
         </div>
         <Separator className="mt-2" />
         <H2>Food Items:</H2>
-        <div className="mt-2 grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
+        <div className="gap-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-2">
           {mealWithNutritionAndFoodItems?.food_items.map((foodItem) => (
             <Card key={foodItem.food_item.id} className="border-2 px-2 py-1">
               <H3>
@@ -79,6 +84,11 @@ function MealDetails({ mealId }: Props) {
           ))}
         </div>
       </CardContent>
+      <CardFooter>
+        <Button onClick={() => navigate(`/dashboard/meal/edit/${mealId}`)}>
+          Edit
+        </Button>
+      </CardFooter>
     </Card>
   );
 }
