@@ -32,7 +32,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: pnpm exec semantic-release
-        
+  
   deploy:
     name: Deploy to Fly.io (Server)
     runs-on: ubuntu-latest
@@ -49,6 +49,10 @@ jobs:
           curl -L https://fly.io/install.sh | sh
           export FLYCTL_INSTALL="/home/runner/.fly"
           export PATH="$FLYCTL_INSTALL/bin:$PATH"
+
+      - name: Add flyctl to PATH
+        run: echo "FLYCTL_INSTALL=/home/runner/.fly" >> $GITHUB_ENV
+        run: echo "PATH=$FLYCTL_INSTALL/bin:$PATH" >> $GITHUB_ENV
 
       - name: Authenticate with Fly.io
         run: flyctl auth token ${{ secrets.FLY_API_TOKEN }}
