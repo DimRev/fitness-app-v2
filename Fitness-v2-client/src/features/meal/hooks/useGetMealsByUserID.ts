@@ -6,6 +6,7 @@ import { QUERY_KEYS, USE_QUERY_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 type GetMealsByUserIDRequestBody = {
   limit: number;
   offset: number;
+  text_filter?: string | null;
 };
 
 type ErrorResponseBody = {
@@ -19,7 +20,11 @@ function useGetMealsByUserID(
     ...USE_QUERY_DEFAULT_OPTIONS,
     queryKey: [
       QUERY_KEYS.MEALS.GET_MEALS_BY_USER_ID,
-      { limit: params.limit, offset: params.offset },
+      {
+        limit: params.limit,
+        offset: params.offset,
+        text_filter: params.text_filter,
+      },
     ],
 
     queryFn: () => getMealsByUserID(params),
@@ -30,12 +35,13 @@ function useGetMealsByUserID(
 async function getMealsByUserID({
   limit,
   offset,
+  text_filter,
 }: GetMealsByUserIDRequestBody): Promise<MealWithNutritionWithPages> {
   try {
     const response = await axiosInstance.get<MealWithNutritionWithPages>(
       `/meals`,
       {
-        params: { limit, offset },
+        params: { limit, offset, text_filter },
       },
     );
     return response.data;

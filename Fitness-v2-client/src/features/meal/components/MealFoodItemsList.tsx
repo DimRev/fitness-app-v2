@@ -56,7 +56,7 @@ function MealFoodItemsList({ toggleFoodItems, initFoodItems }: Props) {
 
   function handleInputValueChange(ev: React.ChangeEvent<HTMLInputElement>) {
     setInputValue(ev.target.value);
-    debounceSetTextFilter(ev.target.value);
+    debounceSetTextFilter(ev.target.value ?? null);
   }
 
   function handleScroll(ev: React.UIEvent<HTMLDivElement>) {

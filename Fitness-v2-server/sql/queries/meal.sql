@@ -50,10 +50,33 @@ ORDER BY m.created_at DESC
 LIMIT $2
 OFFSET $3;
 
+-- name: GetMealsByUserIDWithTextFilter :many
+SELECT 
+  m.*, 
+  COALESCE(SUM(fi.calories * rmf.amount), 0) AS total_calories,
+  COALESCE(SUM(fi.fat * rmf.amount), 0) AS total_fat,
+  COALESCE(SUM(fi.protein * rmf.amount), 0) AS total_protein,
+  COALESCE(SUM(fi.carbs * rmf.amount), 0) AS total_carbs
+FROM meals m
+LEFT JOIN rel_meal_food rmf ON m.id = rmf.meal_id
+LEFT JOIN food_items fi ON rmf.food_item_id = fi.id
+WHERE m.user_id = $1
+AND m.name ILIKE '%' || $2 || '%'
+GROUP BY m.id
+ORDER BY m.created_at DESC
+LIMIT $3
+OFFSET $4;
+
 -- name: GetMealsCountByUserID :one
 SELECT COUNT(*) AS total_rows
 FROM meals
 WHERE user_id = $1;
+
+-- name: GetMealsCountByUserIDWithTextFilter :one
+SELECT COUNT(*) AS total_rows
+FROM meals
+WHERE user_id = $1
+AND name ILIKE '%' || $2 || '%';
 
 -- name: UpdateMeal :one
 UPDATE meals
