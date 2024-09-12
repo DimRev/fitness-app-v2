@@ -25,6 +25,7 @@ import DashboardMealDetailsPage from "./features/views/components/DashboardMealD
 import { useLayoutEffect } from "react";
 import AdminUserPage from "./features/views/components/AdminUserPage";
 import UserEditDialog from "./features/user/components/UserEditDialog";
+import DashboardMealEditPage from "./features/views/components/DashboardMealEditPage";
 
 const queryClient = new QueryClient();
 
@@ -71,6 +72,10 @@ function App() {
                 <Route
                   path="meal/details/:mealId"
                   element={<DashboardMealDetailsPage />}
+                />
+                <Route
+                  path="meal/edit/:mealId"
+                  element={<DashboardMealEditPage />}
                 />
                 <Route
                   path="food_item"

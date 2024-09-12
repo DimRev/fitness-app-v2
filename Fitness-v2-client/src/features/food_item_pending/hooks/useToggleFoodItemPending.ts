@@ -7,6 +7,7 @@ type ToggleFoodItemPendingRequestParams = {
   food_item_pending_id: string;
   limit: number;
   offset: number;
+  text_filter?: string | null;
 };
 
 type ErrorResponseBody = {
@@ -27,24 +28,24 @@ function useToggleFoodItemPending() {
     OptimisticUpdateContext
   >(toggleFoodItemPending, {
     ...USE_MUTATION_DEFAULT_OPTIONS,
-    onMutate: async ({ food_item_pending_id, limit, offset }) => {
+    onMutate: async ({ food_item_pending_id, limit, offset, text_filter }) => {
       await queryClient.cancelQueries([
         QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
-        { limit, offset },
+        { limit, offset, text_filter },
       ]);
 
       // Snapshot the previous value
       const previousFoodItemsPending =
         queryClient.getQueryData<FoodItemsPendingWithPages>([
           QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
-          { limit, offset },
+          { limit, offset, text_filter },
         ]);
 
       // Optimistically update to the new value
       queryClient.setQueryData<FoodItemsPendingWithPages>(
         [
           QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
-          { limit, offset },
+          { limit, offset, text_filter },
         ],
         (old) => {
           const newFoodItemsPending = old!.food_items_pending.map(

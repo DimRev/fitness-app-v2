@@ -11,12 +11,16 @@ import FoodItemPendingPreview, {
   FoodItemPendingPreviewEmpty,
   FoodItemPendingPreviewSkeleton,
 } from "./FoodItemPendingPreview";
+import { useDebounce } from "~/features/shared/hooks/useDebounce";
 
 function FoodItemsPendingList() {
   const [page, setPage] = useState(1);
   // TODO: Make dynamic page size changes
   const [pageSize] = useState(4);
   const offset = useMemo(() => page * pageSize - pageSize, [page, pageSize]);
+  const [textFilter, setTextFilter] = useState<string | null>(null);
+  const [inputValue, setInputValue] = useState<string>("");
+  const debounceSetTextFilter = useDebounce(setTextFilter, 500);
   const {
     data: foodItemsPending,
     isLoading: foodItemsPendingLoading,
@@ -24,6 +28,7 @@ function FoodItemsPendingList() {
   } = useGetFoodItemsPending({
     limit: pageSize,
     offset,
+    text_filter: textFilter,
   });
   const { mutateAsync: toggleFoodItemPending } = useToggleFoodItemPending();
 
@@ -32,6 +37,7 @@ function FoodItemsPendingList() {
       food_item_pending_id: foodItemPendingId,
       limit: pageSize,
       offset,
+      text_filter: textFilter,
     });
   }
 
@@ -48,15 +54,25 @@ function FoodItemsPendingList() {
     }
   }
 
+  function onTextFilterChange(ev: React.ChangeEvent<HTMLInputElement>) {
+    debounceSetTextFilter(ev.target.value ?? null);
+    setInputValue(ev.target.value);
+  }
+
   if (foodItemsPendingLoading) {
     return (
       <DashboardContentCards title="Food Items">
         <div className="flex justify-end">
+          <Input
+            placeholder="Search..."
+            onChange={onTextFilterChange}
+            value={inputValue}
+          />
           <Link className={buttonVariants()} to="/dashboard/food_item/add">
             Add Food Item
           </Link>
         </div>
-        <div className="mt-2 grid grid-cols-1 gap-3 lg:grid-cols-2 xl:grid-cols-4">
+        <div className="gap-3 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 mt-2">
           <FoodItemPendingPreviewSkeleton />
           <FoodItemPendingPreviewSkeleton />
           <FoodItemPendingPreviewSkeleton />
@@ -75,12 +91,17 @@ function FoodItemsPendingList() {
     return (
       <DashboardContentCards title="Food Items">
         <div className="flex justify-end">
+          <Input
+            placeholder="Search..."
+            onChange={onTextFilterChange}
+            value={inputValue}
+          />
           <Link className={buttonVariants()} to="/dashboard/food_item/add">
             Add Food Item
           </Link>
         </div>
-        <div className="mt-2 text-center text-lg font-bold text-destructive">
-          <span className="flex items-center justify-center gap-2">
+        <div className="mt-2 font-bold text-center text-destructive text-lg">
+          <span className="flex justify-center items-center gap-2">
             <XCircleIcon /> An Error Has Occurred
           </span>
         </div>
@@ -91,12 +112,16 @@ function FoodItemsPendingList() {
   return (
     <DashboardContentCards title="Food Items">
       <div className="flex justify-end gap-2">
-        <Input placeholder="Search..." />
+        <Input
+          placeholder="Search..."
+          onChange={onTextFilterChange}
+          value={inputValue}
+        />
         <Link className={buttonVariants()} to="/dashboard/food_item/add">
           Add Food Item
         </Link>
       </div>
-      <div className="mt-2 grid grid-cols-1 gap-3 lg:grid-cols-2 xl:grid-cols-4">
+      <div className="gap-3 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 mt-2">
         {foodItemsPending.food_items_pending.map((foodItemPending) => (
           <FoodItemPendingPreview
             key={foodItemPending.id}

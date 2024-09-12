@@ -6,6 +6,7 @@ import { QUERY_KEYS, USE_QUERY_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 type GetMealsByUserIDRequestBody = {
   limit: number;
   offset: number;
+  text_filter?: string | null;
 };
 
 type ErrorResponseBody = {
@@ -17,7 +18,11 @@ function useGetFoodItemsPending(params: GetMealsByUserIDRequestBody) {
     ...USE_QUERY_DEFAULT_OPTIONS,
     queryKey: [
       QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
-      { limit: params.limit, offset: params.offset },
+      {
+        limit: params.limit,
+        offset: params.offset,
+        text_filter: params.text_filter,
+      },
     ],
 
     queryFn: () => getFoodItemsPending(params),
@@ -28,12 +33,13 @@ function useGetFoodItemsPending(params: GetMealsByUserIDRequestBody) {
 async function getFoodItemsPending({
   limit,
   offset,
+  text_filter,
 }: GetMealsByUserIDRequestBody): Promise<FoodItemsPendingWithPages> {
   try {
     const response = await axiosInstance.get<FoodItemsPendingWithPages>(
       `/food_items_pending`,
       {
-        params: { limit, offset },
+        params: { limit, offset, text_filter },
       },
     );
     return response.data;

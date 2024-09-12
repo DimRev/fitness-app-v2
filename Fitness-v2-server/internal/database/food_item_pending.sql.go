@@ -298,6 +298,97 @@ func (q *Queries) GetFoodItemsPendingByUserID(ctx context.Context, arg GetFoodIt
 	return items, nil
 }
 
+const getFoodItemsPendingByUserIDWithTextFilter = `-- name: GetFoodItemsPendingByUserIDWithTextFilter :many
+SELECT 
+  fip.id, fip.name, fip.description, fip.image_url, fip.food_type, fip.calories, fip.fat, fip.protein, fip.carbs, fip.created_at, fip.updated_at, fip.user_id, 
+  COUNT(rufip.user_id) AS likes,
+  EXISTS (
+    SELECT 1 
+    FROM rel_user_like_food_item_pending rufip_check
+    WHERE rufip_check.food_item_id = fip.id 
+    AND rufip_check.user_id = $1
+  ) AS liked,
+  u.username
+FROM food_items_pending fip
+LEFT JOIN rel_user_like_food_item_pending rufip ON rufip.food_item_id = fip.id
+LEFT JOIN users u ON u.id = fip.user_id
+WHERE fip.user_id = $1
+AND fip.name ILIKE '%' || $2 || '%'
+GROUP BY fip.id, u.username
+ORDER BY likes DESC
+LIMIT $3
+OFFSET $4
+`
+
+type GetFoodItemsPendingByUserIDWithTextFilterParams struct {
+	UserID  uuid.UUID
+	Column2 sql.NullString
+	Limit   int32
+	Offset  int32
+}
+
+type GetFoodItemsPendingByUserIDWithTextFilterRow struct {
+	ID          uuid.UUID
+	Name        string
+	Description sql.NullString
+	ImageUrl    sql.NullString
+	FoodType    FoodItemType
+	Calories    string
+	Fat         string
+	Protein     string
+	Carbs       string
+	CreatedAt   sql.NullTime
+	UpdatedAt   sql.NullTime
+	UserID      uuid.UUID
+	Likes       int64
+	Liked       bool
+	Username    sql.NullString
+}
+
+func (q *Queries) GetFoodItemsPendingByUserIDWithTextFilter(ctx context.Context, arg GetFoodItemsPendingByUserIDWithTextFilterParams) ([]GetFoodItemsPendingByUserIDWithTextFilterRow, error) {
+	rows, err := q.db.QueryContext(ctx, getFoodItemsPendingByUserIDWithTextFilter,
+		arg.UserID,
+		arg.Column2,
+		arg.Limit,
+		arg.Offset,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetFoodItemsPendingByUserIDWithTextFilterRow
+	for rows.Next() {
+		var i GetFoodItemsPendingByUserIDWithTextFilterRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.ImageUrl,
+			&i.FoodType,
+			&i.Calories,
+			&i.Fat,
+			&i.Protein,
+			&i.Carbs,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.UserID,
+			&i.Likes,
+			&i.Liked,
+			&i.Username,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getFoodItemsPendingByUserTotalPages = `-- name: GetFoodItemsPendingByUserTotalPages :one
 SELECT COUNT(*) AS total_pages
 FROM food_items_pending
@@ -318,6 +409,19 @@ FROM food_items_pending
 
 func (q *Queries) GetFoodItemsPendingTotalPages(ctx context.Context) (int64, error) {
 	row := q.db.QueryRowContext(ctx, getFoodItemsPendingTotalPages)
+	var total_pages int64
+	err := row.Scan(&total_pages)
+	return total_pages, err
+}
+
+const getFoodItemsPendingTotalPagesWithTextFilter = `-- name: GetFoodItemsPendingTotalPagesWithTextFilter :one
+SELECT COUNT(*) AS total_pages
+FROM food_items_pending
+WHERE name ILIKE '%' || $1 || '%'
+`
+
+func (q *Queries) GetFoodItemsPendingTotalPagesWithTextFilter(ctx context.Context, dollar_1 sql.NullString) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getFoodItemsPendingTotalPagesWithTextFilter, dollar_1)
 	var total_pages int64
 	err := row.Scan(&total_pages)
 	return total_pages, err

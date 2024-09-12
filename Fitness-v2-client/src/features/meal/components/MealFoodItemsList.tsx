@@ -1,6 +1,6 @@
 import { PopoverContent } from "@radix-ui/react-popover";
 import { Square, SquareCheck, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useGetFoodItems } from "~/features/food_item/hooks/useGetFoodItems";
 import { Badge } from "~/features/shared/components/ui/badge";
 import { Button } from "~/features/shared/components/ui/button";
@@ -19,9 +19,10 @@ import { useDebounce } from "~/features/shared/hooks/useDebounce";
 
 type Props = {
   toggleFoodItems: (foodItems: FoodItem[]) => void;
+  initFoodItems?: FoodItem[];
 };
 
-function MealFoodItemsList({ toggleFoodItems }: Props) {
+function MealFoodItemsList({ toggleFoodItems, initFoodItems }: Props) {
   const [pageSize] = useState(10);
   const [selectedFoodItems, setSelectedFoodItems] = useState<FoodItem[]>([]);
   const [textFilter, setTextFilter] = useState<string | null>(null);
@@ -42,13 +43,20 @@ function MealFoodItemsList({ toggleFoodItems }: Props) {
     text_filter: textFilter,
   });
 
+  useEffect(() => {
+    if (initFoodItems) {
+      setSelectedFoodItems(initFoodItems);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const foodItemsList = useMemo(() => {
     return foodItemsWithPages?.pages.flatMap((page) => page.food_items) ?? [];
   }, [foodItemsWithPages]);
 
   function handleInputValueChange(ev: React.ChangeEvent<HTMLInputElement>) {
     setInputValue(ev.target.value);
-    debounceSetTextFilter(ev.target.value);
+    debounceSetTextFilter(ev.target.value ?? null);
   }
 
   function handleScroll(ev: React.UIEvent<HTMLDivElement>) {
@@ -84,10 +92,10 @@ function MealFoodItemsList({ toggleFoodItems }: Props) {
   }
 
   return (
-    <div className="mt-4 flex flex-col gap-2">
+    <div className="flex flex-col gap-2 mt-4">
       <Popover>
         <PopoverTrigger>
-          <div className="flex min-h-10 flex-wrap items-center justify-start gap-2 rounded-md border border-black/25 bg-input px-1 py-2">
+          <div className="flex flex-wrap justify-start items-center gap-2 bg-input px-1 py-2 border border-black/25 rounded-md min-h-10">
             {selectedFoodItems.map((foodItem) => (
               <Badge
                 key={foodItem.id}
@@ -99,7 +107,7 @@ function MealFoodItemsList({ toggleFoodItems }: Props) {
                 variant="secondary"
               >
                 <div>{foodItem.name}</div>
-                <div className="m-0 size-4 rounded-full p-0">
+                <div className="m-0 p-0 rounded-full size-4">
                   <X className="size-4" />
                 </div>
               </Badge>
@@ -123,7 +131,7 @@ function MealFoodItemsList({ toggleFoodItems }: Props) {
                       variant="ghost"
                       type="button"
                       key={foodItem.id}
-                      className="grid w-full grid-cols-[1fr_10fr] items-center gap-2"
+                      className="items-center gap-2 grid grid-cols-[1fr_10fr] w-full"
                     >
                       {selectedFoodItems.find(
                         (currFoodItem) => currFoodItem.id === foodItem.id,
@@ -136,7 +144,7 @@ function MealFoodItemsList({ toggleFoodItems }: Props) {
                     </Button>
                   ))}
                   {foodItemsList.length === 0 && (
-                    <div className="grid w-full grid-cols-[1fr_10fr] items-center gap-2 font-bold">
+                    <div className="items-center gap-2 grid grid-cols-[1fr_10fr] w-full font-bold">
                       <X />
                       <div className="text-center">No food items found</div>
                     </div>
