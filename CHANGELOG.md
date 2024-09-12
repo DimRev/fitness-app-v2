@@ -1,3 +1,11 @@
+# [0.2.0](https://github.com/DimRev/fitness-app-v2/compare/v0.1.2...v0.2.0) (2024-09-12)
+
+
+### Features
+
+* **meal-client:** Add meal edit page and meal edit form ([22e8fa0](https://github.com/DimRev/fitness-app-v2/commit/22e8fa0be2c30c9b70d96515e511769aaba8b49e))
+* **meal-server:** Handle update meal ([f6a39b9](https://github.com/DimRev/fitness-app-v2/commit/f6a39b98f40a74c16ee9edb68238a5fe97b22a65))
+
 ## [0.1.2](https://github.com/DimRev/fitness-app-v2/compare/v0.1.1...v0.1.2) (2024-09-12)
 
 
