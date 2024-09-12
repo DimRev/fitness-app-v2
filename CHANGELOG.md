@@ -1,3 +1,10 @@
+## [0.1.1](https://github.com/DimRev/fitness-app-v2/compare/v0.1.0...v0.1.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* fixing deploy issue ([fc23a59](https://github.com/DimRev/fitness-app-v2/commit/fc23a594e9ecebae1b3b9af2e65246e90dd95b6d))
+
 # [0.1.0](https://github.com/DimRev/fitness-app-v2/compare/v0.0.2...v0.1.0) (2024-09-12)
 
 
