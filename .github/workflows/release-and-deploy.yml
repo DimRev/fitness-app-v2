@@ -47,13 +47,8 @@ jobs:
       - name: Install flyctl
         run: |
           curl -L https://fly.io/install.sh | sh
-          export FLYCTL_INSTALL="/home/runner/.fly"
-          export PATH="$FLYCTL_INSTALL/bin:$PATH"
-
-      - name: Add flyctl to PATH
-        run: |
           echo "FLYCTL_INSTALL=/home/runner/.fly" >> $GITHUB_ENV
-          echo "PATH=$FLYCTL_INSTALL/bin:$PATH" >> $GITHUB_ENV
+          echo "PATH=/home/runner/.fly/bin:$PATH" >> $GITHUB_ENV  # Add flyctl to PATH
 
       - name: Authenticate with Fly.io
         run: flyctl auth token ${{ secrets.FLY_API_TOKEN }}
