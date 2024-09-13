@@ -56,13 +56,14 @@ jobs:
     runs-on: ubuntu-latest
     needs: deploy  # Run after deployment is successful
     steps:
-      - name: Remove "staged" label from PRs with "released" label
+      - name: Remove "staged" label from PRs with "deployed" label
         run: |
           prs=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${{ github.repository }}/issues?labels=released" | jq -r '.[].number')
+            "https://api.github.com/repos/${{ github.repository }}/issues?labels=deployed&state=open" | jq -r '.[].number')
 
           for pr in $prs; do
+            echo "Removing 'staged' label from PR #$pr"
             curl -X DELETE \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
