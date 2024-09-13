@@ -3,11 +3,13 @@ import { create } from "zustand";
 type LayoutState = {
   isSidebarOpen: boolean;
   isDarkMode: boolean;
+  settingsDialogOpen: boolean;
 };
 
 type LayoutActions = {
   setIsSidebarOpen: () => void;
   setIsDarkMode: (newIsDarkMode: boolean) => void;
+  setSettingsDialogOpen: (open: boolean) => void;
 };
 
 type LayoutStore = LayoutState & LayoutActions;
@@ -15,6 +17,7 @@ type LayoutStore = LayoutState & LayoutActions;
 const useLayoutStore = create<LayoutStore>((set) => ({
   isSidebarOpen: true,
   isDarkMode: false,
+  settingsDialogOpen: false,
   setIsSidebarOpen: () =>
     set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
   setIsDarkMode: (newIsDarkMode) => {
@@ -32,6 +35,9 @@ const useLayoutStore = create<LayoutStore>((set) => ({
       );
     }
     return set(() => ({ isDarkMode: newIsDarkMode }));
+  },
+  setSettingsDialogOpen(open) {
+    set(() => ({ settingsDialogOpen: open }));
   },
 }));
 

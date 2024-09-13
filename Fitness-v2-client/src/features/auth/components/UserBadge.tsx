@@ -23,7 +23,7 @@ type Props = {
 function UserBadge({ user }: Props) {
   const { mutateAsync: logout, isLoading: isLogoutLoading } = useLogout();
   const { setUser } = useAuthStore();
-  const { setIsDarkMode, isDarkMode } = useLayoutStore();
+  const { setIsDarkMode, isDarkMode, setSettingsDialogOpen } = useLayoutStore();
   async function handleLogout() {
     try {
       await logout(undefined, {
@@ -73,9 +73,12 @@ function UserBadge({ user }: Props) {
           </Avatar>
         </PopoverTrigger>
         <PopoverContent className={cn(isDarkMode && "dark")}>
-          <h3 className="text-lg font-bold">{user.username}</h3>
-          <p className="text-sm font-light">{user.email}</p>
-          <div className="flex items-center gap-2 transition-colors duration-500 hover:cursor-pointer hover:fill-primary hover:text-primary">
+          <h3 className="font-bold text-lg">{user.username}</h3>
+          <p className="font-light text-sm">{user.email}</p>
+          <div
+            onClick={() => setSettingsDialogOpen(true)}
+            className="flex items-center gap-2 transition-colors duration-500 hover:cursor-pointer hover:fill-primary hover:text-primary"
+          >
             <Settings className="size-4" />
             <p>Settings</p>
           </div>
@@ -83,14 +86,14 @@ function UserBadge({ user }: Props) {
             <Button
               size="icon"
               className={cn(!isDarkMode && "bg-yellow-500 hover:bg-yellow-700")}
-              onClick={() => setIsDarkMode(!isDarkMode)}
+              onClick={() => setIsDarkMode(false)}
             >
               <Sun className={cn("size-4", !isDarkMode && "stroke-black")} />
             </Button>
             <Button
               size="icon"
               className={cn(isDarkMode && "bg-blue-500 hover:bg-blue-700")}
-              onClick={() => setIsDarkMode(!isDarkMode)}
+              onClick={() => setIsDarkMode(true)}
             >
               <Moon className={cn("size-4", isDarkMode && "stroke-black")} />
             </Button>

@@ -1,4 +1,4 @@
-import { useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AuthProvider from "./features/auth/components/AuthProvider";
@@ -47,9 +47,11 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log(
-    `App is running in ${import.meta.env.MODE} connected to ${import.meta.env.VITE_API_URL}`,
-  );
+  useEffect(() => {
+    console.log(
+      `App is running in ${import.meta.env.MODE} connected to ${import.meta.env.VITE_API_URL}`,
+    );
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

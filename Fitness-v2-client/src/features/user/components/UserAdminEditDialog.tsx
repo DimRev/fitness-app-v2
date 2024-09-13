@@ -1,13 +1,14 @@
+import { DialogDescription } from "@radix-ui/react-dialog";
+import ErrorDialog from "~/features/layout/components/ErrorDialog";
+import useLayoutStore from "~/features/layout/hooks/useLayoutStore";
 import {
   Dialog,
   DialogContent,
   DialogTitle,
 } from "~/features/shared/components/ui/dialog";
+import { cn } from "~/lib/utils";
 import useUserStore from "../hooks/useUserStore";
 import UserAdminEditForm from "./UserAdminEditForm";
-import useLayoutStore from "~/features/layout/hooks/useLayoutStore";
-import { cn } from "~/lib/utils";
-import { DialogDescription } from "@radix-ui/react-dialog";
 
 function UserAdminEditDialog() {
   const { userEditDialogOpen, setUserEditDialogOpen, editingUser } =
@@ -16,7 +17,14 @@ function UserAdminEditDialog() {
   const { isDarkMode } = useLayoutStore();
 
   if (!editingUser) {
-    return <></>;
+    return (
+      <ErrorDialog
+        open={userEditDialogOpen}
+        onOpenChange={setUserEditDialogOpen}
+        errorCode="U-UAED-0"
+        errorMessage="You must be logged in to edit a user."
+      />
+    );
   }
 
   return (
@@ -24,10 +32,10 @@ function UserAdminEditDialog() {
       <DialogContent className={cn(isDarkMode && "dark", "text-foreground")}>
         <DialogTitle>Edit User</DialogTitle>
         <UserAdminEditForm user={editingUser} />
+        <DialogDescription>
+          Edit a user's information, including their username, email, and role.
+        </DialogDescription>
       </DialogContent>
-      <DialogDescription>
-        Edit a user's information, including their username, email, and role.
-      </DialogDescription>
     </Dialog>
   );
 }
