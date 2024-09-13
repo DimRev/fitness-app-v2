@@ -4,12 +4,12 @@ import {
   DialogTitle,
 } from "~/features/shared/components/ui/dialog";
 import useUserStore from "../hooks/useUserStore";
-import UserEditForm from "./UserEditForm";
+import UserAdminEditForm from "./UserAdminEditForm";
 import useLayoutStore from "~/features/layout/hooks/useLayoutStore";
 import { cn } from "~/lib/utils";
 import { DialogDescription } from "@radix-ui/react-dialog";
 
-function UserEditDialog() {
+function UserAdminEditDialog() {
   const { userEditDialogOpen, setUserEditDialogOpen, editingUser } =
     useUserStore();
 
@@ -21,9 +21,9 @@ function UserEditDialog() {
 
   return (
     <Dialog open={userEditDialogOpen} onOpenChange={setUserEditDialogOpen}>
-      <DialogTitle>Edit User</DialogTitle>
       <DialogContent className={cn(isDarkMode && "dark", "text-foreground")}>
-        <UserEditForm user={editingUser} />
+        <DialogTitle>Edit User</DialogTitle>
+        <UserAdminEditForm user={editingUser} />
       </DialogContent>
       <DialogDescription>
         Edit a user's information, including their username, email, and role.
@@ -32,4 +32,4 @@ function UserEditDialog() {
   );
 }
 
-export default UserEditDialog;
+export default UserAdminEditDialog;
