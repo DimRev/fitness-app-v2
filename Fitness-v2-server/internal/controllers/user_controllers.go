@@ -90,7 +90,8 @@ func GetUsers(c echo.Context) error {
 
 type UpdateUserRequest struct {
 	ImageUrl *string `json:"image_url"`
-	Username *string `json:"username"`
+	Username string  `json:"username"`
+	Email    string  `json:"email"`
 }
 
 func UpdateUser(c echo.Context) error {
@@ -107,19 +108,17 @@ func UpdateUser(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
 	}
 
+	if user.Email != updateUserReq.Email {
+		log.Printf("Trying to update user with different email, user: %s, update: %s", user.Email, updateUserReq.Email)
+		return echo.NewHTTPError(http.StatusBadRequest, "unauthorized")
+	}
+
 	var imageUrl sql.NullString
-	var username string
 
 	if updateUserReq.ImageUrl != nil {
 		imageUrl = sql.NullString{String: *updateUserReq.ImageUrl, Valid: true}
 	} else {
 		imageUrl = user.ImageUrl
-	}
-
-	if updateUserReq.Username != nil {
-		username = *updateUserReq.Username
-	} else {
-		username = user.Username
 	}
 
 	if err := config.DB.Ping(); err != nil {
@@ -132,7 +131,8 @@ func UpdateUser(c echo.Context) error {
 	updateUserParams := database.UpdateUserParams{
 		ID:       user.ID,
 		ImageUrl: imageUrl,
-		Username: username,
+		Username: updateUserReq.Username,
+		Email:    updateUserReq.Email,
 	}
 
 	updatedUser, err := config.Queries.UpdateUser(c.Request().Context(), updateUserParams)

@@ -8,10 +8,10 @@ type ErrorResponseBody = {
   message: string;
 };
 
-function useUpdateUser() {
+function useUpdateUserByAdmin() {
   const queryClient = useQueryClient();
   return useMutation<User, Error, UserEditFormSchema & { userId: string }>(
-    updateUser,
+    updateUserByAdmin,
     {
       ...USE_MUTATION_DEFAULT_OPTIONS,
       retry: false,
@@ -22,7 +22,7 @@ function useUpdateUser() {
   );
 }
 
-async function updateUser({
+async function updateUserByAdmin({
   email,
   image_url,
   username,
@@ -48,4 +48,4 @@ async function updateUser({
   }
 }
 
-export default useUpdateUser;
+export default useUpdateUserByAdmin;
