@@ -34,6 +34,7 @@ FROM users;
 UPDATE users
 SET image_url = $2,
   username = $3,
+  email = $4,
   updated_at = NOW()
 WHERE id = $1
 RETURNING *;

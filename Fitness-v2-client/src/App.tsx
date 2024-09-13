@@ -1,31 +1,31 @@
+import { useEffect, useLayoutEffect } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import AppHeader from "./features/layout/components/AppHeader";
-import AboutPage from "./features/views/components/AboutPage";
-import AuthLayout from "./features/views/components/AuthLayout";
-import HomePage from "./features/views/components/HomePage";
-import LoginPage from "./features/views/components/LoginPage";
-import RegisterPage from "./features/views/components/RegisterPage";
-import TestPage from "./features/views/components/TestPage";
 import AuthProvider from "./features/auth/components/AuthProvider";
-import DashboardLayout from "./features/views/components/DashboardLayout";
-import DashboardOverviewPage from "./features/views/components/DashboardOverviewPage";
-import DashboardMealPage from "./features/views/components/DashboardMealPage";
+import AppHeader from "./features/layout/components/AppHeader";
+import GlobalDialogs from "./features/layout/components/GlobalDialogs";
 import useLayoutStore from "./features/layout/hooks/useLayoutStore";
-import { cn } from "./lib/utils";
-import PageNotFound from "./features/views/components/PageNotFound";
-import DashboardMealAddPage from "./features/views/components/DashboardMealAddPage";
+import AboutPage from "./features/views/components/AboutPage";
+import AdminFoodItemAddPage from "./features/views/components/AdminFoodItemAddPage";
+import AdminFoodItemPage from "./features/views/components/AdminFoodItemPage";
 import AdminLayout from "./features/views/components/AdminLayout";
 import AdminOverviewPage from "./features/views/components/AdminOverviewPage";
-import AdminFoodItemPage from "./features/views/components/AdminFoodItemPage";
-import AdminFoodItemAddPage from "./features/views/components/AdminFoodItemAddPage";
-import DashboardFoodItemPendingPage from "./features/views/components/DashboardFoodItemPendingPage";
-import DashboardFoodItemPendingAddPage from "./features/views/components/DashboardFoodItemPendingAddPage";
-import DashboardMealDetailsPage from "./features/views/components/DashboardMealDetailsPage";
-import { useLayoutEffect } from "react";
 import AdminUserPage from "./features/views/components/AdminUserPage";
-import UserEditDialog from "./features/user/components/UserEditDialog";
+import AuthLayout from "./features/views/components/AuthLayout";
+import DashboardFoodItemPendingAddPage from "./features/views/components/DashboardFoodItemPendingAddPage";
+import DashboardFoodItemPendingPage from "./features/views/components/DashboardFoodItemPendingPage";
+import DashboardLayout from "./features/views/components/DashboardLayout";
+import DashboardMealAddPage from "./features/views/components/DashboardMealAddPage";
+import DashboardMealDetailsPage from "./features/views/components/DashboardMealDetailsPage";
 import DashboardMealEditPage from "./features/views/components/DashboardMealEditPage";
+import DashboardMealPage from "./features/views/components/DashboardMealPage";
+import DashboardOverviewPage from "./features/views/components/DashboardOverviewPage";
+import HomePage from "./features/views/components/HomePage";
+import LoginPage from "./features/views/components/LoginPage";
+import PageNotFound from "./features/views/components/PageNotFound";
+import RegisterPage from "./features/views/components/RegisterPage";
+import TestPage from "./features/views/components/TestPage";
+import { cn } from "./lib/utils";
 
 const queryClient = new QueryClient();
 
@@ -47,9 +47,11 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log(
-    `App is running in ${import.meta.env.MODE} connected to ${import.meta.env.VITE_API_URL}`,
-  );
+  useEffect(() => {
+    console.log(
+      `App is running in ${import.meta.env.MODE} connected to ${import.meta.env.VITE_API_URL}`,
+    );
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -103,7 +105,8 @@ function App() {
 
               <Route path="*" element={<PageNotFound />} />
             </Routes>
-            <UserEditDialog />
+
+            <GlobalDialogs />
           </div>
         </AuthProvider>
       </BrowserRouter>

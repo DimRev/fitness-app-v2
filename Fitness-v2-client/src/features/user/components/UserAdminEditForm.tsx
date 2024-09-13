@@ -22,20 +22,20 @@ import {
   userRoles,
   type UserEditFormSchema,
 } from "../user.schema";
-import useUpdateUser from "../hooks/useUpdateUser";
+import useUpdateUserByAdmin from "../hooks/useUpdateUserByAdmin";
 import useUserStore from "../hooks/useUserStore";
 
 type Props = {
   user: User;
 };
 
-function UserEditForm({ user }: Props) {
+function UserAdminEditForm({ user }: Props) {
   const {
     mutateAsync: updateUser,
     isLoading: isUpdateUserLoading,
     isError,
     error,
-  } = useUpdateUser();
+  } = useUpdateUserByAdmin();
   const { setUserEditDialogOpen } = useUserStore();
   const form = useForm<UserEditFormSchema>({
     resolver: zodResolver(userEditFormSchema),
@@ -143,7 +143,7 @@ function UserEditForm({ user }: Props) {
         {isError && (
           <div className="font-bold text-destructive">{error.message}</div>
         )}
-        <div className="mt-4 flex justify-end">
+        <div className="flex justify-end mt-4">
           <Button type="submit">
             {isUpdateUserLoading ? "Submitting..." : "Submit"}
           </Button>
@@ -153,4 +153,4 @@ function UserEditForm({ user }: Props) {
   );
 }
 
-export default UserEditForm;
+export default UserAdminEditForm;
