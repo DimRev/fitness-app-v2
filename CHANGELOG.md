@@ -1,3 +1,15 @@
+# [0.3.0](https://github.com/DimRev/fitness-app-v2/compare/v0.2.0...v0.3.0) (2024-09-13)
+
+
+### Bug Fixes
+
+* permission problems with label ci ([c3c6d02](https://github.com/DimRev/fitness-app-v2/commit/c3c6d02a6709b717e4b48955cb36c755a7ddd1a2))
+
+
+### Features
+
+* **layout:** Add settings dialog edit current user settings ([bbdf0fa](https://github.com/DimRev/fitness-app-v2/commit/bbdf0fa7b8b6ac8ee650976cf38de1babe3212bb))
+
 # [0.2.0](https://github.com/DimRev/fitness-app-v2/compare/v0.1.2...v0.2.0) (2024-09-12)
 
 
