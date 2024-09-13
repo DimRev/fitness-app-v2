@@ -15,12 +15,15 @@ import (
 )
 
 var (
-	Queries   *database.Queries
-	Port      string
-	JwtSecret string
-	DB        *sql.DB
-	CORS      []string
-	ENV       string
+	Queries               *database.Queries
+	Port                  string
+	JwtSecret             string
+	DB                    *sql.DB
+	CORS                  []string
+	ENV                   string
+	CLOUDINARY_CLOUD_NAME string
+	CLOUDINARY_API_KEY    string
+	CLOUDINARY_API_SECRET string
 )
 
 func New() error {
@@ -32,17 +35,15 @@ func New() error {
 		return fmt.Errorf("DATABASE_URL environment variable not set")
 	}
 
-	port := os.Getenv("PORT")
-	if port == "" {
+	Port = os.Getenv("PORT")
+	if Port == "" {
 		return fmt.Errorf("PORT environment variable not set")
 	}
-	Port = port
 
-	jwtSecret := os.Getenv("JWT_SECRET")
-	if jwtSecret == "" {
+	JwtSecret = os.Getenv("JWT_SECRET")
+	if JwtSecret == "" {
 		return fmt.Errorf("JWT_SECRET environment variable not set")
 	}
-	JwtSecret = jwtSecret
 
 	corsStr := os.Getenv("CORS")
 	if corsStr == "" {
@@ -50,11 +51,10 @@ func New() error {
 	}
 	CORS = strings.Split(corsStr, ",")
 
-	env := os.Getenv("ENV")
-	if env == "" {
+	ENV = os.Getenv("ENV")
+	if ENV == "" {
 		return fmt.Errorf("ENV environment variable not set")
 	}
-	ENV = env
 
 	// Use a separate connection for Goose migration
 	// ---------------------------------------------
