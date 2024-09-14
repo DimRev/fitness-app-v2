@@ -8,7 +8,6 @@ import {
   CardHeader,
 } from "~/features/shared/components/ui/card";
 import { Skeleton } from "~/features/shared/components/ui/skeleton";
-import { Textarea } from "~/features/shared/components/ui/textarea";
 
 type Props = {
   mealWithNutrition: MealWithNutrition;
