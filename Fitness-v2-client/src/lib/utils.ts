@@ -13,6 +13,16 @@ export function arrayDiff(a: string[], b: string[]) {
   return difference;
 }
 
+export async function computeCheckSum(file: File) {
+  const buffer = await file.arrayBuffer();
+  const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+  const hushArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hushArray
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  return hashHex;
+}
+
 interface FormattedError extends Error {
   message: string;
 }
