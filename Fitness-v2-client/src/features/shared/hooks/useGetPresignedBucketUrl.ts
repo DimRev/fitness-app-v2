@@ -29,9 +29,6 @@ function useGetPresignedBucketUrl(): UseMutationResult<
     GetPresignedBucketUrlRequestBody
   >(getPresignedBucketUrl, {
     ...USE_MUTATION_DEFAULT_OPTIONS,
-    onSuccess: (data) => {
-      console.log(data);
-    },
   });
 }
 

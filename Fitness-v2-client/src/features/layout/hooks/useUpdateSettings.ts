@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useMutation } from "react-query";
 import axiosInstance from "~/lib/axios";
+import { USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
 type UpdateSettingsRequestBody = {
   username: string;
@@ -16,9 +17,7 @@ function useUpdateSettings() {
   return useMutation<AuthUser, Error, UpdateSettingsRequestBody>(
     updateSettings,
     {
-      onSuccess: (data) => {
-        console.log("success!", data);
-      },
+      ...USE_MUTATION_DEFAULT_OPTIONS,
     },
   );
 }
