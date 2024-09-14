@@ -1,15 +1,20 @@
 package controllers
 
 import (
+	"context"
 	"database/sql"
 	"log"
 	"math"
 	"net/http"
+	"net/url"
+	"strings"
 
 	"github.com/DimRev/Fitness-v2-server/internal/config"
 	"github.com/DimRev/Fitness-v2-server/internal/database"
 	"github.com/DimRev/Fitness-v2-server/internal/models"
 	"github.com/DimRev/Fitness-v2-server/internal/utils"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/google/uuid"
 	"github.com/labstack/echo"
 )
@@ -108,17 +113,37 @@ func UpdateUser(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
 	}
 
+	if user.ImageUrl.Valid {
+		url, err := url.Parse(user.ImageUrl.String)
+		if err != nil {
+			log.Printf("Failed to parse image url[%s]: %s", user.ImageUrl.String, err)
+		}
+
+		splitPath := strings.SplitN(url.Path, "/", 2)
+		if len(splitPath) < 2 {
+			return echo.NewHTTPError(http.StatusBadRequest, "could not extract object key from URL")
+		}
+		objectKey := splitPath[1]
+
+		deleteInput := &s3.DeleteObjectInput{
+			Bucket: aws.String(config.AWS_BUCKET_NAME),
+			Key:    aws.String(objectKey),
+		}
+
+		_, err = config.S3Client.DeleteObject(context.TODO(), deleteInput)
+		if err != nil {
+			log.Printf("Failed to delete object: %v", err)
+		}
+	}
+
 	if user.Email != updateUserReq.Email {
 		log.Printf("Trying to update user with different email, user: %s, update: %s", user.Email, updateUserReq.Email)
 		return echo.NewHTTPError(http.StatusBadRequest, "unauthorized")
 	}
 
 	var imageUrl sql.NullString
-
 	if updateUserReq.ImageUrl != nil {
 		imageUrl = sql.NullString{String: *updateUserReq.ImageUrl, Valid: true}
-	} else {
-		imageUrl = user.ImageUrl
 	}
 
 	if err := config.DB.Ping(); err != nil {

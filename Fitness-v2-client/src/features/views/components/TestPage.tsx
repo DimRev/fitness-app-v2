@@ -1,7 +1,7 @@
 import { cn } from "~/lib/utils";
 import MainPageWrapper from "./MainPageWrapper";
 import { Info } from "lucide-react";
-import FileInput from "~/features/shared/components/FileInput";
+import AvatarImageInput from "~/features/shared/components/AvatarImageInput";
 
 function TestPage() {
   return (
@@ -67,7 +67,7 @@ function TestPage() {
         />
       </TestCard>
 
-      <FileInput />
+      <AvatarImageInput />
     </MainPageWrapper>
   );
 }
