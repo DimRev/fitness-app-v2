@@ -1,3 +1,12 @@
+# [0.4.0](https://github.com/DimRev/fitness-app-v2/compare/v0.3.0...v0.4.0) (2024-09-14)
+
+
+### Features
+
+* Add conn to s3 ([c921a1a](https://github.com/DimRev/fitness-app-v2/commit/c921a1aafd7f0ec4d91dbdcad1e242843cf8cf03))
+* Implement upload for food image ([2ed269d](https://github.com/DimRev/fitness-app-v2/commit/2ed269d04d920125c6f170951ab6524fe9596387))
+* **upload-server:** Add upload endpoint in the server ([fe59e58](https://github.com/DimRev/fitness-app-v2/commit/fe59e58ec579202afb6a93d71a8793ad7676bb7e))
+
 # [0.3.0](https://github.com/DimRev/fitness-app-v2/compare/v0.2.0...v0.3.0) (2024-09-13)
 
 
