@@ -17,12 +17,17 @@ import { Button } from "~/features/shared/components/ui/button";
 import useUpdateSettings from "../hooks/useUpdateSettings";
 import useAuthStore from "~/features/auth/hooks/useAuthStore";
 import useLayoutStore from "../hooks/useLayoutStore";
+import { useRef } from "react";
+import AvatarImageInput from "~/features/upload/components/AvatarImageInput";
 
 type Props = {
   user: AuthUser;
 };
 
 function SettingsEditForm({ user }: Props) {
+  const inputFileRef = useRef<{
+    triggerSubmit: () => Promise<string | null> | undefined;
+  }>(null);
   const form = useForm<SettingsEditFormSchema>({
     resolver: zodResolver(settingsEditFormSchema),
     defaultValues: {
@@ -41,20 +46,30 @@ function SettingsEditForm({ user }: Props) {
   const { setUser } = useAuthStore();
   const { setSettingsDialogOpen } = useLayoutStore();
 
-  function onSubmit(data: SettingsEditFormSchema) {
-    void updateSettings(data, {
-      onSuccess: () => {
-        const updatedUser = {
-          ...user,
-          username: data.username,
+  async function onSubmit(data: SettingsEditFormSchema) {
+    if (inputFileRef.current) {
+      const imageUrl = await inputFileRef.current.triggerSubmit();
+      void updateSettings(
+        {
           email: data.email,
-          image_url: data.image_url,
-        };
-        void form.reset();
-        setUser(updatedUser);
-        setSettingsDialogOpen(false);
-      },
-    });
+          username: data.username,
+          image_url: imageUrl ? `${imageUrl}` : null,
+        },
+        {
+          onSuccess: (res) => {
+            const updatedUser = {
+              ...user,
+              username: res.username,
+              email: res.email,
+              image_url: res.image_url,
+            };
+            void form.reset();
+            setUser(updatedUser);
+            setSettingsDialogOpen(false);
+          },
+        },
+      );
+    }
   }
 
   return (
@@ -86,23 +101,12 @@ function SettingsEditForm({ user }: Props) {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="image_url"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Image URL</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Image URL"
-                  type="text"
-                  {...field}
-                  value={field.value ?? ""}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+        <AvatarImageInput
+          label="Avatar"
+          ref={inputFileRef}
+          initImageUrl={user.image_url ?? undefined}
+          accepts="image/jpeg,image/png,image/webp"
+          size={1024 * 1024 * 2} // 2 MB
         />
 
         {isError && (

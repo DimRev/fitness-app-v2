@@ -65,10 +65,6 @@ function MealFoodItemsList({ toggleFoodItems, initFoodItems }: Props) {
         ev.currentTarget.clientHeight &&
       hasNextPage
     ) {
-      console.log(
-        ev.currentTarget.scrollHeight - ev.currentTarget.scrollTop,
-        ev.currentTarget.clientHeight,
-      );
       void fetchNextPage();
     }
   }
