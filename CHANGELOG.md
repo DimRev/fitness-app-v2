@@ -1,3 +1,10 @@
+## [0.4.1](https://github.com/DimRev/fitness-app-v2/compare/v0.4.0...v0.4.1) (2024-09-14)
+
+
+### Bug Fixes
+
+* install certificates on docker container to access AWS ([b741c1e](https://github.com/DimRev/fitness-app-v2/commit/b741c1ebed0becef778eb3cc95bdeedebbaeb05d))
+
 # [0.4.0](https://github.com/DimRev/fitness-app-v2/compare/v0.3.0...v0.4.0) (2024-09-14)
 
 
