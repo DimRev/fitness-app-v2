@@ -26,6 +26,8 @@ import {
   type FoodItemPendingFormSchema,
 } from "../foodItemsPending.schema";
 import useCreateFoodItemPending from "../hooks/useCreateFoodItemPending";
+import FoodItemImageInput from "~/features/upload/components/FoodItemImageInput";
+import { useRef } from "react";
 
 function FoodItemPendingAddForm() {
   const {
@@ -35,6 +37,10 @@ function FoodItemPendingAddForm() {
     error,
   } = useCreateFoodItemPending();
   const navigate = useNavigate();
+
+  const inputFileRef = useRef<{
+    triggerSubmit: () => Promise<string | null> | undefined;
+  }>(null);
 
   const form = useForm<FoodItemPendingFormSchema>({
     resolver: zodResolver(foodItemPendingFormSchema),
@@ -50,13 +56,22 @@ function FoodItemPendingAddForm() {
     },
   });
 
-  function onSubmit(data: FoodItemPendingFormSchema) {
-    void createFoodItemPending(data, {
-      onSuccess: () => {
-        void form.reset();
-        navigate("/dashboard/food_item");
-      },
-    });
+  async function onSubmit(data: FoodItemPendingFormSchema) {
+    if (inputFileRef.current) {
+      const imageUrl = await inputFileRef.current.triggerSubmit();
+      void createFoodItemPending(
+        {
+          ...data,
+          image_url: imageUrl ? `${imageUrl}` : null,
+        },
+        {
+          onSuccess: () => {
+            void form.reset();
+            navigate("/dashboard/food_item");
+          },
+        },
+      );
+    }
   }
 
   return (
@@ -121,7 +136,14 @@ function FoodItemPendingAddForm() {
               </FormItem>
             )}
           />
-          <div className="grid grid-cols-2 gap-x-2">
+
+          <FoodItemImageInput
+            label="Image"
+            ref={inputFileRef}
+            size={1024 * 1024 * 2}
+          />
+
+          <div className="gap-x-2 grid grid-cols-2">
             <FormField
               control={form.control}
               name="calories"
@@ -149,7 +171,7 @@ function FoodItemPendingAddForm() {
               )}
             />
           </div>
-          <div className="grid grid-cols-2 gap-x-2">
+          <div className="gap-x-2 grid grid-cols-2">
             <FormField
               control={form.control}
               name="fat"
@@ -177,7 +199,7 @@ function FoodItemPendingAddForm() {
               )}
             />
           </div>
-          <div className="mt-4 flex justify-end">
+          <div className="flex justify-end mt-4">
             <Button type="submit" disabled={isPending}>
               {isPending ? "Creating..." : "Create"}
             </Button>

@@ -18,7 +18,7 @@ import useUpdateSettings from "../hooks/useUpdateSettings";
 import useAuthStore from "~/features/auth/hooks/useAuthStore";
 import useLayoutStore from "../hooks/useLayoutStore";
 import { useRef } from "react";
-import AvatarImageInput from "~/features/shared/components/AvatarImageInput";
+import AvatarImageInput from "~/features/upload/components/AvatarImageInput";
 
 type Props = {
   user: AuthUser;

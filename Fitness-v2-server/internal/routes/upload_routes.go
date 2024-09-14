@@ -9,6 +9,7 @@ import (
 func UploadRoutesV1(e *echo.Group) {
 	upload := e.Group("/upload", middleware.ProtectedRoute)
 	{
-		upload.POST("/presigned_avatar_url", controllers.GetPresignedAvatarBucketUrl)
+		upload.POST("/presigned_avatar_url", controllers.GetPresignedUrlAvatar)
+		upload.POST("/presigned_food_image_url", controllers.GetPresignedUrlFoodImage)
 	}
 }

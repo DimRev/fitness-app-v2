@@ -9,6 +9,8 @@ import { H2, H3 } from "~/features/shared/components/Typography";
 import { Separator } from "~/features/shared/components/ui/separator";
 import { Button } from "~/features/shared/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { Textarea } from "~/features/shared/components/ui/textarea";
+import { Apple } from "lucide-react";
 
 type Props = {
   mealId: string;
@@ -20,6 +22,10 @@ function MealDetails({ mealId }: Props) {
   });
 
   const navigate = useNavigate();
+
+  function capitalizeFirstLetter(string: string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -37,10 +43,15 @@ function MealDetails({ mealId }: Props) {
       <CardContent>
         <Separator className="mb-2" />
         <div className="gap-2 grid grid-cols-[3fr_2fr]">
-          <div className="border-e line-clamp-3 break-words">
-            {mealWithNutritionAndFoodItems?.meal.meal.description ??
-              "No description"}
-          </div>
+          {/* <div className="border-e line-clamp-3 break-words"></div> */}
+          <Textarea
+            readOnly={true}
+            value={
+              mealWithNutritionAndFoodItems?.meal.meal.description ??
+              "No description"
+            }
+            className="height-[100px] resize-none scroll"
+          />
           <div className="truncate">
             <div className="flex justify-between items-center gap-2">
               <div>Total Calories:</div>
@@ -74,12 +85,43 @@ function MealDetails({ mealId }: Props) {
           {mealWithNutritionAndFoodItems?.food_items.map((foodItem) => (
             <Card key={foodItem.food_item.id} className="border-2 px-2 py-1">
               <H3>
+                {capitalizeFirstLetter(foodItem.food_item.food_type)} |{" "}
                 {foodItem.food_item.name} x {foodItem.amount}
               </H3>
-              <div>Calories: {foodItem.food_item.calories}</div>
-              <div>Carbs: {foodItem.food_item.carbs}</div>
-              <div>Fat: {foodItem.food_item.fat}</div>
-              <div>Protein: {foodItem.food_item.protein}</div>
+              <div className="mt-2 line-clamp-3">
+                {foodItem.food_item.description ?? "No description"}
+              </div>
+              <div className="gap-2 grid grid-cols-[3fr_4fr] py-2">
+                <div className="flex justify-center items-center p-1 border rounded-md">
+                  {foodItem.food_item.image_url ? (
+                    <img
+                      src={foodItem.food_item.image_url}
+                      alt={foodItem.food_item.name}
+                      className="w-full h-full object-contain"
+                    />
+                  ) : (
+                    <Apple className="opacity-55 w-full h-full object-contain" />
+                  )}
+                </div>
+                <div>
+                  <div className="flex justify-between items-center gap-2">
+                    <div>Calories:</div>
+                    <div>{foodItem.food_item.calories}</div>
+                  </div>
+                  <div className="flex justify-between items-center gap-2">
+                    <div>Carbs:</div>
+                    <div>{foodItem.food_item.carbs}</div>
+                  </div>
+                  <div className="flex justify-between items-center gap-2">
+                    <div>Fat:</div>
+                    <div>{foodItem.food_item.fat}</div>
+                  </div>
+                  <div className="flex justify-between items-center gap-2">
+                    <div>Protein:</div>
+                    <div>{foodItem.food_item.protein}</div>
+                  </div>
+                </div>
+              </div>
             </Card>
           ))}
         </div>
