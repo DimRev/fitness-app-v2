@@ -7,9 +7,9 @@ import {
   type ChangeEvent,
 } from "react";
 import { cn, computeCheckSum } from "~/lib/utils";
-import useGetPresignedBucketUrl from "../hooks/useGetPresignedBucketUrl";
-import { H4 } from "./Typography";
-import { Button } from "./ui/button";
+import useGetPresignedUrlAvatar from "../hooks/useGetPresignedUrlAvatar";
+import { H4 } from "~/features/shared/components/Typography";
+import { Button } from "~/features/shared/components/ui/button";
 
 type Props = {
   accepts?: string;
@@ -29,7 +29,7 @@ const AvatarImageInput = forwardRef(
       isError,
       isLoading,
       error,
-    } = useGetPresignedBucketUrl();
+    } = useGetPresignedUrlAvatar();
 
     useImperativeHandle(ref, () => ({
       async triggerSubmit() {

@@ -8,6 +8,7 @@ import {
   CardHeader,
 } from "~/features/shared/components/ui/card";
 import { Skeleton } from "~/features/shared/components/ui/skeleton";
+import { Textarea } from "~/features/shared/components/ui/textarea";
 
 type Props = {
   mealWithNutrition: MealWithNutrition;
@@ -22,7 +23,7 @@ function MealPreview({ mealWithNutrition }: Props) {
       </CardHeader>
       <CardContent>
         <div className="gap-2 grid grid-cols-[3fr_2fr]">
-          <div className="line-clamp-3 break-words">
+          <div className="line-clamp-3 whitespace-pre-wrap">
             {mealWithNutrition.meal.description ?? "No description"}
           </div>
           <div className="truncate">

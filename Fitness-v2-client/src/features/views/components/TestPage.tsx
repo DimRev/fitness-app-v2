@@ -1,7 +1,7 @@
 import { cn } from "~/lib/utils";
 import MainPageWrapper from "./MainPageWrapper";
 import { Info } from "lucide-react";
-import AvatarImageInput from "~/features/shared/components/AvatarImageInput";
+import AvatarImageInput from "~/features/upload/components/AvatarImageInput";
 
 function TestPage() {
   return (

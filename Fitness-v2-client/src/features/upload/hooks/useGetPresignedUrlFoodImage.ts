@@ -3,14 +3,14 @@ import { useMutation, type UseMutationResult } from "react-query";
 import axiosInstance from "~/lib/axios";
 import { USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
-type GetPresignedBucketUrlRequestBody = {
+type GetPresignedUrlFoodImageRequestBody = {
   file_name: string;
   file_type: string;
   file_size: number;
   check_sum: string;
 };
 
-type GetPresignedBucketUrlRespBody = {
+type GetPresignedUrlFoodImageRespBody = {
   presigned_url: string;
 };
 
@@ -18,29 +18,29 @@ type ErrorResponseBody = {
   message: string;
 };
 
-function useGetPresignedBucketUrl(): UseMutationResult<
-  GetPresignedBucketUrlRespBody,
+function useGetPresignedUrlFoodImage(): UseMutationResult<
+  GetPresignedUrlFoodImageRespBody,
   Error,
-  GetPresignedBucketUrlRequestBody
+  GetPresignedUrlFoodImageRequestBody
 > {
   return useMutation<
-    GetPresignedBucketUrlRespBody,
+    GetPresignedUrlFoodImageRespBody,
     Error,
-    GetPresignedBucketUrlRequestBody
-  >(getPresignedBucketUrl, {
+    GetPresignedUrlFoodImageRequestBody
+  >(getPresignedUrlFoodImage, {
     ...USE_MUTATION_DEFAULT_OPTIONS,
   });
 }
 
-async function getPresignedBucketUrl({
+async function getPresignedUrlFoodImage({
   file_name,
   file_type,
   file_size,
   check_sum,
-}: GetPresignedBucketUrlRequestBody): Promise<GetPresignedBucketUrlRespBody> {
+}: GetPresignedUrlFoodImageRequestBody): Promise<GetPresignedUrlFoodImageRespBody> {
   try {
-    const response = await axiosInstance.post<GetPresignedBucketUrlRespBody>(
-      "/upload/presigned_avatar_url",
+    const response = await axiosInstance.post<GetPresignedUrlFoodImageRespBody>(
+      "/upload/presigned_food_image_url",
       {
         file_name,
         file_type,
@@ -60,4 +60,4 @@ async function getPresignedBucketUrl({
   }
 }
 
-export default useGetPresignedBucketUrl;
+export default useGetPresignedUrlFoodImage;
