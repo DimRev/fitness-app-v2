@@ -1,3 +1,10 @@
+# [0.5.0](https://github.com/DimRev/fitness-app-v2/compare/v0.4.1...v0.5.0) (2024-09-15)
+
+
+### Features
+
+* Add toaster ([366a065](https://github.com/DimRev/fitness-app-v2/commit/366a065d040f5bcb2f200e2e743d0e48c8dcc65b))
+
 ## [0.4.1](https://github.com/DimRev/fitness-app-v2/compare/v0.4.0...v0.4.1) (2024-09-14)
 
 
