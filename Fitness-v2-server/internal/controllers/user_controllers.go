@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"math"
 	"net/http"
@@ -173,24 +174,49 @@ type UpdateUserByAdminRequest struct {
 func UpdateUserByAdmin(c echo.Context) error {
 	updateUserReq := UpdateUserByAdminRequest{}
 	if err := c.Bind(&updateUserReq); err != nil {
+		utils.FmtLogMsg(
+			"user_controller.go",
+			"UpdateUserByAdmin",
+			fmt.Errorf("failed to bind update user by admin request: %s", err),
+		)
 		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
-			"message": "malformed request",
+			"message": "Failed to update user by admin, malformed request",
 		})
 	}
 
 	userToUpdateId, err := uuid.Parse(c.Param("userId"))
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "invalid user id")
+		utils.FmtLogMsg(
+			"user_controller.go",
+			"UpdateUserByAdmin",
+			fmt.Errorf("failed to parse user id: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to update user by admin, invalid user id",
+		})
 	}
 
 	user, ok := c.Get("user").(database.User)
 	if !ok {
-		log.Printf("Reached update user by admin without user")
-		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
+		utils.FmtLogMsg(
+			"user_controller.go",
+			"UpdateUserByAdmin",
+			fmt.Errorf("reached update user by admin without user"),
+		)
+		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
+			"message": "Failed to update user by admin, unauthorized",
+		})
 	}
 
 	if user.ID == userToUpdateId {
-		return echo.NewHTTPError(http.StatusBadRequest, "Can not update self")
+		utils.FmtLogMsg(
+			"user_controller.go",
+			"UpdateUserByAdmin",
+			fmt.Errorf("can not update self"),
+		)
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to update user by admin, can not update self",
+		})
 	}
 
 	var imageUrl sql.NullString
@@ -207,8 +233,14 @@ func UpdateUserByAdmin(c echo.Context) error {
 	}
 	updatedUser, err := config.Queries.UpdateUserByAdmin(c.Request().Context(), updateUserParams)
 	if err != nil {
-		log.Println("Failed to update user: ", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to update user")
+		utils.FmtLogMsg(
+			"user_controller.go",
+			"UpdateUserByAdmin",
+			fmt.Errorf("failed to update user: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to update user by admin, trouble with server",
+		})
 	}
 
 	var updatedImageUrl *string

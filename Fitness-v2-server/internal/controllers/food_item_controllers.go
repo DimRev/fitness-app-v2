@@ -3,7 +3,6 @@ package controllers
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"math"
 	"net/http"
 	"strconv"
@@ -20,7 +19,11 @@ import (
 func GetFoodItems(c echo.Context) error {
 	_, ok := c.Get("user").(database.User)
 	if !ok {
-		log.Printf("Reached create Meal without user")
+		utils.FmtLogMsg(
+			"food_item_controllers.go",
+			"GetFoodItems",
+			fmt.Errorf("reached get food items without user"),
+		)
 		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
 			"message": "Failed to get food items, unauthorized",
 		})
@@ -32,7 +35,11 @@ func GetFoodItems(c echo.Context) error {
 	if offsetStr := c.QueryParam("offset"); offsetStr != "" {
 		convOffset, err := utils.SafeParseStrToInt32(offsetStr, 0, math.MaxInt32)
 		if err != nil {
-			log.Println("Failed to parse offset: ", err)
+			utils.FmtLogMsg(
+				"food_item_controllers.go",
+				"GetFoodItems",
+				fmt.Errorf("failed to parse offset: %s", err),
+			)
 			return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
 				"message": "Failed to get food items, invalid offset",
 			})
@@ -42,7 +49,11 @@ func GetFoodItems(c echo.Context) error {
 	if limitStr := c.QueryParam("limit"); limitStr != "" {
 		convLimit, err := utils.SafeParseStrToInt32(limitStr, 1, 100)
 		if err != nil {
-			log.Println("Failed to parse limit: ", err)
+			utils.FmtLogMsg(
+				"food_item_controllers.go",
+				"GetFoodItems",
+				fmt.Errorf("failed to parse limit: %s", err),
+			)
 			return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
 				"message": "Failed to get food items, invalid limit",
 			})
@@ -57,7 +68,11 @@ func GetFoodItems(c echo.Context) error {
 	}
 
 	if err := config.DB.Ping(); err != nil {
-		log.Println("Connection to database failed: ", err)
+		utils.FmtLogMsg(
+			"food_item_controllers.go",
+			"GetFoodItems",
+			fmt.Errorf("connection to database failed : %s", err),
+		)
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 			"message": "Failed to get food items, trouble with server",
 		})
@@ -73,7 +88,11 @@ func GetFoodItems(c echo.Context) error {
 
 		foods, err := config.Queries.GetFoodsWithFilter(c.Request().Context(), getFoodParams)
 		if err != nil {
-			log.Println("Failed to get food items, GetFoodsWithFilter failed: ", err)
+			utils.FmtLogMsg(
+				"food_item_controllers.go",
+				"GetFoodItems",
+				fmt.Errorf("failed to get food items: %s", err),
+			)
 			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 				"message": "Failed to get food items, trouble with server",
 			})
@@ -276,7 +295,6 @@ func CreateFoodItem(c echo.Context) error {
 			"CreateFoodItem",
 			fmt.Errorf("connection to database failed : %s", err),
 		)
-		log.Println("Connection to database failed: ", err)
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 			"message": "Failed to create food item, trouble with server",
 		})
