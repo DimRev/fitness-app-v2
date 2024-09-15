@@ -1,9 +1,34 @@
+import { Info } from "lucide-react";
+import { Button } from "~/features/shared/components/ui/button";
 import { cn } from "~/lib/utils";
 import MainPageWrapper from "./MainPageWrapper";
-import { Info } from "lucide-react";
-import AvatarImageInput from "~/features/upload/components/AvatarImageInput";
+import { toast } from "sonner";
 
 function TestPage() {
+  function handleDefaultSonner() {
+    toast.success("This is a success sonner", {
+      dismissible: true,
+    });
+  }
+
+  function handleDestructiveSonner() {
+    toast.error("This is a destructive sonner", {
+      dismissible: true,
+    });
+  }
+
+  function handleWarningSonner() {
+    toast.warning("This is a warning sonner", {
+      dismissible: true,
+    });
+  }
+
+  function handleInfoSonner() {
+    toast.info("This is a info sonner", {
+      dismissible: true,
+    });
+  }
+
   return (
     <MainPageWrapper LucideIcon={Info} title="Test Page" to="/test">
       <TestCard title="Color Palette | Background & Foreground">
@@ -66,8 +91,12 @@ function TestPage() {
           colorClasses="bg-ring text-foreground"
         />
       </TestCard>
-
-      <AvatarImageInput />
+      <TestCard title="Toast & Sonners">
+        <Button onClick={handleDefaultSonner}>Success Toast</Button>
+        <Button onClick={handleDestructiveSonner}>Destructive Toast</Button>
+        <Button onClick={handleWarningSonner}>Warning Toast</Button>
+        <Button onClick={handleInfoSonner}>Info Toast</Button>
+      </TestCard>
     </MainPageWrapper>
   );
 }
@@ -80,7 +109,7 @@ function TestCard({ title, children }: TestCardProps) {
   return (
     <div className="flex flex-col gap-2 border-t font-bold">
       <h2 className="text-center text-lg">{title}</h2>
-      <div className="flex flex-wrap justify-center gap-4 py-2 border-b font-bold">
+      <div className="flex flex-wrap justify-center gap-4 border-b py-2 font-bold">
         {children}
       </div>
     </div>
@@ -94,7 +123,7 @@ type DuelColorCardProps = {
 
 function DarkLightColorCards({ title, colorClasses }: DuelColorCardProps) {
   return (
-    <div className="flex gap-2 border-2 p-1 border-black">
+    <div className="flex gap-2 border-2 border-black p-1">
       <div
         className={cn("flex size-36 items-center justify-center", colorClasses)}
       >
