@@ -28,6 +28,7 @@ import {
 import useCreateFoodItemPending from "../hooks/useCreateFoodItemPending";
 import FoodItemImageInput from "~/features/upload/components/FoodItemImageInput";
 import { useRef } from "react";
+import { toast } from "sonner";
 
 function FoodItemPendingAddForm() {
   const {
@@ -65,9 +66,19 @@ function FoodItemPendingAddForm() {
           image_url: imageUrl ? `${imageUrl}` : null,
         },
         {
-          onSuccess: () => {
+          onSuccess: (res) => {
             void form.reset();
+            toast.success("Successfully created food item", {
+              dismissible: true,
+              description: `Created: ${res.food_type} | ${res.name}`,
+            });
             navigate("/dashboard/food_item");
+          },
+          onError: (err) => {
+            toast.error("Failed to create food item", {
+              dismissible: true,
+              description: `Error: ${err.message}`,
+            });
           },
         },
       );
@@ -143,7 +154,7 @@ function FoodItemPendingAddForm() {
             size={1024 * 1024 * 2}
           />
 
-          <div className="gap-x-2 grid grid-cols-2">
+          <div className="grid grid-cols-2 gap-x-2">
             <FormField
               control={form.control}
               name="calories"
@@ -171,7 +182,7 @@ function FoodItemPendingAddForm() {
               )}
             />
           </div>
-          <div className="gap-x-2 grid grid-cols-2">
+          <div className="grid grid-cols-2 gap-x-2">
             <FormField
               control={form.control}
               name="fat"
@@ -199,7 +210,7 @@ function FoodItemPendingAddForm() {
               )}
             />
           </div>
-          <div className="flex justify-end mt-4">
+          <div className="mt-4 flex justify-end">
             <Button type="submit" disabled={isPending}>
               {isPending ? "Creating..." : "Create"}
             </Button>

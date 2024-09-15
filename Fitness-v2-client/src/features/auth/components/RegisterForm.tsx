@@ -14,6 +14,7 @@ import {
 import { Input } from "~/features/shared/components/ui/input";
 import useRegister from "../hooks/useRegister";
 import useAuthStore from "../hooks/useAuthStore";
+import { toast } from "sonner";
 
 const registerFormSchema = z.object({
   email: z.string().email(),
@@ -38,20 +39,23 @@ function RegisterForm() {
   });
 
   async function handleSubmit(data: RegisterFormSchema) {
-    try {
-      await register(data, {
-        onSuccess: (user) => {
-          sessionStorage.setItem("fitness_app_session", user.session_token);
-          setUser(user);
-        },
-      });
-    } catch (err) {
-      if (err instanceof Error) {
+    void register(data, {
+      onSuccess: (user) => {
+        sessionStorage.setItem("fitness_app_session", user.session_token);
+        toast.success("Successfully registered", {
+          dismissible: true,
+          description: `Registered: ${user.email}`,
+        });
+        setUser(user);
+      },
+      onError: (err) => {
+        toast.error("Failed to register", {
+          dismissible: true,
+          description: `Error: ${err.message}`,
+        });
         setError(err.message);
-      } else {
-        setError("An unexpected error occurred");
-      }
-    }
+      },
+    });
   }
 
   return (

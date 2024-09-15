@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "~/features/shared/components/ui/button";
 import {
@@ -12,8 +13,8 @@ import {
   FormMessage,
 } from "~/features/shared/components/ui/form";
 import { Input } from "~/features/shared/components/ui/input";
-import useLogin from "../hooks/useLogin";
 import useAuthStore from "../hooks/useAuthStore";
+import useLogin from "../hooks/useLogin";
 
 const loginFormSchema = z.object({
   email: z.string().email(),
@@ -36,20 +37,23 @@ function LoginForm() {
   });
 
   async function handleSubmit(data: LoginFormSchema) {
-    try {
-      await login(data, {
-        onSuccess: (user) => {
-          sessionStorage.setItem("fitness_app_session", user.session_token);
-          setUser(user);
-        },
-      });
-    } catch (err) {
-      if (err instanceof Error) {
+    void login(data, {
+      onSuccess: (user) => {
+        sessionStorage.setItem("fitness_app_session", user.session_token);
+        setUser(user);
+        toast.success("Successfully logged in", {
+          dismissible: true,
+          description: `Logged in as ${user.email}`,
+        });
+      },
+      onError: (err) => {
+        toast.error("Failed to login", {
+          dismissible: true,
+          description: `Error: ${err.message}`,
+        });
         setError(err.message);
-      } else {
-        setError("An unexpected error occurred");
-      }
-    }
+      },
+    });
   }
 
   return (

@@ -20,6 +20,7 @@ import { mealFormSchema, type MealFormSchema } from "../meal.schema";
 import MealFoodItemsList from "./MealFoodItemsList";
 import useCreateMeal from "../hooks/useCreateMeal";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 function MealAddForm() {
   const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
@@ -58,9 +59,19 @@ function MealAddForm() {
         food_items: data.food_items,
       },
       {
-        onSuccess: () => {
+        onSuccess: (res) => {
           void form.reset();
+          toast.success("Successfully created meal", {
+            dismissible: true,
+            description: `Created: ${res.meal.name}`,
+          });
           navigate("/dashboard/meal");
+        },
+        onError: (err) => {
+          toast.error("Failed to create meal", {
+            dismissible: true,
+            description: `Error: ${err.message}`,
+          });
         },
       },
     );
