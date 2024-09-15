@@ -15,6 +15,7 @@ import FoodItemPendingAdminTableRow, {
   FoodItemPendingAdminTableRowEmpty,
   FoodItemPendingAdminTableRowSkeleton,
 } from "./FoodItemPendingAdminTableRow";
+import { toast } from "sonner";
 
 function FoodItemsPendingAdminTable() {
   const [page, setPage] = useState(1);
@@ -44,6 +45,18 @@ function FoodItemsPendingAdminTable() {
         offset,
       },
       {
+        onSuccess: (data) => {
+          toast.success("Successfully approved food item", {
+            dismissible: true,
+            description: `Approved: ${data.message}`,
+          });
+        },
+        onError: (err) => {
+          toast.error("Failed to approve food item", {
+            dismissible: true,
+            description: `Error: ${err.message}`,
+          });
+        },
         onSettled: () => {
           setPendingIds((prev) =>
             prev.filter((id) => id !== foodItemPendingId),
@@ -62,6 +75,18 @@ function FoodItemsPendingAdminTable() {
         offset,
       },
       {
+        onSuccess: (data) => {
+          toast.success("Successfully approved food item", {
+            dismissible: true,
+            description: `Rejected: ${data.message}`,
+          });
+        },
+        onError: (err) => {
+          toast.error("Failed to reject food item", {
+            dismissible: true,
+            description: `Error: ${err.message}`,
+          });
+        },
         onSettled: () => {
           setPendingIds((prev) =>
             prev.filter((id) => id !== foodItemPendingId),

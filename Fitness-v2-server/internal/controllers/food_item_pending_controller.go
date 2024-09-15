@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"database/sql"
-	"log"
+	"fmt"
 	"math"
 	"net/http"
 
@@ -17,8 +17,13 @@ import (
 func GetFoodItemsPending(c echo.Context) error {
 	user, ok := c.Get("user").(database.User)
 	if !ok {
+		utils.FmtLogMsg(
+			"food_item_pending_controller.go",
+			"GetFoodItemsPending",
+			fmt.Errorf("reached get food items pending without user"),
+		)
 		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
-			"message": "unauthorized",
+			"message": "Failed to get food items pending, unauthorized",
 		})
 	}
 
@@ -28,16 +33,28 @@ func GetFoodItemsPending(c echo.Context) error {
 	if offsetStr := c.QueryParam("offset"); offsetStr != "" {
 		convOffset, err := utils.SafeParseStrToInt32(offsetStr, 0, math.MaxInt32)
 		if err != nil {
-			log.Println("Failed to parse offset: ", err)
-			return echo.NewHTTPError(http.StatusBadRequest, "invalid offset")
+			utils.FmtLogMsg(
+				"food_item_pending_controller.go",
+				"GetFoodItemsPending",
+				fmt.Errorf("failed to parse offset: %s", err),
+			)
+			return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+				"message": "Failed to get food items pending, invalid offset",
+			})
 		}
 		offset = int32(convOffset)
 	}
 	if limitStr := c.QueryParam("limit"); limitStr != "" {
 		convLimit, err := utils.SafeParseStrToInt32(limitStr, 1, 100)
 		if err != nil {
-			log.Println("Failed to parse limit: ", err)
-			return echo.NewHTTPError(http.StatusBadRequest, "invalid limit")
+			utils.FmtLogMsg(
+				"food_item_pending_controller.go",
+				"GetFoodItemsPending",
+				fmt.Errorf("failed to parse limit: %s", err),
+			)
+			return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+				"message": "Failed to get food items pending, invalid limit",
+			})
 		}
 		limit = int32(convLimit)
 	}
@@ -46,9 +63,13 @@ func GetFoodItemsPending(c echo.Context) error {
 	}
 
 	if err := config.DB.Ping(); err != nil {
-		log.Println("Connection to database failed: ", err)
+		utils.FmtLogMsg(
+			"food_item_pending_controller.go",
+			"GetFoodItemsPending",
+			fmt.Errorf("connection to database failed : %s", err),
+		)
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-			"message": "failed to get food items",
+			"message": "Failed to get food items pending, trouble with server",
 		})
 	}
 
@@ -61,17 +82,25 @@ func GetFoodItemsPending(c echo.Context) error {
 
 		foodItemsPending, err := config.Queries.GetFoodItemsPending(c.Request().Context(), getFoodItemsPendingParams)
 		if err != nil {
-			log.Println("Failed to get food items: ", err)
+			utils.FmtLogMsg(
+				"food_item_pending_controller.go",
+				"GetFoodItemsPending",
+				fmt.Errorf("failed to get food items: %s", err),
+			)
 			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-				"message": "failed to get food items",
+				"message": "Failed to get food items pending, trouble with server",
 			})
 		}
 
 		rowCount, err := config.Queries.GetFoodItemsPendingTotalPages(c.Request().Context())
 		if err != nil {
-			log.Println("Failed to get food items: ", err)
+			utils.FmtLogMsg(
+				"food_item_pending_controller.go",
+				"GetFoodItemsPending",
+				fmt.Errorf("failed to get food items total pages: %s", err),
+			)
 			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-				"message": "failed to get food items",
+				"message": "Failed to get food items pending, trouble with server",
 			})
 		}
 
@@ -125,17 +154,25 @@ func GetFoodItemsPending(c echo.Context) error {
 
 		foodItemsPending, err := config.Queries.GetFoodItemsPendingByUserIDWithTextFilter(c.Request().Context(), getFoodItemsPendingParams)
 		if err != nil {
-			log.Println("Failed to get food items: ", err)
+			utils.FmtLogMsg(
+				"food_item_pending_controller.go",
+				"GetFoodItemsPending",
+				fmt.Errorf("failed to get food items: %s", err),
+			)
 			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-				"message": "failed to get food items",
+				"message": "Failed to get food items pending, trouble with server",
 			})
 		}
 
 		rowCount, err := config.Queries.GetFoodItemsPendingTotalPagesWithTextFilter(c.Request().Context(), textFilterNullString)
 		if err != nil {
-			log.Println("Failed to get food items: ", err)
+			utils.FmtLogMsg(
+				"food_item_pending_controller.go",
+				"GetFoodItemsPending",
+				fmt.Errorf("failed to get food items total pages: %s", err),
+			)
 			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-				"message": "failed to get food items",
+				"message": "Failed to get food items pending, trouble with server",
 			})
 		}
 
@@ -183,8 +220,13 @@ func GetFoodItemsPending(c echo.Context) error {
 func GetFoodItemsPendingByUserID(c echo.Context) error {
 	user, ok := c.Get("user").(database.User)
 	if !ok {
+		utils.FmtLogMsg(
+			"food_item_pending_controller.go",
+			"GetFoodItemsPendingByUserID",
+			fmt.Errorf("reached get food items pending by user id without user"),
+		)
 		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
-			"message": "unauthorized",
+			"message": "Failed to get food items pending, unauthorized",
 		})
 	}
 
@@ -193,16 +235,28 @@ func GetFoodItemsPendingByUserID(c echo.Context) error {
 	if offsetStr := c.QueryParam("offset"); offsetStr != "" {
 		convOffset, err := utils.SafeParseStrToInt32(offsetStr, 0, math.MaxInt32)
 		if err != nil {
-			log.Println("Failed to parse offset: ", err)
-			return echo.NewHTTPError(http.StatusBadRequest, "invalid offset")
+			utils.FmtLogMsg(
+				"food_item_pending_controller.go",
+				"GetFoodItemsPendingByUserID",
+				fmt.Errorf("failed to parse offset: %s", err),
+			)
+			return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+				"message": "Failed to get food items pending, invalid offset",
+			})
 		}
 		offset = int32(convOffset)
 	}
 	if limitStr := c.QueryParam("limit"); limitStr != "" {
 		convLimit, err := utils.SafeParseStrToInt32(limitStr, 1, 100)
 		if err != nil {
-			log.Println("Failed to parse limit: ", err)
-			return echo.NewHTTPError(http.StatusBadRequest, "invalid limit")
+			utils.FmtLogMsg(
+				"food_item_pending_controller.go",
+				"GetFoodItemsPendingByUserID",
+				fmt.Errorf("failed to parse limit: %s", err),
+			)
+			return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+				"message": "Failed to get food items pending, invalid limit",
+			})
 		}
 		limit = int32(convLimit)
 	}
@@ -215,17 +269,25 @@ func GetFoodItemsPendingByUserID(c echo.Context) error {
 
 	foodItemsPending, err := config.Queries.GetFoodItemsPendingByUserID(c.Request().Context(), getFoodItemsPendingByUserIDParams)
 	if err != nil {
-		log.Println("Failed to get food items by user id: ", err)
+		utils.FmtLogMsg(
+			"food_item_pending_controller.go",
+			"GetFoodItemsPendingByUserID",
+			fmt.Errorf("failed to get food items by user id: %s", err),
+		)
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-			"message": "failed to get food items",
+			"message": "Failed to get food items pending, trouble with server",
 		})
 	}
 
 	rowCount, err := config.Queries.GetFoodItemsPendingByUserTotalPages(c.Request().Context(), user.ID)
 	if err != nil {
-		log.Println("Failed to get food items by user id: ", err)
+		utils.FmtLogMsg(
+			"food_item_pending_controller.go",
+			"GetFoodItemsPendingByUserID",
+			fmt.Errorf("failed to get food items by user id total pages: %s", err),
+		)
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-			"message": "failed to get food items",
+			"message": "Failed to get food items pending, trouble with server",
 		})
 	}
 
@@ -283,15 +345,20 @@ type CreateFoodItemPendingRequest struct {
 func CreateFoodItemPending(c echo.Context) error {
 	user, ok := c.Get("user").(database.User)
 	if !ok {
+		utils.FmtLogMsg(
+			"food_item_pending_controller.go",
+			"CreateFoodItemPending",
+			fmt.Errorf("reached create food item pending without user"),
+		)
 		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
-			"message": "unauthorized",
+			"message": "Failed to create food item pending, unauthorized",
 		})
 	}
 
 	createFoodItemPendingReq := CreateFoodItemPendingRequest{}
 	if err := c.Bind(&createFoodItemPendingReq); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
-			"message": "malformed request",
+			"message": "Failed to create food item pending, malformed request",
 		})
 	}
 
@@ -318,17 +385,25 @@ func CreateFoodItemPending(c echo.Context) error {
 	}
 
 	if err := config.DB.Ping(); err != nil {
-		log.Println("Connection to database failed: ", err)
+		utils.FmtLogMsg(
+			"food_item_pending_controller.go",
+			"CreateFoodItemPending",
+			fmt.Errorf("connection to database failed : %s", err),
+		)
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-			"message": "failed to create food item",
+			"message": "Failed to create food item pending, trouble with server",
 		})
 	}
 
 	foodItemPending, err := config.Queries.CreateFoodItemPending(c.Request().Context(), createFoodItemPendingParams)
 	if err != nil {
-		log.Println("Failed to create food item: ", err)
+		utils.FmtLogMsg(
+			"food_item_pending_controller.go",
+			"CreateFoodItemPending",
+			fmt.Errorf("failed to create food item pending: %s", err),
+		)
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-			"message": "failed to create food item",
+			"message": "Failed to create food item pending, trouble with server",
 		})
 	}
 
@@ -365,12 +440,24 @@ func CreateFoodItemPending(c echo.Context) error {
 func ToggleFoodItemPending(c echo.Context) error {
 	user, ok := c.Get("user").(database.User)
 	if !ok {
-		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
+		utils.FmtLogMsg(
+			"food_item_pending_controller.go",
+			"ToggleFoodItemPending",
+			fmt.Errorf("reached toggle food item pending without user"),
+		)
+		return echo.NewHTTPError(http.StatusUnauthorized, "Failed to toggle food item pending, unauthorized")
 	}
 
 	foodItemPendingID, err := uuid.Parse(c.Param("food_item_pending_id"))
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "invalid food item pending id")
+		utils.FmtLogMsg(
+			"food_item_pending_controller.go",
+			"ToggleFoodItemPending",
+			fmt.Errorf("failed to parse food item pending id: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to toggle food item pending, invalid food item pending id",
+		})
 	}
 
 	getFoodItemPendingLikeForUserParams := database.GetFoodItemPendingLikeForUserParams{
@@ -389,15 +476,22 @@ func ToggleFoodItemPending(c echo.Context) error {
 				FoodItemID: foodItemPendingID,
 			}
 			if err := config.Queries.LikeFoodItemPendingForUser(c.Request().Context(), likeFoodItemPendingForUserParams); err != nil {
-				log.Println("Failed to like food item pending: ", err)
-				return echo.NewHTTPError(http.StatusInternalServerError, "failed to unlike food item pending")
+				return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+					"message": "Failed to toggle food item pending, trouble with server",
+				})
 			}
 			return c.JSON(http.StatusOK, map[string]string{
-				"message": "food item pending liked",
+				"message": "Food item pending liked",
 			})
 		}
-		log.Println("Failed to get food item pending like for user: ", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get food item pending like for user")
+		utils.FmtLogMsg(
+			"food_item_pending_controller.go",
+			"ToggleFoodItemPending",
+			fmt.Errorf("failed to get food item pending like for user: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to toggle food item pending, trouble with server",
+		})
 	}
 
 	unlikeFoodItemPendingForUserParams := database.UnlikeFoodItemPendingForUserParams{
@@ -405,54 +499,100 @@ func ToggleFoodItemPending(c echo.Context) error {
 		FoodItemID: foodItemPendingID,
 	}
 	if err := config.Queries.UnlikeFoodItemPendingForUser(c.Request().Context(), unlikeFoodItemPendingForUserParams); err != nil {
-		log.Println("Failed to unlike food item pending: ", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to unlike food item pending")
+		utils.FmtLogMsg(
+			"food_item_pending_controller.go",
+			"ToggleFoodItemPending",
+			fmt.Errorf("failed to unlike food item pending: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to toggle food item pending, trouble with server",
+		})
 	}
 	return c.JSON(http.StatusOK, map[string]string{
-		"message": "food item pending unliked",
+		"message": "Food item pending unliked",
 	})
 }
 
 func ApproveFoodItemPending(c echo.Context) error {
 	user, ok := c.Get("user").(database.User)
 	if !ok || user.Role != database.UserRoleAdmin {
-		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
+		utils.FmtLogMsg(
+			"food_item_pending_controller.go",
+			"ApproveFoodItemPending",
+			fmt.Errorf("reached approve food item pending without user"),
+		)
+		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
+			"message": "Failed to approve food item pending, unauthorized",
+		})
 	}
 
 	foodItemPendingID, err := uuid.Parse(c.Param("food_item_pending_id"))
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "invalid food item pending id")
+		utils.FmtLogMsg(
+			"food_item_pending_controller.go",
+			"ApproveFoodItemPending",
+			fmt.Errorf("failed to parse food item pending id: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to approve food item pending, invalid food item pending id",
+		})
 	}
 
 	err = config.Queries.ApproveFoodItemPending(c.Request().Context(), foodItemPendingID)
 	if err != nil {
-		log.Println("Failed to approve food item pending: ", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to approve food item pending")
+		utils.FmtLogMsg(
+			"food_item_pending_controller.go",
+			"ApproveFoodItemPending",
+			fmt.Errorf("failed to approve food item pending: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to approve food item pending, trouble with server",
+		})
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{
-		"message": "food item pending approved",
+		"message": "Food item pending approved",
 	})
 }
 
 func RejectFoodItemPending(c echo.Context) error {
 	user, ok := c.Get("user").(database.User)
 	if !ok || user.Role != database.UserRoleAdmin {
-		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
+		utils.FmtLogMsg(
+			"food_item_pending_controller.go",
+			"RejectFoodItemPending",
+			fmt.Errorf("reached reject food item pending without user"),
+		)
+		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
+			"message": "Failed to reject food item pending, unauthorized",
+		})
 	}
 
 	foodItemPendingID, err := uuid.Parse(c.Param("food_item_pending_id"))
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "invalid food item pending id")
+		utils.FmtLogMsg(
+			"food_item_pending_controller.go",
+			"RejectFoodItemPending",
+			fmt.Errorf("failed to parse food item pending id: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to reject food item pending, invalid food item pending id",
+		})
 	}
 
 	err = config.Queries.RejectFoodItemPending(c.Request().Context(), foodItemPendingID)
 	if err != nil {
-		log.Println("Failed to reject food item pending: ", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to reject food item pending")
+		utils.FmtLogMsg(
+			"food_item_pending_controller.go",
+			"RejectFoodItemPending",
+			fmt.Errorf("failed to reject food item pending: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to reject food item pending, trouble with server",
+		})
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{
-		"message": "food item pending rejected",
+		"message": "Food item pending rejected",
 	})
 }

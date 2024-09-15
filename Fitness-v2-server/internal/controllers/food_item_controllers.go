@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"database/sql"
-	"log"
+	"fmt"
 	"math"
 	"net/http"
 	"strconv"
@@ -19,8 +19,14 @@ import (
 func GetFoodItems(c echo.Context) error {
 	_, ok := c.Get("user").(database.User)
 	if !ok {
-		log.Printf("Reached create Meal without user")
-		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
+		utils.FmtLogMsg(
+			"food_item_controllers.go",
+			"GetFoodItems",
+			fmt.Errorf("reached get food items without user"),
+		)
+		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
+			"message": "Failed to get food items, unauthorized",
+		})
 	}
 
 	offset := int32(0)
@@ -29,16 +35,28 @@ func GetFoodItems(c echo.Context) error {
 	if offsetStr := c.QueryParam("offset"); offsetStr != "" {
 		convOffset, err := utils.SafeParseStrToInt32(offsetStr, 0, math.MaxInt32)
 		if err != nil {
-			log.Println("Failed to parse offset: ", err)
-			return echo.NewHTTPError(http.StatusBadRequest, "invalid offset")
+			utils.FmtLogMsg(
+				"food_item_controllers.go",
+				"GetFoodItems",
+				fmt.Errorf("failed to parse offset: %s", err),
+			)
+			return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+				"message": "Failed to get food items, invalid offset",
+			})
 		}
 		offset = int32(convOffset)
 	}
 	if limitStr := c.QueryParam("limit"); limitStr != "" {
 		convLimit, err := utils.SafeParseStrToInt32(limitStr, 1, 100)
 		if err != nil {
-			log.Println("Failed to parse limit: ", err)
-			return echo.NewHTTPError(http.StatusBadRequest, "invalid limit")
+			utils.FmtLogMsg(
+				"food_item_controllers.go",
+				"GetFoodItems",
+				fmt.Errorf("failed to parse limit: %s", err),
+			)
+			return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+				"message": "Failed to get food items, invalid limit",
+			})
 		}
 		limit = int32(convLimit)
 	}
@@ -50,9 +68,13 @@ func GetFoodItems(c echo.Context) error {
 	}
 
 	if err := config.DB.Ping(); err != nil {
-		log.Println("Connection to database failed: ", err)
+		utils.FmtLogMsg(
+			"food_item_controllers.go",
+			"GetFoodItems",
+			fmt.Errorf("connection to database failed : %s", err),
+		)
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-			"message": "failed to get foods",
+			"message": "Failed to get food items, trouble with server",
 		})
 	}
 
@@ -66,7 +88,14 @@ func GetFoodItems(c echo.Context) error {
 
 		foods, err := config.Queries.GetFoodsWithFilter(c.Request().Context(), getFoodParams)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "failed to get foods")
+			utils.FmtLogMsg(
+				"food_item_controllers.go",
+				"GetFoodItems",
+				fmt.Errorf("failed to get food items: %s", err),
+			)
+			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+				"message": "Failed to get food items, trouble with server",
+			})
 		}
 
 		foodItems := make([]models.FoodItem, len(foods))
@@ -97,9 +126,9 @@ func GetFoodItems(c echo.Context) error {
 
 		totalPages, err := config.Queries.GetFoodItemsTotalPages(c.Request().Context())
 		if err != nil {
-			log.Println("Failed to get food items: ", err)
+			utils.FmtLogMsg("food_item_controllers.go", "GetFoodItems", fmt.Errorf("failed to get food items: %s", err))
 			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-				"message": "failed to get food items",
+				"message": "Failed to get food items, trouble with server",
 			})
 		}
 
@@ -117,7 +146,10 @@ func GetFoodItems(c echo.Context) error {
 
 		foods, err := config.Queries.GetFoods(c.Request().Context(), getFoodParams)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "failed to get foods")
+			utils.FmtLogMsg("food_item_controllers.go", "GetFoodItems", fmt.Errorf("failed to get food items: %s", err))
+			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+				"message": "Failed to get food items, trouble with server",
+			})
 		}
 
 		foodItems := make([]models.FoodItem, len(foods))
@@ -148,9 +180,9 @@ func GetFoodItems(c echo.Context) error {
 
 		totalPages, err := config.Queries.GetFoodItemsTotalPages(c.Request().Context())
 		if err != nil {
-			log.Println("Failed to get food items: ", err)
+			utils.FmtLogMsg("food_item_controllers.go", "GetFoodItems", fmt.Errorf("failed to get food items: %s", err))
 			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-				"message": "failed to get food items",
+				"message": "Failed to get food items, trouble with server",
 			})
 		}
 
@@ -177,19 +209,31 @@ type CreateFoodItemRequest struct {
 func CreateFoodItem(c echo.Context) error {
 	user, ok := c.Get("user").(database.User)
 	if !ok {
-		log.Printf("Reached create Meal without user")
-		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
+		utils.FmtLogMsg(
+			"food_item_controllers.go",
+			"CreateFoodItem",
+			fmt.Errorf("reached create food item without user"),
+		)
+		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
+			"message": "Failed to create food item, unauthorized",
+		})
 	}
 	if user.Role != database.UserRoleAdmin {
-		log.Printf("Reached create Meal without admin role")
-		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
+		utils.FmtLogMsg(
+			"food_item_controllers.go",
+			"CreateFoodItem",
+			fmt.Errorf("reached create food item without admin role"),
+		)
+		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
+			"message": "Failed to create food item, unauthorized",
+		})
 	}
 
 	createFoodItemReq := CreateFoodItemRequest{}
 
 	if err := c.Bind(&createFoodItemReq); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
-			"message": "malformed request",
+			"message": "Failed to create food item, malformed request",
 		})
 	}
 
@@ -205,24 +249,32 @@ func CreateFoodItem(c echo.Context) error {
 
 	foodType := database.FoodItemType(createFoodItemReq.FoodType)
 	if err := foodType.Scan(string(createFoodItemReq.FoodType)); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "invalid food type")
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to create food item, invalid food type",
+		})
+	}
+
+	if _, err := strconv.ParseFloat(createFoodItemReq.Calories, 64); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to create food item, calories must be a valid number",
+		})
 	}
 
 	if _, err := strconv.ParseFloat(createFoodItemReq.Fat, 64); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
-			"message": "fat must be a valid number",
+			"message": "Failed to create food item, fat must be a valid number",
 		})
 	}
 
 	if _, err := strconv.ParseFloat(createFoodItemReq.Protein, 64); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
-			"message": "protein must be a valid number",
+			"message": "Failed to create food item, protein must be a valid number",
 		})
 	}
 
 	if _, err := strconv.ParseFloat(createFoodItemReq.Carbs, 64); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
-			"message": "carbs must be a valid number",
+			"message": "Failed to create food item, carbs must be a valid number",
 		})
 	}
 
@@ -238,30 +290,45 @@ func CreateFoodItem(c echo.Context) error {
 	}
 
 	if err := config.DB.Ping(); err != nil {
-		log.Println("Connection to database failed: ", err)
+		utils.FmtLogMsg(
+			"food_item_controllers.go",
+			"CreateFoodItem",
+			fmt.Errorf("connection to database failed : %s", err),
+		)
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-			"message": "failed to create food item",
+			"message": "Failed to create food item, trouble with server",
 		})
 	}
 
 	foodItem, err := config.Queries.CreateFood(c.Request().Context(), createFoodItemParams)
 	if err != nil {
+		utils.FmtLogMsg(
+			"food_item_controllers.go",
+			"CreateFoodItem",
+			fmt.Errorf("failed to create food item: %s", err),
+		)
 		if pgErr, ok := err.(*pgconn.PgError); ok {
 			switch pgErr.Code {
 			case "22P02":
 				errMsg := strings.Replace(pgErr.Message, "_", " ", -1)
 				return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
-					"message": errMsg,
+					"message": fmt.Sprintf("Failed to create food item, %s", errMsg),
 				})
 
 			default:
 				return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-					"message": "failed to create food item",
+					"message": "Failed to create food item, trouble with server",
 				})
 			}
 		} else {
-			log.Println("Non-PostgreSQL error detected: ", err)
-			return echo.NewHTTPError(http.StatusInternalServerError, "failed to create food item")
+			utils.FmtLogMsg(
+				"food_item_controllers.go",
+				"CreateFoodItem",
+				fmt.Errorf("non-PostgreSQL error detected: %s", err),
+			)
+			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+				"message": "Failed to create food item, trouble with server",
+			})
 		}
 	}
 

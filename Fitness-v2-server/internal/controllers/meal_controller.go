@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"database/sql"
-	"log"
+	"fmt"
 	"math"
 	"net/http"
 	"strconv"
@@ -28,15 +28,26 @@ type CreateMealRequest struct {
 func CreateMeal(c echo.Context) error {
 	createMealReq := CreateMealRequest{}
 	if err := c.Bind(&createMealReq); err != nil {
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"CreateMeal",
+			fmt.Errorf("failed to bind create meal request: %s", err),
+		)
 		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
-			"message": "malformed request",
+			"message": "Failed to create meal, malformed request",
 		})
 	}
 
 	user, ok := c.Get("user").(database.User)
 	if !ok {
-		log.Printf("Reached create meal without user")
-		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"CreateMeal",
+			fmt.Errorf("reached create meal without user"),
+		)
+		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
+			"message": "Failed to create meal, unauthorized",
+		})
 	}
 
 	var description sql.NullString
@@ -55,8 +66,14 @@ func CreateMeal(c echo.Context) error {
 		UserID:      user.ID,
 	})
 	if err != nil {
-		log.Println("Failed to create meal: ", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to create meal")
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"CreateMeal",
+			fmt.Errorf("failed to create meal: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to create meal, trouble with server",
+		})
 	}
 
 	foodItemIDs := make([]uuid.UUID, 0)
@@ -64,8 +81,14 @@ func CreateMeal(c echo.Context) error {
 	for _, foodItem := range createMealReq.FoodItems {
 		foodItemAmountI32, err := utils.SafeParseIntToInt32(foodItem.Amount, 1, math.MaxInt32)
 		if err != nil {
-			log.Println("Failed to parse food item amount: ", err)
-			return echo.NewHTTPError(http.StatusBadRequest, "invalid food item amount")
+			utils.FmtLogMsg(
+				"meal_controller.go",
+				"CreateMeal",
+				fmt.Errorf("failed to parse food item amount: %s", err),
+			)
+			return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+				"message": "Failed to create meal, invalid food item amount",
+			})
 		}
 
 		foodItemIDs = append(foodItemIDs, foodItem.FoodItemID)
@@ -79,34 +102,70 @@ func CreateMeal(c echo.Context) error {
 		Column4: amounts, // Amounts array
 	})
 	if err != nil {
-		log.Println("Failed to insert food items for meal: ", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to add food items to meal")
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"CreateMeal",
+			fmt.Errorf("failed to insert food items for meal: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to create meal, trouble with server",
+		})
 	}
 
 	mealWithNutrients, err := config.Queries.GetMealByID(c.Request().Context(), meal.ID)
 	if err != nil {
-		log.Println("Failed to retrieve meal with food items: ", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to retrieve meal with food items")
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"CreateMeal",
+			fmt.Errorf("failed to retrieve meal with food items: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to create meal, trouble with server",
+		})
 	}
 	totalCalories, err := strconv.ParseFloat(mealWithNutrients.TotalCalories.(string), 64)
 	if err != nil {
-		log.Println("Failed to parse total calories: ", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total calories")
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"CreateMeal",
+			fmt.Errorf("failed to parse total calories: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to create meal, trouble with server",
+		})
 	}
 	totalFat, err := strconv.ParseFloat(mealWithNutrients.TotalFat.(string), 64)
 	if err != nil {
-		log.Println("Failed to parse total fat: ", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total fat")
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"CreateMeal",
+			fmt.Errorf("failed to parse total fat: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to create meal, trouble with server",
+		})
 	}
 	totalProtein, err := strconv.ParseFloat(mealWithNutrients.TotalProtein.(string), 64)
 	if err != nil {
-		log.Println("Failed to parse total protein: ", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total protein")
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"CreateMeal",
+			fmt.Errorf("failed to parse total protein: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to create meal, trouble with server",
+		})
 	}
 	totalCarbs, err := strconv.ParseFloat(mealWithNutrients.TotalCarbs.(string), 64)
 	if err != nil {
-		log.Println("Failed to parse total carbs: ", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total carbs")
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"CreateMeal",
+			fmt.Errorf("failed to parse total carbs: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to create meal, trouble with server",
+		})
 	}
 
 	var descriptionResp *string
@@ -150,16 +209,28 @@ func GetMealsByUserID(c echo.Context) error {
 	if offsetStr := c.QueryParam("offset"); offsetStr != "" {
 		convOffset, err := utils.SafeParseStrToInt32(offsetStr, 0, math.MaxInt32)
 		if err != nil {
-			log.Println("Failed to parse offset: ", err)
-			return echo.NewHTTPError(http.StatusBadRequest, "invalid offset")
+			utils.FmtLogMsg(
+				"meal_controller.go",
+				"GetMealsByUserID",
+				fmt.Errorf("failed to parse offset: %s", err),
+			)
+			return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+				"message": "Failed to get meals, invalid offset",
+			})
 		}
 		offset = int32(convOffset)
 	}
 	if limitStr := c.QueryParam("limit"); limitStr != "" {
 		convLimit, err := utils.SafeParseStrToInt32(limitStr, 1, 100)
 		if err != nil {
-			log.Println("Failed to parse limit: ", err)
-			return echo.NewHTTPError(http.StatusBadRequest, "invalid limit")
+			utils.FmtLogMsg(
+				"meal_controller.go",
+				"GetMealsByUserID",
+				fmt.Errorf("failed to parse limit: %s", err),
+			)
+			return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+				"message": "Failed to get meals, invalid limit",
+			})
 		}
 		limit = int32(convLimit)
 	}
@@ -169,14 +240,24 @@ func GetMealsByUserID(c echo.Context) error {
 
 	user, ok := c.Get("user").(database.User)
 	if !ok {
-		log.Printf("Reached create Meal without user")
-		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"GetMealsByUserID",
+			fmt.Errorf("reached get meals by user id without user"),
+		)
+		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
+			"message": "Failed to get meals, unauthorized",
+		})
 	}
 
 	if err := config.DB.Ping(); err != nil {
-		log.Println("Connection to database failed: ", err)
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"GetMealsByUserID",
+			fmt.Errorf("connection to database failed : %s", err),
+		)
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-			"message": "failed to get meals",
+			"message": "Failed to get meals, trouble with server",
 		})
 	}
 
@@ -189,14 +270,25 @@ func GetMealsByUserID(c echo.Context) error {
 
 		mealsWithNut, err := config.Queries.GetMealsByUserID(c.Request().Context(), getMealsByUserIdParams)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "failed to get meals")
+			utils.FmtLogMsg(
+				"meal_controller.go",
+				"GetMealsByUserID",
+				fmt.Errorf("failed to get meals: %s", err),
+			)
+			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+				"message": "Failed to get meals, trouble with server",
+			})
 		}
 
 		totalRows, err := config.Queries.GetMealsCountByUserID(c.Request().Context(), user.ID)
 		if err != nil {
-			log.Println("Failed to get meals count: ", err)
+			utils.FmtLogMsg(
+				"meal_controller.go",
+				"GetMealsByUserID",
+				fmt.Errorf("failed to get meals count: %s", err),
+			)
 			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-				"message": "failed to get meals count",
+				"message": "Failed to get meals, trouble with server",
 			})
 		}
 
@@ -204,23 +296,47 @@ func GetMealsByUserID(c echo.Context) error {
 		for i, mealWithNut := range mealsWithNut {
 			totalCalories, err := strconv.ParseFloat(mealWithNut.TotalCalories.(string), 64)
 			if err != nil {
-				log.Println("Failed to parse total calories: ", err)
-				return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total calories")
+				utils.FmtLogMsg(
+					"meal_controller.go",
+					"GetMealsByUserID",
+					fmt.Errorf("failed to parse total calories: %s", err),
+				)
+				return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+					"message": "Failed to get meals, trouble with server",
+				})
 			}
 			totalFat, err := strconv.ParseFloat(mealWithNut.TotalFat.(string), 64)
 			if err != nil {
-				log.Println("Failed to parse total fat: ", err)
-				return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total fat")
+				utils.FmtLogMsg(
+					"meal_controller.go",
+					"GetMealsByUserID",
+					fmt.Errorf("failed to parse total fat: %s", err),
+				)
+				return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+					"message": "Failed to get meals, trouble with server",
+				})
 			}
 			totalProtein, err := strconv.ParseFloat(mealWithNut.TotalProtein.(string), 64)
 			if err != nil {
-				log.Println("Failed to parse total protein: ", err)
-				return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total protein")
+				utils.FmtLogMsg(
+					"meal_controller.go",
+					"GetMealsByUserID",
+					fmt.Errorf("failed to parse total protein: %s", err),
+				)
+				return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+					"message": "Failed to get meals, trouble with server",
+				})
 			}
 			totalCarbs, err := strconv.ParseFloat(mealWithNut.TotalCarbs.(string), 64)
 			if err != nil {
-				log.Println("Failed to parse total carbs: ", err)
-				return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total carbs")
+				utils.FmtLogMsg(
+					"meal_controller.go",
+					"GetMealsByUserID",
+					fmt.Errorf("failed to parse total carbs: %s", err),
+				)
+				return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+					"message": "Failed to get meals, trouble with server",
+				})
 			}
 
 			var descriptionResp *string
@@ -267,7 +383,14 @@ func GetMealsByUserID(c echo.Context) error {
 
 		mealsWithNut, err := config.Queries.GetMealsByUserIDWithTextFilter(c.Request().Context(), getMealsByUserIDWithTextFilterParams)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "failed to get meals")
+			utils.FmtLogMsg(
+				"meal_controller.go",
+				"GetMealsByUserID",
+				fmt.Errorf("failed to get meals: %s", err),
+			)
+			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+				"message": "Failed to get meals, trouble with server",
+			})
 		}
 
 		getMealsCountByUserIDWithTextFilter := database.GetMealsCountByUserIDWithTextFilterParams{
@@ -277,9 +400,13 @@ func GetMealsByUserID(c echo.Context) error {
 
 		totalRows, err := config.Queries.GetMealsCountByUserIDWithTextFilter(c.Request().Context(), getMealsCountByUserIDWithTextFilter)
 		if err != nil {
-			log.Println("Failed to get meals count: ", err)
+			utils.FmtLogMsg(
+				"meal_controller.go",
+				"GetMealsByUserID",
+				fmt.Errorf("failed to get meals count: %s", err),
+			)
 			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-				"message": "failed to get meals count",
+				"message": "Failed to get meals, trouble with server",
 			})
 		}
 
@@ -287,23 +414,47 @@ func GetMealsByUserID(c echo.Context) error {
 		for i, mealWithNut := range mealsWithNut {
 			totalCalories, err := strconv.ParseFloat(mealWithNut.TotalCalories.(string), 64)
 			if err != nil {
-				log.Println("Failed to parse total calories: ", err)
-				return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total calories")
+				utils.FmtLogMsg(
+					"meal_controller.go",
+					"GetMealsByUserID",
+					fmt.Errorf("failed to parse total calories: %s", err),
+				)
+				return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+					"message": "Failed to get meals, trouble with server",
+				})
 			}
 			totalFat, err := strconv.ParseFloat(mealWithNut.TotalFat.(string), 64)
 			if err != nil {
-				log.Println("Failed to parse total fat: ", err)
-				return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total fat")
+				utils.FmtLogMsg(
+					"meal_controller.go",
+					"GetMealsByUserID",
+					fmt.Errorf("failed to parse total fat: %s", err),
+				)
+				return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+					"message": "Failed to get meals, trouble with server",
+				})
 			}
 			totalProtein, err := strconv.ParseFloat(mealWithNut.TotalProtein.(string), 64)
 			if err != nil {
-				log.Println("Failed to parse total protein: ", err)
-				return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total protein")
+				utils.FmtLogMsg(
+					"meal_controller.go",
+					"GetMealsByUserID",
+					fmt.Errorf("failed to parse total protein: %s", err),
+				)
+				return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+					"message": "Failed to get meals, trouble with server",
+				})
 			}
 			totalCarbs, err := strconv.ParseFloat(mealWithNut.TotalCarbs.(string), 64)
 			if err != nil {
-				log.Println("Failed to parse total carbs: ", err)
-				return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total carbs")
+				utils.FmtLogMsg(
+					"meal_controller.go",
+					"GetMealsByUserID",
+					fmt.Errorf("failed to parse total carbs: %s", err),
+				)
+				return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+					"message": "Failed to get meals, trouble with server",
+				})
 			}
 
 			var descriptionResp *string
@@ -345,39 +496,83 @@ func GetMealsByUserID(c echo.Context) error {
 func GetMealByID(c echo.Context) error {
 	mealID, err := uuid.Parse(c.Param("meal_id"))
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "invalid meal id")
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"GetMealByID",
+			fmt.Errorf("failed to parse meal id: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to get meal, invalid meal id",
+		})
 	}
 
 	_, ok := c.Get("user").(database.User)
 	if !ok {
-		log.Printf("Reached create Meal without user")
-		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"GetMealByID",
+			fmt.Errorf("reached get meal by id without user"),
+		)
+		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
+			"message": "Failed to get meal, unauthorized",
+		})
 	}
 
 	mealWithNut, err := config.Queries.GetMealByID(c.Request().Context(), mealID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusNotFound, "failed to get meal")
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"GetMealByID",
+			fmt.Errorf("failed to get meal: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusNotFound, map[string]string{
+			"message": "Failed to get meal, trouble with server",
+		})
 	}
 
 	totalCalories, err := strconv.ParseFloat(mealWithNut.TotalCalories.(string), 64)
 	if err != nil {
-		log.Println("Failed to parse total calories: ", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total calories")
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"GetMealByID",
+			fmt.Errorf("failed to parse total calories: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to get meal, trouble with server",
+		})
 	}
 	totalFat, err := strconv.ParseFloat(mealWithNut.TotalFat.(string), 64)
 	if err != nil {
-		log.Println("Failed to parse total fat: ", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total fat")
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"GetMealByID",
+			fmt.Errorf("failed to parse total fat: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to get meal, trouble with server",
+		})
 	}
 	totalProtein, err := strconv.ParseFloat(mealWithNut.TotalProtein.(string), 64)
 	if err != nil {
-		log.Println("Failed to parse total protein: ", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total protein")
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"GetMealByID",
+			fmt.Errorf("failed to parse total protein: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to get meal, trouble with server",
+		})
 	}
 	totalCarbs, err := strconv.ParseFloat(mealWithNut.TotalCarbs.(string), 64)
 	if err != nil {
-		log.Println("Failed to parse total carbs: ", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total carbs")
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"GetMealByID",
+			fmt.Errorf("failed to parse total carbs: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to get meal, trouble with server",
+		})
 	}
 
 	var descriptionResp *string
@@ -396,9 +591,13 @@ func GetMealByID(c echo.Context) error {
 
 	foodItems, err := config.Queries.GetFoodItemsByMealID(c.Request().Context(), getFoodItemsByMealIDParams)
 	if err != nil {
-		log.Println("Failed to get food items by meal id: ", err)
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"GetMealByID",
+			fmt.Errorf("failed to get food items by meal id: %s", err),
+		)
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-			"message": "failed to get food items by meal id",
+			"message": "Failed to get meal, trouble with server",
 		})
 	}
 
@@ -468,26 +667,48 @@ type UpdateMealRequest struct {
 func UpdateMeal(c echo.Context) error {
 	user, ok := c.Get("user").(database.User)
 	if !ok {
-		log.Printf("Reached update meal without user")
-		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"UpdateMeal",
+			fmt.Errorf("reached update meal without user"),
+		)
+		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
+			"message": "Failed to update meal, unauthorized",
+		})
 	}
 
 	updateMealReq := UpdateMealRequest{}
 	if err := c.Bind(&updateMealReq); err != nil {
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"UpdateMeal",
+			fmt.Errorf("failed to bind update meal request: %s", err),
+		)
 		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
-			"message": "malformed request",
+			"message": "Failed to update meal, malformed request",
 		})
 	}
 
 	mealId, err := uuid.Parse(c.Param("meal_id"))
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "invalid meal id")
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"UpdateMeal",
+			fmt.Errorf("failed to parse meal id: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to update meal, invalid meal id",
+		})
 	}
 
 	if err := config.DB.Ping(); err != nil {
-		log.Println("Connection to database failed: ", err)
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"UpdateMeal",
+			fmt.Errorf("connection to database failed : %s", err),
+		)
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-			"message": "failed to update meal",
+			"message": "Failed to update meal, trouble with server",
 		})
 	}
 
@@ -498,9 +719,13 @@ func UpdateMeal(c echo.Context) error {
 
 	err = config.Queries.DeleteFoodItemsByMealID(c.Request().Context(), deleteFoodItemsByMealIdParams)
 	if err != nil {
-		log.Println("Failed to delete food items by meal id: ", err)
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"UpdateMeal",
+			fmt.Errorf("failed to delete food items by meal id: %s", err),
+		)
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-			"message": "failed to delete food items by meal id",
+			"message": "Failed to update meal, trouble with server",
 		})
 	}
 
@@ -522,8 +747,14 @@ func UpdateMeal(c echo.Context) error {
 
 	meal, err := config.Queries.UpdateMeal(c.Request().Context(), updateMealParams)
 	if err != nil {
-		log.Println("Failed to update meal: ", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to update meal")
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"UpdateMeal",
+			fmt.Errorf("failed to update meal: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to update meal, trouble with server",
+		})
 	}
 
 	foodItemIDs := make([]uuid.UUID, 0)
@@ -531,8 +762,14 @@ func UpdateMeal(c echo.Context) error {
 	for _, foodItem := range updateMealReq.FoodItems {
 		foodItemAmountI32, err := utils.SafeParseIntToInt32(foodItem.Amount, 1, math.MaxInt32)
 		if err != nil {
-			log.Println("Failed to parse food item amount: ", err)
-			return echo.NewHTTPError(http.StatusBadRequest, "invalid food item amount")
+			utils.FmtLogMsg(
+				"meal_controller.go",
+				"UpdateMeal",
+				fmt.Errorf("failed to parse food item amount: %s", err),
+			)
+			return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+				"message": "Failed to update meal, invalid food item amount",
+			})
 		}
 
 		foodItemIDs = append(foodItemIDs, foodItem.FoodItemID)
@@ -546,34 +783,70 @@ func UpdateMeal(c echo.Context) error {
 		Column4: amounts, // Amounts array
 	})
 	if err != nil {
-		log.Println("Failed to insert food items for meal: ", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to add food items to meal")
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"UpdateMeal",
+			fmt.Errorf("failed to insert food items for meal: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to update meal, trouble with server",
+		})
 	}
 
 	mealWithNutrients, err := config.Queries.GetMealByID(c.Request().Context(), meal.ID)
 	if err != nil {
-		log.Println("Failed to retrieve meal with food items: ", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to retrieve meal with food items")
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"UpdateMeal",
+			fmt.Errorf("failed to retrieve meal with food items: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to update meal, trouble with server",
+		})
 	}
 	totalCalories, err := strconv.ParseFloat(mealWithNutrients.TotalCalories.(string), 64)
 	if err != nil {
-		log.Println("Failed to parse total calories: ", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total calories")
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"UpdateMeal",
+			fmt.Errorf("failed to parse total calories: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to update meal, trouble with server",
+		})
 	}
 	totalFat, err := strconv.ParseFloat(mealWithNutrients.TotalFat.(string), 64)
 	if err != nil {
-		log.Println("Failed to parse total fat: ", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total fat")
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"UpdateMeal",
+			fmt.Errorf("failed to parse total fat: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to update meal, trouble with server",
+		})
 	}
 	totalProtein, err := strconv.ParseFloat(mealWithNutrients.TotalProtein.(string), 64)
 	if err != nil {
-		log.Println("Failed to parse total protein: ", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total protein")
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"UpdateMeal",
+			fmt.Errorf("failed to parse total protein: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to update meal, trouble with server",
+		})
 	}
 	totalCarbs, err := strconv.ParseFloat(mealWithNutrients.TotalCarbs.(string), 64)
 	if err != nil {
-		log.Println("Failed to parse total carbs: ", err)
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to parse total carbs")
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"UpdateMeal",
+			fmt.Errorf("failed to parse total carbs: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to update meal, trouble with server",
+		})
 	}
 
 	var descriptionResp *string
