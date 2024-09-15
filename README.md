@@ -2,7 +2,7 @@
 
 ## Summery
 
-This is a monorepo for the Fitness App V2 project.
+This is a monorepo for the Fitness App V2 project..
 
 ## Stack
 
