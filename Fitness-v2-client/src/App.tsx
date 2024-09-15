@@ -26,6 +26,7 @@ import PageNotFound from "./features/views/components/PageNotFound";
 import RegisterPage from "./features/views/components/RegisterPage";
 import TestPage from "./features/views/components/TestPage";
 import { cn } from "./lib/utils";
+import { Toaster } from "~/features/shared/components/ui/sonner";
 
 const queryClient = new QueryClient();
 
@@ -106,6 +107,7 @@ function App() {
               <Route path="*" element={<PageNotFound />} />
             </Routes>
 
+            <Toaster />
             <GlobalDialogs />
           </div>
         </AuthProvider>

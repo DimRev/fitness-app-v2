@@ -24,6 +24,7 @@ import {
 } from "../user.schema";
 import useUpdateUserByAdmin from "../hooks/useUpdateUserByAdmin";
 import useUserStore from "../hooks/useUserStore";
+import { toast } from "sonner";
 
 type Props = {
   user: User;
@@ -59,7 +60,17 @@ function UserAdminEditForm({ user }: Props) {
       {
         onSuccess: () => {
           void form.reset();
+          toast.success("Successfully updated user", {
+            dismissible: true,
+            description: `Updated: ${data.username}`,
+          });
           setUserEditDialogOpen(false);
+        },
+        onError: (err) => {
+          toast.error("Failed to update user", {
+            dismissible: true,
+            description: `Error: ${err.message}`,
+          });
         },
       },
     );
@@ -143,7 +154,7 @@ function UserAdminEditForm({ user }: Props) {
         {isError && (
           <div className="font-bold text-destructive">{error.message}</div>
         )}
-        <div className="flex justify-end mt-4">
+        <div className="mt-4 flex justify-end">
           <Button type="submit">
             {isUpdateUserLoading ? "Submitting..." : "Submit"}
           </Button>

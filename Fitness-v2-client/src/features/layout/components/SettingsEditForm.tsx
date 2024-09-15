@@ -19,6 +19,7 @@ import useAuthStore from "~/features/auth/hooks/useAuthStore";
 import useLayoutStore from "../hooks/useLayoutStore";
 import { useRef } from "react";
 import AvatarImageInput from "~/features/upload/components/AvatarImageInput";
+import { toast } from "sonner";
 
 type Props = {
   user: AuthUser;
@@ -65,7 +66,17 @@ function SettingsEditForm({ user }: Props) {
             };
             void form.reset();
             setUser(updatedUser);
+            toast.success("Successfully updated settings", {
+              dismissible: true,
+              description: `Updated: ${res.username}`,
+            });
             setSettingsDialogOpen(false);
+          },
+          onError: (err) => {
+            toast.error("Failed to update settings", {
+              dismissible: true,
+              description: `Error: ${err.message}`,
+            });
           },
         },
       );
@@ -112,7 +123,7 @@ function SettingsEditForm({ user }: Props) {
         {isError && (
           <div className="font-bold text-destructive">{error.message}</div>
         )}
-        <div className="flex justify-end mt-4">
+        <div className="mt-4 flex justify-end">
           <Button type="submit" disabled={isUpdateSettingsLoading}>
             {isUpdateSettingsLoading ? "Updating..." : "Update Settings"}
           </Button>
