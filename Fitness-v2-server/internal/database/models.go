@@ -9,6 +9,7 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -136,6 +137,15 @@ type Meal struct {
 	CreatedAt   sql.NullTime
 	UpdatedAt   sql.NullTime
 	UserID      uuid.UUID
+}
+
+type MealConsumed struct {
+	ID        uuid.UUID
+	UserID    uuid.UUID
+	MealID    uuid.UUID
+	Date      time.Time
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type RelMealFood struct {
