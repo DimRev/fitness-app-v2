@@ -1,3 +1,12 @@
+# [0.6.0](https://github.com/DimRev/fitness-app-v2/compare/v0.5.0...v0.6.0) (2024-09-16)
+
+
+### Features
+
+* Add consume meal endpoints to server ([5b979a3](https://github.com/DimRev/fitness-app-v2/commit/5b979a332cd6e40c7c99932190a9db1e61fa658e))
+* add main calendar ([c84725a](https://github.com/DimRev/fitness-app-v2/commit/c84725a5c2d53d9ecfac586fcef40901b5c21c0c))
+* Record meals consumed client ([ea68d04](https://github.com/DimRev/fitness-app-v2/commit/ea68d04f793b4462f590bd0dfd58306beaf6401a))
+
 # [0.5.0](https://github.com/DimRev/fitness-app-v2/compare/v0.4.1...v0.5.0) (2024-09-15)
 
 
