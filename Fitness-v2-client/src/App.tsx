@@ -27,6 +27,7 @@ import RegisterPage from "./features/views/components/RegisterPage";
 import TestPage from "./features/views/components/TestPage";
 import { cn } from "./lib/utils";
 import { Toaster } from "~/features/shared/components/ui/sonner";
+import DashboardCalendarPage from "./features/views/components/DashboardCalendarPage";
 
 const queryClient = new QueryClient();
 
@@ -88,6 +89,7 @@ function App() {
                   path="food_item/add"
                   element={<DashboardFoodItemPendingAddPage />}
                 />
+                <Route path="calendar" element={<DashboardCalendarPage />} />
               </Route>
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminOverviewPage />} />

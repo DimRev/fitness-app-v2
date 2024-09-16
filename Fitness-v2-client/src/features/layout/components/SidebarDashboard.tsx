@@ -1,5 +1,6 @@
 import {
   Apple,
+  Calendar,
   ChevronLeft,
   ChevronRight,
   LineChart,
@@ -23,7 +24,7 @@ function SidebarDashboard() {
     >
       {isSidebarOpen ? (
         <>
-          <div className="flex w-full items-center justify-between gap-2">
+          <div className="flex justify-between items-center gap-2 w-full">
             <H3 className="truncate">Dashboard</H3>
             <Button
               className="border-foreground bg-sidebar"
@@ -47,7 +48,7 @@ function SidebarDashboard() {
           </Button>
         </>
       )}
-      <div className="w-full border-b border-foreground"></div>
+      <div className="border-foreground border-b w-full"></div>
       <SidebarNavLink
         LucideIcon={LineChart}
         to="/dashboard"
@@ -64,6 +65,12 @@ function SidebarDashboard() {
         LucideIcon={Apple}
         to="/dashboard/food_item"
         title="Food Items"
+        onlyIcon={!isSidebarOpen}
+      />
+      <SidebarNavLink
+        LucideIcon={Calendar}
+        to="/dashboard/calendar"
+        title="Calendar"
         onlyIcon={!isSidebarOpen}
       />
     </nav>
