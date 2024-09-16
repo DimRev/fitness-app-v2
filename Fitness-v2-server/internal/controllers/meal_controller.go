@@ -6,6 +6,7 @@ import (
 	"math"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/DimRev/Fitness-v2-server/internal/config"
 	"github.com/DimRev/Fitness-v2-server/internal/database"
@@ -875,4 +876,261 @@ func UpdateMeal(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, respMeal)
+}
+
+type ConsumeMealRequest struct {
+	MealID string `json:"meal_id"`
+	Date   string `json:"date"`
+}
+
+func ConsumeMeal(c echo.Context) error {
+	user, ok := c.Get("user").(database.User)
+	if !ok {
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"ConsumeMeal",
+			fmt.Errorf("reached consume meal without user"),
+		)
+		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
+			"message": "Failed to consume meal, unauthorized",
+		})
+	}
+
+	consumeMealReq := ConsumeMealRequest{}
+	if err := c.Bind(&consumeMealReq); err != nil {
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"ConsumeMeal",
+			fmt.Errorf("failed to bind consume meal request: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to consume meal, malformed request",
+		})
+	}
+
+	mealId, err := uuid.Parse(consumeMealReq.MealID)
+	if err != nil {
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"ConsumeMeal",
+			fmt.Errorf("failed to parse meal id: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to consume meal, invalid meal id",
+		})
+	}
+
+	date, err := time.Parse("2006-01-02", consumeMealReq.Date)
+	if err != nil {
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"ConsumeMeal",
+			fmt.Errorf("failed to parse date: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to consume meal, invalid date",
+		})
+	}
+
+	if err := config.DB.Ping(); err != nil {
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"ConsumeMeal",
+			fmt.Errorf("connection to database failed : %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to consume meal, trouble with server",
+		})
+	}
+
+	consumeMealParams := database.ConsumeMealParams{
+		UserID: user.ID,
+		MealID: mealId,
+		Date:   date,
+	}
+
+	consumedMeal, err := config.Queries.ConsumeMeal(c.Request().Context(), consumeMealParams)
+	if err != nil {
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"ConsumeMeal",
+			fmt.Errorf("failed to consume meal: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to consume meal, trouble with server",
+		})
+	}
+
+	consumedMealResp := models.ConsumedMeal{
+		ID:        consumedMeal.ID.String(),
+		UserID:    consumedMeal.UserID.String(),
+		MealID:    consumedMeal.MealID.String(),
+		Date:      consumedMeal.Date,
+		CreatedAt: consumedMeal.CreatedAt,
+		UpdatedAt: consumedMeal.UpdatedAt,
+	}
+
+	return c.JSON(http.StatusOK, consumedMealResp)
+}
+
+func GetConsumedMealsByMealID(c echo.Context) error {
+	_, ok := c.Get("user").(database.User)
+	if !ok {
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"ConsumeMeal",
+			fmt.Errorf("reached consume meal without user"),
+		)
+		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
+			"message": "Failed to consume meal, unauthorized",
+		})
+	}
+
+	mealID, err := uuid.Parse(c.Param("meal_id"))
+	if err != nil {
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"GetConsumedMealsByMealID",
+			fmt.Errorf("failed to parse meal id: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to get consumed meals, invalid meal id",
+		})
+	}
+
+	consumedMeals, err := config.Queries.GetConsumedMealsByMealID(c.Request().Context(), mealID)
+	if err != nil {
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"GetConsumedMealsByMealID",
+			fmt.Errorf("failed to get consumed meals by meal id: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to get consumed meals, trouble with server",
+		})
+	}
+
+	mealConsumed := make([]models.ConsumedMeal, len(consumedMeals))
+	for i, consumedMeal := range consumedMeals {
+		mealConsumed[i] = models.ConsumedMeal{
+			ID:        consumedMeal.ID.String(),
+			UserID:    consumedMeal.UserID.String(),
+			MealID:    consumedMeal.MealID.String(),
+			Date:      consumedMeal.Date,
+			CreatedAt: consumedMeal.CreatedAt,
+			UpdatedAt: consumedMeal.UpdatedAt,
+		}
+	}
+
+	return c.JSON(http.StatusOK, mealConsumed)
+}
+
+type GetConsumedMealsByDateRequest struct {
+	Date string `json:"date"`
+}
+
+func GetConsumedMealsByDate(c echo.Context) error {
+	_, ok := c.Get("user").(database.User)
+	if !ok {
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"ConsumeMeal",
+			fmt.Errorf("reached consume meal without user"),
+		)
+		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
+			"message": "Failed to consume meal, unauthorized",
+		})
+	}
+
+	consumeMealReq := GetConsumedMealsByDateRequest{}
+	if err := c.Bind(&consumeMealReq); err != nil {
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"GetConsumedMealsByDate",
+			fmt.Errorf("failed to bind get consumed meals by date request: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to get consumed meals, malformed request",
+		})
+	}
+
+	date, err := time.Parse("2006-01-02", consumeMealReq.Date)
+	if err != nil {
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"GetConsumedMealsByDate",
+			fmt.Errorf("failed to parse date: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to get consumed meals, invalid date",
+		})
+	}
+
+	consumedMeals, err := config.Queries.GetConsumedMealsByDate(c.Request().Context(), date)
+	if err != nil {
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"GetConsumedMealsByDate",
+			fmt.Errorf("failed to get consumed meals by date: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to get consumed meals, trouble with server",
+		})
+	}
+
+	mealConsumed := make([]models.ConsumedMeal, len(consumedMeals))
+	for i, consumedMeal := range consumedMeals {
+		mealConsumed[i] = models.ConsumedMeal{
+			ID:        consumedMeal.ID.String(),
+			UserID:    consumedMeal.UserID.String(),
+			MealID:    consumedMeal.MealID.String(),
+			Date:      consumedMeal.Date,
+			CreatedAt: consumedMeal.CreatedAt,
+			UpdatedAt: consumedMeal.UpdatedAt,
+		}
+	}
+
+	return c.JSON(http.StatusOK, mealConsumed)
+}
+
+func RemoveConsumedMeal(c echo.Context) error {
+	_, ok := c.Get("user").(database.User)
+	if !ok {
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"ConsumeMeal",
+			fmt.Errorf("reached consume meal without user"),
+		)
+		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
+			"message": "Failed to consume meal, unauthorized",
+		})
+	}
+
+	mealID, err := uuid.Parse(c.Param("meal_id"))
+	if err != nil {
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"RemoveConsumedMeal",
+			fmt.Errorf("failed to parse meal id: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to remove consumed meal, invalid meal id",
+		})
+	}
+
+	err = config.Queries.RemoveConsumedMeal(c.Request().Context(), mealID)
+	if err != nil {
+		utils.FmtLogMsg(
+			"meal_controller.go",
+			"RemoveConsumedMeal",
+			fmt.Errorf("failed to remove consumed meal: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to remove consumed meal, trouble with server",
+		})
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{
+		"message": "Consumed meal removed",
+	})
 }

@@ -90,3 +90,24 @@ RETURNING *;
 DELETE FROM rel_meal_food
 WHERE meal_id = $1
 AND user_id = $2;
+
+-- name: ConsumeMeal :one
+INSERT INTO meal_consumed (
+  user_id, 
+  meal_id, 
+  date
+)
+VALUES ($1, $2, $3)
+RETURNING *;
+
+-- name: GetConsumedMealsByMealID :many
+SELECT * FROM meal_consumed
+WHERE meal_id = $1;
+
+-- name: GetConsumedMealsByDate :many
+SELECT * FROM meal_consumed
+WHERE date = $1;
+
+-- name: RemoveConsumedMeal :exec
+DELETE FROM meal_consumed
+WHERE id = $1;
