@@ -1,20 +1,113 @@
+import { PopoverContent } from "@radix-ui/react-popover";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { H2 } from "~/features/shared/components/Typography";
 import { Button } from "~/features/shared/components/ui/button";
+import { Calendar } from "~/features/shared/components/ui/calendar";
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
 } from "~/features/shared/components/ui/card";
+import {
+  Popover,
+  PopoverTrigger,
+} from "~/features/shared/components/ui/popover";
 import { Skeleton } from "~/features/shared/components/ui/skeleton";
+import useGetConsumedMealsByMealID from "../hooks/useGetConsumedMealsByMealID";
+import useConsumeMeal from "../hooks/useConsumeMeal";
+import { toast } from "sonner";
+import { cn } from "~/lib/utils";
+import useRemoveConsumedMeal from "../hooks/useRemoveConsumedMeal";
 
 type Props = {
   mealWithNutrition: MealWithNutrition;
 };
 
 function MealPreview({ mealWithNutrition }: Props) {
+  const [selectedDates, setSelectedDates] = useState<Date[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const {
+    data: consumedMeals,
+    isLoading: isLoadingConsumedMeals,
+    isError,
+    error,
+  } = useGetConsumedMealsByMealID({
+    mealId: mealWithNutrition.meal.id,
+  });
+
+  const { mutateAsync: consumeMeal } = useConsumeMeal();
+  const { mutateAsync: removeConsumedMeal } = useRemoveConsumedMeal();
+
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (consumedMeals) {
+      setSelectedDates(consumedMeals.map((meal) => new Date(meal.date)));
+    }
+  }, [consumedMeals]);
+
+  function handleSelect(date: Date[] | undefined) {
+    if (!date) return;
+
+    if (date.length > selectedDates.length) {
+      const diff = date.filter((d) => !selectedDates.includes(d))[0];
+      void consumeMeal(
+        {
+          meal_id: mealWithNutrition.meal.id,
+          date: diff.toISOString().split("T")[0],
+        },
+        {
+          onSuccess: () => {
+            setSelectedDates([...selectedDates, diff]);
+            toast.success("Successfully recorded!", {
+              dismissible: true,
+              description: `Consumed ${mealWithNutrition.meal.name} on ${diff.toDateString()}`,
+            });
+            setIsOpen(false);
+          },
+          onError: (err) => {
+            toast.error("Failed to consume", {
+              dismissible: true,
+              description: `Error: ${err.message}`,
+            });
+          },
+        },
+      );
+    } else {
+      const diff = selectedDates.filter((d) => !date.includes(d))[0];
+      const id = consumedMeals?.find(
+        (m) => m.date.split("T")[0] === diff.toISOString().split("T")[0],
+      )?.id;
+
+      void removeConsumedMeal(
+        {
+          id: id!,
+          meal_id: mealWithNutrition.meal.id,
+          date: diff.toISOString().split("T")[0],
+        },
+        {
+          onSuccess: () => {
+            setSelectedDates(selectedDates.filter((d) => d !== diff));
+            toast.success("Successfully removed!", {
+              dismissible: true,
+              description: `Removed ${mealWithNutrition.meal.name} on ${diff.toDateString()}`,
+            });
+            setIsOpen(false);
+          },
+          onError: (err) => {
+            toast.error("Failed to remove", {
+              dismissible: true,
+              description: `Error: ${err.message}`,
+            });
+          },
+        },
+      );
+    }
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -45,7 +138,7 @@ function MealPreview({ mealWithNutrition }: Props) {
           </div>
         </div>
       </CardContent>
-      <CardFooter className="flex gap-2">
+      <CardFooter className="flex flex-wrap gap-2">
         <Button
           onClick={() =>
             navigate(`/dashboard/meal/details/${mealWithNutrition.meal.id}`)
@@ -60,6 +153,38 @@ function MealPreview({ mealWithNutrition }: Props) {
         >
           Edit
         </Button>
+        <Popover open={isOpen} onOpenChange={setIsOpen}>
+          <PopoverTrigger asChild>
+            <Button>Consume</Button>
+          </PopoverTrigger>
+          <PopoverContent className="z-10">
+            <Card>
+              <CardHeader>
+                <H2>Record Meal</H2>
+              </CardHeader>
+              <CardContent>
+                {isError && <div>{error.message}</div>}
+                <Calendar
+                  disabled={!isError && isLoadingConsumedMeals}
+                  className={cn(
+                    isLoadingConsumedMeals && "animate-pulse",
+                    isError && "cursor-not-allowed",
+                  )}
+                  mode="multiple"
+                  onSelect={handleSelect}
+                  selected={selectedDates}
+                />
+              </CardContent>
+              <CardFooter>
+                {isError && (
+                  <div className="font-extrabold text-destructive">
+                    {error.message}
+                  </div>
+                )}
+              </CardFooter>
+            </Card>
+          </PopoverContent>
+        </Popover>
       </CardFooter>
     </Card>
   );

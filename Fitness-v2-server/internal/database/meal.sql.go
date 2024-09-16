@@ -8,10 +8,41 @@ package database
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/lib/pq"
 )
+
+const consumeMeal = `-- name: ConsumeMeal :one
+INSERT INTO meal_consumed (
+  user_id, 
+  meal_id, 
+  date
+)
+VALUES ($1, $2, $3)
+RETURNING id, user_id, meal_id, date, created_at, updated_at
+`
+
+type ConsumeMealParams struct {
+	UserID uuid.UUID
+	MealID uuid.UUID
+	Date   time.Time
+}
+
+func (q *Queries) ConsumeMeal(ctx context.Context, arg ConsumeMealParams) (MealConsumed, error) {
+	row := q.db.QueryRowContext(ctx, consumeMeal, arg.UserID, arg.MealID, arg.Date)
+	var i MealConsumed
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.MealID,
+		&i.Date,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
 
 const deleteFoodItemsByMealID = `-- name: DeleteFoodItemsByMealID :exec
 DELETE FROM rel_meal_food
@@ -27,6 +58,76 @@ type DeleteFoodItemsByMealIDParams struct {
 func (q *Queries) DeleteFoodItemsByMealID(ctx context.Context, arg DeleteFoodItemsByMealIDParams) error {
 	_, err := q.db.ExecContext(ctx, deleteFoodItemsByMealID, arg.MealID, arg.UserID)
 	return err
+}
+
+const getConsumedMealsByDate = `-- name: GetConsumedMealsByDate :many
+SELECT id, user_id, meal_id, date, created_at, updated_at FROM meal_consumed
+WHERE date = $1
+`
+
+func (q *Queries) GetConsumedMealsByDate(ctx context.Context, date time.Time) ([]MealConsumed, error) {
+	rows, err := q.db.QueryContext(ctx, getConsumedMealsByDate, date)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []MealConsumed
+	for rows.Next() {
+		var i MealConsumed
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.MealID,
+			&i.Date,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getConsumedMealsByMealID = `-- name: GetConsumedMealsByMealID :many
+SELECT id, user_id, meal_id, date, created_at, updated_at FROM meal_consumed
+WHERE meal_id = $1
+`
+
+func (q *Queries) GetConsumedMealsByMealID(ctx context.Context, mealID uuid.UUID) ([]MealConsumed, error) {
+	rows, err := q.db.QueryContext(ctx, getConsumedMealsByMealID, mealID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []MealConsumed
+	for rows.Next() {
+		var i MealConsumed
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.MealID,
+			&i.Date,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getMealByID = `-- name: GetMealByID :one
@@ -323,6 +424,16 @@ func (q *Queries) InsertMealFoodItems(ctx context.Context, arg InsertMealFoodIte
 		arg.UserID,
 		pq.Array(arg.Column4),
 	)
+	return err
+}
+
+const removeConsumedMeal = `-- name: RemoveConsumedMeal :exec
+DELETE FROM meal_consumed
+WHERE id = $1
+`
+
+func (q *Queries) RemoveConsumedMeal(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, removeConsumedMeal, id)
 	return err
 }
 

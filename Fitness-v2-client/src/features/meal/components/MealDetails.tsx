@@ -11,6 +11,7 @@ import { Button } from "~/features/shared/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Textarea } from "~/features/shared/components/ui/textarea";
 import { Apple } from "lucide-react";
+import useGetConsumedMealsByMealID from "../hooks/useGetConsumedMealsByMealID";
 
 type Props = {
   mealId: string;
@@ -20,6 +21,10 @@ function MealDetails({ mealId }: Props) {
   const { data: mealWithNutritionAndFoodItems, isLoading } = useGetMealByID({
     mealId,
   });
+  const { data: consumedMeals, isLoading: isLoadingConsumedMeals } =
+    useGetConsumedMealsByMealID({
+      mealId,
+    });
 
   const navigate = useNavigate();
 
@@ -27,11 +32,11 @@ function MealDetails({ mealId }: Props) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
-  if (isLoading) {
+  if (isLoading || isLoadingConsumedMeals) {
     return <div>Loading...</div>;
   }
 
-  if (!mealWithNutritionAndFoodItems) {
+  if (!mealWithNutritionAndFoodItems || !consumedMeals) {
     return <div>No meal found</div>;
   }
 
@@ -78,6 +83,15 @@ function MealDetails({ mealId }: Props) {
               </div>
             </div>
           </div>
+        </div>
+        <Separator className="mt-2" />
+        <H2>Dates Consumed:</H2>
+        <div className="flex flex-wrap gap-2">
+          {consumedMeals.map((consumedMeal) => (
+            <div key={consumedMeal.id} className="px-4 py-2 border rounded-md">
+              <div>{new Date(consumedMeal.date).toDateString()}</div>
+            </div>
+          ))}
         </div>
         <Separator className="mt-2" />
         <H2>Food Items:</H2>
