@@ -6,6 +6,7 @@ import (
 	"math"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/DimRev/Fitness-v2-server/internal/config"
@@ -920,7 +921,7 @@ func ConsumeMeal(c echo.Context) error {
 		})
 	}
 
-	date, err := time.Parse("2006-01-02", consumeMealReq.Date)
+	date, err := time.Parse("2006-01-02", strings.Split(consumeMealReq.Date, "T")[0])
 	if err != nil {
 		utils.FmtLogMsg(
 			"meal_controller.go",
