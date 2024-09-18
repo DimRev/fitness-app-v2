@@ -1,35 +1,15 @@
-class WebSocketSingleton {
-  private static instance: WebSocket | null = null;
+export type Message = {
+  action: MessageActions;
+  data?: string;
+};
+type MessageActions = "greet" | "broadcastAll" | "broadcast";
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  private constructor() {}
-
-  public static getInstance(): WebSocket {
-    if (!WebSocketSingleton.instance) {
-      WebSocketSingleton.instance = new WebSocket(import.meta.env.VITE_WS_URL);
-
-      WebSocketSingleton.instance.onopen = () => {
-        console.log("Connected to websocket");
-      };
-
-      WebSocketSingleton.instance.onmessage = (event) => {
-        console.log("Received message from websocket:", event.data);
-      };
-
-      WebSocketSingleton.instance.onclose = (event) => {
-        console.log(
-          "Connection to websocket closed:",
-          event.code,
-          event.reason,
-        );
-      };
-
-      WebSocketSingleton.instance.onerror = (error) => {
-        console.log("Error with websocket connection:", error);
-      };
-    }
-    return WebSocketSingleton.instance;
+export function SendSocketMessage(message: Message, socket: WebSocket | null) {
+  if (socket && socket.readyState === WebSocket.OPEN) {
+    const messageString = JSON.stringify(message);
+    console.log("Sending message:", messageString);
+    socket.send(messageString);
+  } else {
+    console.log("WebSocket is not open. Cannot send message.");
   }
 }
-
-export const socket = WebSocketSingleton.getInstance();

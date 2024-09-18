@@ -27,7 +27,7 @@ type GetPresignedUrlAvatarRequestBody struct {
 func GetPresignedUrlAvatar(c echo.Context) error {
 	_, ok := c.Get("user").(database.User)
 	if !ok {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"upload_controller.go",
 			"GetPresignedUrlAvatar",
 			fmt.Errorf("reached get presigned url avatar without user"),
@@ -39,7 +39,7 @@ func GetPresignedUrlAvatar(c echo.Context) error {
 
 	getPresignedUrlAvatarReqBody := GetPresignedUrlAvatarRequestBody{}
 	if err := c.Bind(&getPresignedUrlAvatarReqBody); err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"upload_controller.go",
 			"GetPresignedUrlAvatar",
 			fmt.Errorf("failed to bind get presigned url avatar request: %s", err),
@@ -53,7 +53,7 @@ func GetPresignedUrlAvatar(c echo.Context) error {
 	maxFileSize := 1024 * 1024 * 2 // 2 MB
 
 	if !slices.Contains(allowedFileTypes, getPresignedUrlAvatarReqBody.FileType) {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"upload_controller.go",
 			"GetPresignedUrlAvatar",
 			fmt.Errorf("invalid file type: %s", getPresignedUrlAvatarReqBody.FileType),
@@ -64,7 +64,7 @@ func GetPresignedUrlAvatar(c echo.Context) error {
 	}
 
 	if getPresignedUrlAvatarReqBody.FileSize > maxFileSize {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"upload_controller.go",
 			"GetPresignedUrlAvatar",
 			fmt.Errorf("file size exceeds maximum allowed size: %d", getPresignedUrlAvatarReqBody.FileSize),
@@ -88,7 +88,7 @@ func GetPresignedUrlAvatar(c echo.Context) error {
 		ChecksumSHA256: aws.String(getPresignedUrlAvatarReqBody.CheckSum),
 	}, s3.WithPresignExpires(time.Minute))
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"upload_controller.go",
 			"GetPresignedUrlAvatar",
 			fmt.Errorf("failed to generate presigned url: %s", err),
@@ -113,7 +113,7 @@ type GetPresignedUrlFoodImageRequestBody struct {
 func GetPresignedUrlFoodImage(c echo.Context) error {
 	_, ok := c.Get("user").(database.User)
 	if !ok {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"upload_controller.go",
 			"GetPresignedUrlFoodImage",
 			fmt.Errorf("reached get presigned url food image without user"),
@@ -125,7 +125,7 @@ func GetPresignedUrlFoodImage(c echo.Context) error {
 
 	uploadReq := GetPresignedUrlFoodImageRequestBody{}
 	if err := c.Bind(&uploadReq); err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"upload_controller.go",
 			"GetPresignedUrlFoodImage",
 			fmt.Errorf("failed to bind get presigned url food image request: %s", err),
@@ -139,7 +139,7 @@ func GetPresignedUrlFoodImage(c echo.Context) error {
 	maxFileSize := 1024 * 1024 * 2 // 2 MB
 
 	if !slices.Contains(allowedFileTypes, uploadReq.FileType) {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"upload_controller.go",
 			"GetPresignedUrlFoodImage",
 			fmt.Errorf("invalid file type: %s", uploadReq.FileType),
@@ -150,7 +150,7 @@ func GetPresignedUrlFoodImage(c echo.Context) error {
 	}
 
 	if uploadReq.FileSize > maxFileSize {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"upload_controller.go",
 			"GetPresignedUrlFoodImage",
 			fmt.Errorf("file size exceeds maximum allowed size: %d", uploadReq.FileSize),
@@ -174,7 +174,7 @@ func GetPresignedUrlFoodImage(c echo.Context) error {
 		ChecksumSHA256: aws.String(uploadReq.CheckSum),
 	}, s3.WithPresignExpires(time.Minute))
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"upload_controller.go",
 			"GetPresignedUrlFoodImage",
 			fmt.Errorf("failed to generate presigned url: %s", err),

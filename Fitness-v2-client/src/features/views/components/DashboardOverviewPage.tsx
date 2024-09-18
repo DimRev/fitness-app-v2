@@ -3,6 +3,7 @@ import DashboardPageWrapper from "./DashboardPageWrapper";
 import useSocket from "~/features/socket/useSocket";
 import { Button } from "~/features/shared/components/ui/button";
 import { useMemo } from "react";
+import { SendSocketMessage } from "~/lib/socket";
 
 function DashboardOverviewPage() {
   const { socket } = useSocket();
@@ -23,6 +24,24 @@ function DashboardOverviewPage() {
     }
   }, [socket]);
 
+  function handleSendMessage() {
+    SendSocketMessage({ action: "greet", data: "Hello from client!" }, socket);
+  }
+
+  function handleBroadcastMessage() {
+    SendSocketMessage(
+      { action: "broadcast", data: "Hello from client!" },
+      socket,
+    );
+  }
+
+  function handleBroadcastAllMessage() {
+    SendSocketMessage(
+      { action: "broadcastAll", data: "Hello from client!" },
+      socket,
+    );
+  }
+
   return (
     <DashboardPageWrapper
       title="Overview"
@@ -31,9 +50,11 @@ function DashboardOverviewPage() {
     >
       <div>
         <div>{socketStateStr}</div>
-        <Button>Send message</Button>
-        <Button>Join Group</Button>
-        <Button>Leave Group</Button>
+        <Button onClick={handleSendMessage}>Greeting message</Button>
+        <Button onClick={handleBroadcastMessage}>Broadcast message</Button>
+        <Button onClick={handleBroadcastAllMessage}>
+          Broadcast all message
+        </Button>
       </div>
     </DashboardPageWrapper>
   );
