@@ -1,10 +1,12 @@
 import { useEffect, useLayoutEffect } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Toaster } from "~/features/shared/components/ui/sonner";
 import AuthProvider from "./features/auth/components/AuthProvider";
 import AppHeader from "./features/layout/components/AppHeader";
 import GlobalDialogs from "./features/layout/components/GlobalDialogs";
 import useLayoutStore from "./features/layout/hooks/useLayoutStore";
+import useSocket from "./features/socket/useSocket";
 import AboutPage from "./features/views/components/AboutPage";
 import AdminFoodItemAddPage from "./features/views/components/AdminFoodItemAddPage";
 import AdminFoodItemPage from "./features/views/components/AdminFoodItemPage";
@@ -12,6 +14,7 @@ import AdminLayout from "./features/views/components/AdminLayout";
 import AdminOverviewPage from "./features/views/components/AdminOverviewPage";
 import AdminUserPage from "./features/views/components/AdminUserPage";
 import AuthLayout from "./features/views/components/AuthLayout";
+import DashboardCalendarPage from "./features/views/components/DashboardCalendarPage";
 import DashboardFoodItemPendingAddPage from "./features/views/components/DashboardFoodItemPendingAddPage";
 import DashboardFoodItemPendingPage from "./features/views/components/DashboardFoodItemPendingPage";
 import DashboardLayout from "./features/views/components/DashboardLayout";
@@ -26,13 +29,12 @@ import PageNotFound from "./features/views/components/PageNotFound";
 import RegisterPage from "./features/views/components/RegisterPage";
 import TestPage from "./features/views/components/TestPage";
 import { cn } from "./lib/utils";
-import { Toaster } from "~/features/shared/components/ui/sonner";
-import DashboardCalendarPage from "./features/views/components/DashboardCalendarPage";
 
 const queryClient = new QueryClient();
 
 function App() {
   const { isDarkMode, setIsDarkMode } = useLayoutStore();
+  const { connSocket, disconnectSocket } = useSocket();
 
   // Set the initial theme based on the user's preferences
   useLayoutEffect(() => {
@@ -53,6 +55,10 @@ function App() {
     console.log(
       `App is running in ${import.meta.env.MODE} connected to ${import.meta.env.VITE_API_URL}`,
     );
+    connSocket();
+    return () => {
+      disconnectSocket();
+    };
   }, []);
 
   return (
