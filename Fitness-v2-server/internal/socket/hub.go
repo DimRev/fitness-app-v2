@@ -32,11 +32,8 @@ func (h *SocketHub) RunHub() {
 			h.Mux.Lock()
 			h.Clients[client] = true
 			utils.FmtLogInfo("socket_controllers.go", "RunHub", fmt.Sprintf("Clients connected: %d", len(h.Clients)))
-			client.Send <- Message{
-				Action: "greet",
-				Data:   fmt.Sprintf("Welcome to the channel, [%d] are connected", len(h.Clients)),
-			}
 			h.Mux.Unlock()
+			h.BroadcastToAll(Greet, fmt.Sprintf("A new client connected, [%d] are connected", len(h.Clients)))
 
 		case client := <-h.Unregister:
 			h.Mux.Lock()
@@ -45,6 +42,7 @@ func (h *SocketHub) RunHub() {
 			client.Socket.Close()
 			utils.FmtLogInfo("socket_controllers.go", "RunHub", fmt.Sprintf("Clients connected: %d", len(h.Clients)))
 			h.Mux.Unlock()
+			h.BroadcastToAll(Greet, fmt.Sprintf("A client disconnected, [%d] are connected", len(h.Clients)))
 
 		case msgToBroadcast := <-h.Broadcast:
 			h.Mux.Lock()
@@ -84,4 +82,79 @@ func (h *SocketHub) RunHub() {
 		}
 	}
 
+}
+
+func (h *SocketHub) BroadcastToGroup(group string, action MessageActions, data string) {
+	h.Mux.Lock()
+	defer h.Mux.Unlock()
+
+	msg := Message{
+		Action: action,
+		Data:   data,
+		Group:  group,
+	}
+
+	for client := range h.Clients {
+		if slices.Contains(client.Groups, group) {
+			msgBytes, err := json.Marshal(msg)
+			if err != nil {
+				client.Socket.Close()
+				delete(h.Clients, client)
+				continue
+			}
+			err = client.Socket.WriteMessage(websocket.TextMessage, msgBytes)
+			if err != nil {
+				client.Socket.Close()
+				delete(h.Clients, client)
+			}
+		}
+	}
+}
+
+func (h *SocketHub) BroadcastToAll(action MessageActions, data string) {
+	h.Mux.Lock()
+	defer h.Mux.Unlock()
+
+	msg := Message{
+		Action: action,
+		Data:   data,
+	}
+
+	for client := range h.Clients {
+		msgBytes, err := json.Marshal(msg)
+		if err != nil {
+			client.Socket.Close()
+			delete(h.Clients, client)
+			continue
+		}
+		err = client.Socket.WriteMessage(websocket.TextMessage, msgBytes)
+		if err != nil {
+			client.Socket.Close()
+			delete(h.Clients, client)
+		}
+	}
+}
+
+func (h *SocketHub) BroadcastGlobal(action MessageActions, data string) {
+	h.Mux.Lock()
+	defer h.Mux.Unlock()
+
+	msg := Message{
+		Action: action,
+		Data:   data,
+	}
+
+	for client := range h.Clients {
+		msgBytes, err := json.Marshal(msg)
+		if err != nil {
+			client.Socket.Close()
+			delete(h.Clients, client)
+			continue
+		}
+		err = client.Socket.WriteMessage(websocket.TextMessage, msgBytes)
+		if err != nil {
+			client.Socket.Close()
+			delete(h.Clients, client)
+		}
+	}
 }
