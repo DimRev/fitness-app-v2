@@ -28,18 +28,41 @@ function DashboardOverviewPage() {
     SendSocketMessage({ action: "greet", data: "Hello from client!" }, socket);
   }
 
-  function handleBroadcastMessage() {
+  function handleBroadcastGroupMessage() {
     SendSocketMessage(
-      { action: "broadcast", data: "Hello from client!" },
+      { action: "broadcast-group", data: "Hello from client!", group: "test" },
       socket,
     );
   }
 
-  function handleBroadcastAllMessage() {
+  function handleBroadcastAllGroupsMessage() {
     SendSocketMessage(
-      { action: "broadcastAll", data: "Hello from client!" },
+      { action: "broadcast-all", data: "Hello from client!" },
       socket,
     );
+  }
+
+  function handleBroadcastGlobalMessage() {
+    SendSocketMessage(
+      { action: "broadcast-global", data: "Hello from client!" },
+      socket,
+    );
+  }
+
+  function handleSignIn() {
+    SendSocketMessage({ action: "sign-in", data: "test@test.com" }, socket);
+  }
+
+  function handleSignOut() {
+    SendSocketMessage({ action: "sign-out", data: "" }, socket);
+  }
+
+  function handleJoinGroup() {
+    SendSocketMessage({ action: "join-group", data: "test" }, socket);
+  }
+
+  function handleLeaveGroup() {
+    SendSocketMessage({ action: "leave-group", data: "test" }, socket);
   }
 
   return (
@@ -51,10 +74,17 @@ function DashboardOverviewPage() {
       <div>
         <div>{socketStateStr}</div>
         <Button onClick={handleSendMessage}>Greeting message</Button>
-        <Button onClick={handleBroadcastMessage}>Broadcast message</Button>
-        <Button onClick={handleBroadcastAllMessage}>
+        <Button onClick={handleBroadcastGroupMessage}>Broadcast message</Button>
+        <Button onClick={handleBroadcastAllGroupsMessage}>
+          Broadcast all groups message
+        </Button>
+        <Button onClick={handleBroadcastGlobalMessage}>
           Broadcast all message
         </Button>
+        <Button onClick={handleSignIn}>Sign in</Button>
+        <Button onClick={handleSignOut}>Sign out</Button>
+        <Button onClick={handleJoinGroup}>Join group</Button>
+        <Button onClick={handleLeaveGroup}>Leave group</Button>
       </div>
     </DashboardPageWrapper>
   );

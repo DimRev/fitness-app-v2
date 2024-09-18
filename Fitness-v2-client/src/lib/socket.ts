@@ -1,8 +1,17 @@
 export type Message = {
   action: MessageActions;
   data?: string;
+  group?: string;
 };
-type MessageActions = "greet" | "broadcastAll" | "broadcast";
+type MessageActions =
+  | "greet"
+  | "broadcast-all"
+  | "broadcast-group"
+  | "broadcast-global"
+  | "sign-in"
+  | "sign-out"
+  | "join-group"
+  | "leave-group";
 
 export function SendSocketMessage(message: Message, socket: WebSocket | null) {
   if (socket && socket.readyState === WebSocket.OPEN) {
