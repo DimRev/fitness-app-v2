@@ -53,7 +53,10 @@ func ConnectSocket(c echo.Context) error {
 	}
 	defer func() {
 		Hub.Unregister <- client
-		ws.WriteMessage(websocket.CloseMessage, []byte{})
+		err = ws.WriteMessage(websocket.CloseMessage, []byte{})
+		if err != nil {
+			utils.FmtLogError("socket_controllers.go", "ConnectSocket", fmt.Errorf("failed to write close message: %s", err))
+		}
 	}()
 
 	go client.SendMessage()

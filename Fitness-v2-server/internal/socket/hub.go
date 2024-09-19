@@ -40,7 +40,10 @@ func (h *SocketHub) RunHub() {
 			h.Mux.Lock()
 			delete(h.Clients, client)
 			close(client.Send)
-			client.Socket.Close()
+			err := client.Socket.Close()
+			if err != nil {
+				utils.FmtLogError("socket_controllers.go", "RunHub", fmt.Errorf("failed to close send channel: %s", err))
+			}
 			utils.FmtLogInfo("socket_controllers.go", "RunHub", fmt.Sprintf("Clients connected: %d", len(h.Clients)))
 			h.Mux.Unlock()
 			h.BroadcastToAll(Greet, fmt.Sprintf("A client disconnected, [%d] are connected", len(h.Clients)))
@@ -70,12 +73,20 @@ func (h *SocketHub) RunHub() {
 				msg := msgToBroadcast.TransformIntoMessage()
 				msgBytes, err := json.Marshal(msg)
 				if err != nil {
-					client.Socket.Close()
+					utils.FmtLogError("socket_controllers.go", "RunHub", fmt.Errorf("failed to marshal message: %s", err))
+					err = client.Socket.Close()
+					if err != nil {
+						utils.FmtLogError("socket_controllers.go", "RunHub", fmt.Errorf("failed to close socket: %s", err))
+					}
 					delete(h.Clients, client)
 				}
 				err = client.Socket.WriteMessage(websocket.TextMessage, msgBytes)
 				if err != nil {
-					client.Socket.Close()
+					utils.FmtLogError("socket_controllers.go", "RunHub", fmt.Errorf("failed to write message: %s", err))
+					err = client.Socket.Close()
+					if err != nil {
+						utils.FmtLogError("socket_controllers.go", "RunHub", fmt.Errorf("failed to close socket: %s", err))
+					}
 					delete(h.Clients, client)
 				}
 			}
@@ -99,13 +110,21 @@ func (h *SocketHub) BroadcastToGroup(group string, action MessageActions, data s
 		if slices.Contains(client.Groups, group) {
 			msgBytes, err := json.Marshal(msg)
 			if err != nil {
-				client.Socket.Close()
+				utils.FmtLogError("socket_controllers.go", "BroadcastToGroup", fmt.Errorf("failed to marshal message: %s", err))
+				err = client.Socket.Close()
+				if err != nil {
+					utils.FmtLogError("socket_controllers.go", "BroadcastToGroup", fmt.Errorf("failed to close socket: %s", err))
+				}
 				delete(h.Clients, client)
 				continue
 			}
 			err = client.Socket.WriteMessage(websocket.TextMessage, msgBytes)
 			if err != nil {
-				client.Socket.Close()
+				utils.FmtLogError("socket_controllers.go", "BroadcastToGroup", fmt.Errorf("failed to write message: %s", err))
+				err = client.Socket.Close()
+				if err != nil {
+					utils.FmtLogError("socket_controllers.go", "BroadcastToGroup", fmt.Errorf("failed to close socket: %s", err))
+				}
 				delete(h.Clients, client)
 			}
 		}
@@ -124,13 +143,21 @@ func (h *SocketHub) BroadcastToAll(action MessageActions, data string) {
 	for client := range h.Clients {
 		msgBytes, err := json.Marshal(msg)
 		if err != nil {
-			client.Socket.Close()
+			utils.FmtLogError("socket_controllers.go", "BroadcastAll", fmt.Errorf("failed to marshal message: %s", err))
+			err = client.Socket.Close()
+			if err != nil {
+				utils.FmtLogError("socket_controllers.go", "BroadcastAll", fmt.Errorf("failed to close socket: %s", err))
+			}
 			delete(h.Clients, client)
 			continue
 		}
 		err = client.Socket.WriteMessage(websocket.TextMessage, msgBytes)
 		if err != nil {
-			client.Socket.Close()
+			utils.FmtLogError("socket_controllers.go", "BroadcastAll", fmt.Errorf("failed to write message: %s", err))
+			err = client.Socket.Close()
+			if err != nil {
+				utils.FmtLogError("socket_controllers.go", "BroadcastAll", fmt.Errorf("failed to close socket: %s", err))
+			}
 			delete(h.Clients, client)
 		}
 	}
@@ -148,13 +175,21 @@ func (h *SocketHub) BroadcastGlobal(action MessageActions, data string) {
 	for client := range h.Clients {
 		msgBytes, err := json.Marshal(msg)
 		if err != nil {
-			client.Socket.Close()
+			utils.FmtLogError("socket_controllers.go", "BroadcastGlobal", fmt.Errorf("failed to marshal message: %s", err))
+			err = client.Socket.Close()
+			if err != nil {
+				utils.FmtLogError("socket_controllers.go", "BroadcastGlobal", fmt.Errorf("failed to close socket: %s", err))
+			}
 			delete(h.Clients, client)
 			continue
 		}
 		err = client.Socket.WriteMessage(websocket.TextMessage, msgBytes)
 		if err != nil {
-			client.Socket.Close()
+			utils.FmtLogError("socket_controllers.go", "BroadcastGlobal", fmt.Errorf("failed to write message: %s", err))
+			err = client.Socket.Close()
+			if err != nil {
+				utils.FmtLogError("socket_controllers.go", "BroadcastGlobal", fmt.Errorf("failed to close socket: %s", err))
+			}
 			delete(h.Clients, client)
 		}
 	}
@@ -176,13 +211,21 @@ func (h *SocketHub) BroadcastToUser(userID uuid.UUID, action MessageActions, dat
 		fmt.Println(client.User.ID, userID)
 		msgBytes, err := json.Marshal(msg)
 		if err != nil {
-			client.Socket.Close()
+			utils.FmtLogError("socket_controllers.go", "BroadcastToUser", fmt.Errorf("failed to marshal message: %s", err))
+			err = client.Socket.Close()
+			if err != nil {
+				utils.FmtLogError("socket_controllers.go", "BroadcastToUser", fmt.Errorf("failed to close socket: %s", err))
+			}
 			delete(h.Clients, client)
 			continue
 		}
 		err = client.Socket.WriteMessage(websocket.TextMessage, msgBytes)
 		if err != nil {
-			client.Socket.Close()
+			utils.FmtLogError("socket_controllers.go", "BroadcastToUser", fmt.Errorf("failed to write message: %s", err))
+			err = client.Socket.Close()
+			if err != nil {
+				utils.FmtLogError("socket_controllers.go", "BroadcastToUser", fmt.Errorf("failed to close socket: %s", err))
+			}
 			delete(h.Clients, client)
 		}
 	}
