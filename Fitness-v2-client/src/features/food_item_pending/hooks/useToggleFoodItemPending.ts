@@ -81,9 +81,13 @@ function useToggleFoodItemPending() {
       return { previousFoodItemsPending };
     },
     onSuccess: (_data, { limit, offset, text_filter }) => {
+      const stringifiedData = JSON.stringify({
+        group: QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
+        data: { limit, offset, text_filter },
+      });
       sendSocketGroupMessage(
         QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
-        `group=${QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING},action=invalidate,limit=${limit},offset=${offset},text_filter=${text_filter}`,
+        `"${stringifiedData}"`,
       );
     },
     onError: (_err, { limit, offset }, context) => {

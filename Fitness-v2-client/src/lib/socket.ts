@@ -3,6 +3,7 @@ export type Message = {
   data?: string;
   group?: string;
 };
+
 type MessageActions =
   | "greet"
   | "broadcast-all"
@@ -13,6 +14,15 @@ type MessageActions =
   | "join-group"
   | "leave-group";
 
+export type BroadcastData = {
+  group: string;
+  data: {
+    limit: number;
+    offset: number;
+    text_filter?: string | null;
+  };
+};
+
 export function SendSocketMessage(message: Message, socket: WebSocket | null) {
   if (socket && socket.readyState === WebSocket.OPEN) {
     const messageString = JSON.stringify(message);
@@ -21,4 +31,16 @@ export function SendSocketMessage(message: Message, socket: WebSocket | null) {
   } else {
     console.log("WebSocket is not open. Cannot send message.");
   }
+}
+
+export function parseSocketData<T>(loggedMessage: string) {
+  if (
+    typeof loggedMessage === "string" &&
+    loggedMessage.startsWith('"') &&
+    loggedMessage.endsWith('"')
+  ) {
+    loggedMessage = loggedMessage.slice(1, -1); // Remove the first and last quote
+  }
+
+  return JSON.parse(loggedMessage) as T;
 }

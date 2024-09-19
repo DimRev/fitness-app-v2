@@ -4,7 +4,11 @@ import { useQuery, useQueryClient } from "react-query";
 import useSocket from "~/features/socket/useSocket";
 import axiosInstance from "~/lib/axios";
 import { QUERY_KEYS, USE_QUERY_DEFAULT_OPTIONS } from "~/lib/reactQuery";
-import { Message } from "~/lib/socket";
+import {
+  type BroadcastData,
+  parseSocketData,
+  type Message,
+} from "~/lib/socket";
 
 type GetMealsByUserIDRequestBody = {
   limit: number;
@@ -29,35 +33,15 @@ function useGetFoodItemsPending(params: GetMealsByUserIDRequestBody) {
           switch (message.action) {
             case "broadcast-group":
               if (message.data) {
-                const fmtKVS = message.data.split(",");
-                const map = fmtKVS.reduce(
-                  (acc, curr) => {
-                    const [key, value] = curr.split("=");
-                    if (key === "limit" || key === "offset") {
-                      acc[key] = Number(value);
-                    } else if (key === "text_filter" && value === "null") {
-                      acc[key] = null;
-                    } else {
-                      acc[key] = value;
-                    }
-                    return acc;
-                  },
-                  {} as Record<string, string | number | null>,
-                );
+                const data = parseSocketData<BroadcastData>(message.data);
                 if (
-                  map.group ===
+                  data.group ===
                   QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING
                 ) {
-                  if (map.action === "invalidate") {
-                    void queryClient.invalidateQueries([
-                      QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
-                      {
-                        limit: map.limit,
-                        offset: map.offset,
-                        text_filter: map.text_filter,
-                      },
-                    ]);
-                  }
+                  void queryClient.invalidateQueries([
+                    QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
+                    data.data,
+                  ]);
                 }
               }
               break;
