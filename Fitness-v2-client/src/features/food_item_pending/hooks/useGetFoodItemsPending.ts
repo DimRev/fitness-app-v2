@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useLayoutEffect } from "react";
 import { useQuery, useQueryClient } from "react-query";
-import useSocket from "~/features/socket/useSocket";
+import useSocket from "~/features/socket/hooks/useSocket";
 import axiosInstance from "~/lib/axios";
 import { QUERY_KEYS, USE_QUERY_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 import {
@@ -32,8 +32,11 @@ function useGetFoodItemsPending(params: GetMealsByUserIDRequestBody) {
           const message = JSON.parse(event.data) as Message;
           switch (message.action) {
             case "broadcast-group":
+            case "broadcast-global":
+            case "broadcast-all":
               if (message.data) {
                 const data = parseSocketData<BroadcastData>(message.data);
+                console.log("Received data:", data);
                 if (
                   data.group ===
                   QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useMutation, useQueryClient } from "react-query";
+import useSocket from "~/features/socket/hooks/useSocket";
 import axiosInstance from "~/lib/axios";
 import { QUERY_KEYS, USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
@@ -19,6 +20,7 @@ type SuccessResponseBody = {
 
 function useApproveFoodItemPending() {
   const queryClient = useQueryClient();
+  const { sendSocketGroupMessage } = useSocket();
 
   return useMutation<
     SuccessResponseBody,
@@ -26,10 +28,18 @@ function useApproveFoodItemPending() {
     ApproveFoodItemPendingRequestParams
   >(approveFoodItemPending, {
     ...USE_MUTATION_DEFAULT_OPTIONS,
-    onSuccess: (_data, { limit, offset }) => {
+    onSuccess: (_data) => {
+      const stringifiedData = JSON.stringify({
+        group: QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
+        data: {},
+      });
+      sendSocketGroupMessage(
+        QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
+        `"${stringifiedData}"`,
+      );
       void queryClient.invalidateQueries([
         QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
-        { limit, offset },
+        {},
       ]);
     },
   });

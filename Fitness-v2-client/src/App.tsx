@@ -6,7 +6,7 @@ import AuthProvider from "./features/auth/components/AuthProvider";
 import AppHeader from "./features/layout/components/AppHeader";
 import GlobalDialogs from "./features/layout/components/GlobalDialogs";
 import useLayoutStore from "./features/layout/hooks/useLayoutStore";
-import useSocket from "./features/socket/useSocket";
+import useSocket from "./features/socket/hooks/useSocket";
 import AboutPage from "./features/views/components/AboutPage";
 import AdminFoodItemAddPage from "./features/views/components/AdminFoodItemAddPage";
 import AdminFoodItemPage from "./features/views/components/AdminFoodItemPage";
