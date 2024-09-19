@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster } from "~/features/shared/components/ui/sonner";
@@ -36,6 +36,8 @@ function App() {
   const { isDarkMode, setIsDarkMode } = useLayoutStore();
   const { connSocket, disconnectSocket } = useSocket();
 
+  const isFirstLoad = useRef(true);
+
   // Set the initial theme based on the user's preferences
   useLayoutEffect(() => {
     const storedConfig = localStorage.getItem("fitness_app_config");
@@ -52,20 +54,18 @@ function App() {
   }, []);
 
   useEffect(() => {
-    let socket: WebSocket | null = null;
-
-    const connectSocket = async () => {
-      socket = await connSocket();
-    };
-
-    void connectSocket();
+    if (isFirstLoad.current) {
+      isFirstLoad.current = false;
+      void connSocket();
+      return;
+    }
 
     return () => {
-      if (socket) {
+      if (!isFirstLoad.current) {
         void disconnectSocket();
       }
     };
-  }, []);
+  }, [connSocket, disconnectSocket]);
 
   return (
     <QueryClientProvider client={queryClient}>
