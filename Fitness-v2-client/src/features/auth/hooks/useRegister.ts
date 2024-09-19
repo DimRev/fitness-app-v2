@@ -1,5 +1,6 @@
 import axios from "axios";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
+import useSocket from "~/features/socket/hooks/useSocket";
 import axiosInstance from "~/lib/axios";
 import { USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
@@ -14,8 +15,14 @@ type ErrorResponseBody = {
 };
 
 function useRegister() {
+  const queryClient = useQueryClient();
+  const { signInSocket } = useSocket();
   return useMutation<AuthUser, Error, RegisterRequestBody>(register, {
     ...USE_MUTATION_DEFAULT_OPTIONS,
+    onSuccess: async (data) => {
+      void signInSocket(data.email);
+      await queryClient.invalidateQueries();
+    },
   });
 }
 

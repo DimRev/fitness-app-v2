@@ -9,6 +9,7 @@ import (
 	"github.com/DimRev/Fitness-v2-server/internal/config"
 	"github.com/DimRev/Fitness-v2-server/internal/database"
 	"github.com/DimRev/Fitness-v2-server/internal/models"
+	"github.com/DimRev/Fitness-v2-server/internal/socket"
 	"github.com/DimRev/Fitness-v2-server/internal/utils"
 	"github.com/google/uuid"
 	"github.com/labstack/echo"
@@ -17,7 +18,7 @@ import (
 func GetFoodItemsPending(c echo.Context) error {
 	user, ok := c.Get("user").(database.User)
 	if !ok {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"food_item_pending_controller.go",
 			"GetFoodItemsPending",
 			fmt.Errorf("reached get food items pending without user"),
@@ -33,7 +34,7 @@ func GetFoodItemsPending(c echo.Context) error {
 	if offsetStr := c.QueryParam("offset"); offsetStr != "" {
 		convOffset, err := utils.SafeParseStrToInt32(offsetStr, 0, math.MaxInt32)
 		if err != nil {
-			utils.FmtLogMsg(
+			utils.FmtLogError(
 				"food_item_pending_controller.go",
 				"GetFoodItemsPending",
 				fmt.Errorf("failed to parse offset: %s", err),
@@ -47,7 +48,7 @@ func GetFoodItemsPending(c echo.Context) error {
 	if limitStr := c.QueryParam("limit"); limitStr != "" {
 		convLimit, err := utils.SafeParseStrToInt32(limitStr, 1, 100)
 		if err != nil {
-			utils.FmtLogMsg(
+			utils.FmtLogError(
 				"food_item_pending_controller.go",
 				"GetFoodItemsPending",
 				fmt.Errorf("failed to parse limit: %s", err),
@@ -63,7 +64,7 @@ func GetFoodItemsPending(c echo.Context) error {
 	}
 
 	if err := config.DB.Ping(); err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"food_item_pending_controller.go",
 			"GetFoodItemsPending",
 			fmt.Errorf("connection to database failed : %s", err),
@@ -82,7 +83,7 @@ func GetFoodItemsPending(c echo.Context) error {
 
 		foodItemsPending, err := config.Queries.GetFoodItemsPending(c.Request().Context(), getFoodItemsPendingParams)
 		if err != nil {
-			utils.FmtLogMsg(
+			utils.FmtLogError(
 				"food_item_pending_controller.go",
 				"GetFoodItemsPending",
 				fmt.Errorf("failed to get food items: %s", err),
@@ -94,7 +95,7 @@ func GetFoodItemsPending(c echo.Context) error {
 
 		rowCount, err := config.Queries.GetFoodItemsPendingTotalPages(c.Request().Context())
 		if err != nil {
-			utils.FmtLogMsg(
+			utils.FmtLogError(
 				"food_item_pending_controller.go",
 				"GetFoodItemsPending",
 				fmt.Errorf("failed to get food items total pages: %s", err),
@@ -154,7 +155,7 @@ func GetFoodItemsPending(c echo.Context) error {
 
 		foodItemsPending, err := config.Queries.GetFoodItemsPendingByUserIDWithTextFilter(c.Request().Context(), getFoodItemsPendingParams)
 		if err != nil {
-			utils.FmtLogMsg(
+			utils.FmtLogError(
 				"food_item_pending_controller.go",
 				"GetFoodItemsPending",
 				fmt.Errorf("failed to get food items: %s", err),
@@ -166,7 +167,7 @@ func GetFoodItemsPending(c echo.Context) error {
 
 		rowCount, err := config.Queries.GetFoodItemsPendingTotalPagesWithTextFilter(c.Request().Context(), textFilterNullString)
 		if err != nil {
-			utils.FmtLogMsg(
+			utils.FmtLogError(
 				"food_item_pending_controller.go",
 				"GetFoodItemsPending",
 				fmt.Errorf("failed to get food items total pages: %s", err),
@@ -220,7 +221,7 @@ func GetFoodItemsPending(c echo.Context) error {
 func GetFoodItemsPendingByUserID(c echo.Context) error {
 	user, ok := c.Get("user").(database.User)
 	if !ok {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"food_item_pending_controller.go",
 			"GetFoodItemsPendingByUserID",
 			fmt.Errorf("reached get food items pending by user id without user"),
@@ -235,7 +236,7 @@ func GetFoodItemsPendingByUserID(c echo.Context) error {
 	if offsetStr := c.QueryParam("offset"); offsetStr != "" {
 		convOffset, err := utils.SafeParseStrToInt32(offsetStr, 0, math.MaxInt32)
 		if err != nil {
-			utils.FmtLogMsg(
+			utils.FmtLogError(
 				"food_item_pending_controller.go",
 				"GetFoodItemsPendingByUserID",
 				fmt.Errorf("failed to parse offset: %s", err),
@@ -249,7 +250,7 @@ func GetFoodItemsPendingByUserID(c echo.Context) error {
 	if limitStr := c.QueryParam("limit"); limitStr != "" {
 		convLimit, err := utils.SafeParseStrToInt32(limitStr, 1, 100)
 		if err != nil {
-			utils.FmtLogMsg(
+			utils.FmtLogError(
 				"food_item_pending_controller.go",
 				"GetFoodItemsPendingByUserID",
 				fmt.Errorf("failed to parse limit: %s", err),
@@ -269,7 +270,7 @@ func GetFoodItemsPendingByUserID(c echo.Context) error {
 
 	foodItemsPending, err := config.Queries.GetFoodItemsPendingByUserID(c.Request().Context(), getFoodItemsPendingByUserIDParams)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"food_item_pending_controller.go",
 			"GetFoodItemsPendingByUserID",
 			fmt.Errorf("failed to get food items by user id: %s", err),
@@ -281,7 +282,7 @@ func GetFoodItemsPendingByUserID(c echo.Context) error {
 
 	rowCount, err := config.Queries.GetFoodItemsPendingByUserTotalPages(c.Request().Context(), user.ID)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"food_item_pending_controller.go",
 			"GetFoodItemsPendingByUserID",
 			fmt.Errorf("failed to get food items by user id total pages: %s", err),
@@ -345,7 +346,7 @@ type CreateFoodItemPendingRequest struct {
 func CreateFoodItemPending(c echo.Context) error {
 	user, ok := c.Get("user").(database.User)
 	if !ok {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"food_item_pending_controller.go",
 			"CreateFoodItemPending",
 			fmt.Errorf("reached create food item pending without user"),
@@ -385,7 +386,7 @@ func CreateFoodItemPending(c echo.Context) error {
 	}
 
 	if err := config.DB.Ping(); err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"food_item_pending_controller.go",
 			"CreateFoodItemPending",
 			fmt.Errorf("connection to database failed : %s", err),
@@ -397,7 +398,7 @@ func CreateFoodItemPending(c echo.Context) error {
 
 	foodItemPending, err := config.Queries.CreateFoodItemPending(c.Request().Context(), createFoodItemPendingParams)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"food_item_pending_controller.go",
 			"CreateFoodItemPending",
 			fmt.Errorf("failed to create food item pending: %s", err),
@@ -440,7 +441,7 @@ func CreateFoodItemPending(c echo.Context) error {
 func ToggleFoodItemPending(c echo.Context) error {
 	user, ok := c.Get("user").(database.User)
 	if !ok {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"food_item_pending_controller.go",
 			"ToggleFoodItemPending",
 			fmt.Errorf("reached toggle food item pending without user"),
@@ -450,7 +451,7 @@ func ToggleFoodItemPending(c echo.Context) error {
 
 	foodItemPendingID, err := uuid.Parse(c.Param("food_item_pending_id"))
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"food_item_pending_controller.go",
 			"ToggleFoodItemPending",
 			fmt.Errorf("failed to parse food item pending id: %s", err),
@@ -480,11 +481,30 @@ func ToggleFoodItemPending(c echo.Context) error {
 					"message": "Failed to toggle food item pending, trouble with server",
 				})
 			}
+
+			foodItemPending, err := config.Queries.GetFoodItemPendingOwnerId(c.Request().Context(), foodItemPendingID)
+			if err != nil {
+				utils.FmtLogError(
+					"food_item_pending_controller.go",
+					"ToggleFoodItemPending",
+					fmt.Errorf("failed to get food item pending owner id: %s", err),
+				)
+				return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+					"message": "Failed to toggle food item pending, trouble with server",
+				})
+			}
+
+			socket.Hub.BroadcastToUser(
+				foodItemPending.OwnerID,
+				socket.UserNotification,
+				fmt.Sprintf(`{"action": "food-item-pending-got-like", "data": {"title": "Food item pending liked", "description": "Your food item %s gained a like!"}}`, foodItemPending.FoodItemPendingName),
+			)
+
 			return c.JSON(http.StatusOK, map[string]string{
 				"message": "Food item pending liked",
 			})
 		}
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"food_item_pending_controller.go",
 			"ToggleFoodItemPending",
 			fmt.Errorf("failed to get food item pending like for user: %s", err),
@@ -499,7 +519,7 @@ func ToggleFoodItemPending(c echo.Context) error {
 		FoodItemID: foodItemPendingID,
 	}
 	if err := config.Queries.UnlikeFoodItemPendingForUser(c.Request().Context(), unlikeFoodItemPendingForUserParams); err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"food_item_pending_controller.go",
 			"ToggleFoodItemPending",
 			fmt.Errorf("failed to unlike food item pending: %s", err),
@@ -516,7 +536,7 @@ func ToggleFoodItemPending(c echo.Context) error {
 func ApproveFoodItemPending(c echo.Context) error {
 	user, ok := c.Get("user").(database.User)
 	if !ok || user.Role != database.UserRoleAdmin {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"food_item_pending_controller.go",
 			"ApproveFoodItemPending",
 			fmt.Errorf("reached approve food item pending without user"),
@@ -528,7 +548,7 @@ func ApproveFoodItemPending(c echo.Context) error {
 
 	foodItemPendingID, err := uuid.Parse(c.Param("food_item_pending_id"))
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"food_item_pending_controller.go",
 			"ApproveFoodItemPending",
 			fmt.Errorf("failed to parse food item pending id: %s", err),
@@ -540,7 +560,7 @@ func ApproveFoodItemPending(c echo.Context) error {
 
 	err = config.Queries.ApproveFoodItemPending(c.Request().Context(), foodItemPendingID)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"food_item_pending_controller.go",
 			"ApproveFoodItemPending",
 			fmt.Errorf("failed to approve food item pending: %s", err),
@@ -558,7 +578,7 @@ func ApproveFoodItemPending(c echo.Context) error {
 func RejectFoodItemPending(c echo.Context) error {
 	user, ok := c.Get("user").(database.User)
 	if !ok || user.Role != database.UserRoleAdmin {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"food_item_pending_controller.go",
 			"RejectFoodItemPending",
 			fmt.Errorf("reached reject food item pending without user"),
@@ -570,7 +590,7 @@ func RejectFoodItemPending(c echo.Context) error {
 
 	foodItemPendingID, err := uuid.Parse(c.Param("food_item_pending_id"))
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"food_item_pending_controller.go",
 			"RejectFoodItemPending",
 			fmt.Errorf("failed to parse food item pending id: %s", err),
@@ -582,7 +602,7 @@ func RejectFoodItemPending(c echo.Context) error {
 
 	err = config.Queries.RejectFoodItemPending(c.Request().Context(), foodItemPendingID)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"food_item_pending_controller.go",
 			"RejectFoodItemPending",
 			fmt.Errorf("failed to reject food item pending: %s", err),

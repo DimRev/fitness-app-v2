@@ -30,7 +30,7 @@ type CreateMealRequest struct {
 func CreateMeal(c echo.Context) error {
 	createMealReq := CreateMealRequest{}
 	if err := c.Bind(&createMealReq); err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"CreateMeal",
 			fmt.Errorf("failed to bind create meal request: %s", err),
@@ -42,7 +42,7 @@ func CreateMeal(c echo.Context) error {
 
 	user, ok := c.Get("user").(database.User)
 	if !ok {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"CreateMeal",
 			fmt.Errorf("reached create meal without user"),
@@ -68,7 +68,7 @@ func CreateMeal(c echo.Context) error {
 		UserID:      user.ID,
 	})
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"CreateMeal",
 			fmt.Errorf("failed to create meal: %s", err),
@@ -83,7 +83,7 @@ func CreateMeal(c echo.Context) error {
 	for _, foodItem := range createMealReq.FoodItems {
 		foodItemAmountI32, err := utils.SafeParseIntToInt32(foodItem.Amount, 1, math.MaxInt32)
 		if err != nil {
-			utils.FmtLogMsg(
+			utils.FmtLogError(
 				"meal_controller.go",
 				"CreateMeal",
 				fmt.Errorf("failed to parse food item amount: %s", err),
@@ -104,7 +104,7 @@ func CreateMeal(c echo.Context) error {
 		Column4: amounts, // Amounts array
 	})
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"CreateMeal",
 			fmt.Errorf("failed to insert food items for meal: %s", err),
@@ -116,7 +116,7 @@ func CreateMeal(c echo.Context) error {
 
 	mealWithNutrients, err := config.Queries.GetMealByID(c.Request().Context(), meal.ID)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"CreateMeal",
 			fmt.Errorf("failed to retrieve meal with food items: %s", err),
@@ -127,7 +127,7 @@ func CreateMeal(c echo.Context) error {
 	}
 	totalCalories, err := strconv.ParseFloat(mealWithNutrients.TotalCalories.(string), 64)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"CreateMeal",
 			fmt.Errorf("failed to parse total calories: %s", err),
@@ -138,7 +138,7 @@ func CreateMeal(c echo.Context) error {
 	}
 	totalFat, err := strconv.ParseFloat(mealWithNutrients.TotalFat.(string), 64)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"CreateMeal",
 			fmt.Errorf("failed to parse total fat: %s", err),
@@ -149,7 +149,7 @@ func CreateMeal(c echo.Context) error {
 	}
 	totalProtein, err := strconv.ParseFloat(mealWithNutrients.TotalProtein.(string), 64)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"CreateMeal",
 			fmt.Errorf("failed to parse total protein: %s", err),
@@ -160,7 +160,7 @@ func CreateMeal(c echo.Context) error {
 	}
 	totalCarbs, err := strconv.ParseFloat(mealWithNutrients.TotalCarbs.(string), 64)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"CreateMeal",
 			fmt.Errorf("failed to parse total carbs: %s", err),
@@ -211,7 +211,7 @@ func GetMealsByUserID(c echo.Context) error {
 	if offsetStr := c.QueryParam("offset"); offsetStr != "" {
 		convOffset, err := utils.SafeParseStrToInt32(offsetStr, 0, math.MaxInt32)
 		if err != nil {
-			utils.FmtLogMsg(
+			utils.FmtLogError(
 				"meal_controller.go",
 				"GetMealsByUserID",
 				fmt.Errorf("failed to parse offset: %s", err),
@@ -225,7 +225,7 @@ func GetMealsByUserID(c echo.Context) error {
 	if limitStr := c.QueryParam("limit"); limitStr != "" {
 		convLimit, err := utils.SafeParseStrToInt32(limitStr, 1, 100)
 		if err != nil {
-			utils.FmtLogMsg(
+			utils.FmtLogError(
 				"meal_controller.go",
 				"GetMealsByUserID",
 				fmt.Errorf("failed to parse limit: %s", err),
@@ -242,7 +242,7 @@ func GetMealsByUserID(c echo.Context) error {
 
 	user, ok := c.Get("user").(database.User)
 	if !ok {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"GetMealsByUserID",
 			fmt.Errorf("reached get meals by user id without user"),
@@ -253,7 +253,7 @@ func GetMealsByUserID(c echo.Context) error {
 	}
 
 	if err := config.DB.Ping(); err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"GetMealsByUserID",
 			fmt.Errorf("connection to database failed : %s", err),
@@ -272,7 +272,7 @@ func GetMealsByUserID(c echo.Context) error {
 
 		mealsWithNut, err := config.Queries.GetMealsByUserID(c.Request().Context(), getMealsByUserIdParams)
 		if err != nil {
-			utils.FmtLogMsg(
+			utils.FmtLogError(
 				"meal_controller.go",
 				"GetMealsByUserID",
 				fmt.Errorf("failed to get meals: %s", err),
@@ -284,7 +284,7 @@ func GetMealsByUserID(c echo.Context) error {
 
 		totalRows, err := config.Queries.GetMealsCountByUserID(c.Request().Context(), user.ID)
 		if err != nil {
-			utils.FmtLogMsg(
+			utils.FmtLogError(
 				"meal_controller.go",
 				"GetMealsByUserID",
 				fmt.Errorf("failed to get meals count: %s", err),
@@ -298,7 +298,7 @@ func GetMealsByUserID(c echo.Context) error {
 		for i, mealWithNut := range mealsWithNut {
 			totalCalories, err := strconv.ParseFloat(mealWithNut.TotalCalories.(string), 64)
 			if err != nil {
-				utils.FmtLogMsg(
+				utils.FmtLogError(
 					"meal_controller.go",
 					"GetMealsByUserID",
 					fmt.Errorf("failed to parse total calories: %s", err),
@@ -309,7 +309,7 @@ func GetMealsByUserID(c echo.Context) error {
 			}
 			totalFat, err := strconv.ParseFloat(mealWithNut.TotalFat.(string), 64)
 			if err != nil {
-				utils.FmtLogMsg(
+				utils.FmtLogError(
 					"meal_controller.go",
 					"GetMealsByUserID",
 					fmt.Errorf("failed to parse total fat: %s", err),
@@ -320,7 +320,7 @@ func GetMealsByUserID(c echo.Context) error {
 			}
 			totalProtein, err := strconv.ParseFloat(mealWithNut.TotalProtein.(string), 64)
 			if err != nil {
-				utils.FmtLogMsg(
+				utils.FmtLogError(
 					"meal_controller.go",
 					"GetMealsByUserID",
 					fmt.Errorf("failed to parse total protein: %s", err),
@@ -331,7 +331,7 @@ func GetMealsByUserID(c echo.Context) error {
 			}
 			totalCarbs, err := strconv.ParseFloat(mealWithNut.TotalCarbs.(string), 64)
 			if err != nil {
-				utils.FmtLogMsg(
+				utils.FmtLogError(
 					"meal_controller.go",
 					"GetMealsByUserID",
 					fmt.Errorf("failed to parse total carbs: %s", err),
@@ -385,7 +385,7 @@ func GetMealsByUserID(c echo.Context) error {
 
 		mealsWithNut, err := config.Queries.GetMealsByUserIDWithTextFilter(c.Request().Context(), getMealsByUserIDWithTextFilterParams)
 		if err != nil {
-			utils.FmtLogMsg(
+			utils.FmtLogError(
 				"meal_controller.go",
 				"GetMealsByUserID",
 				fmt.Errorf("failed to get meals: %s", err),
@@ -402,7 +402,7 @@ func GetMealsByUserID(c echo.Context) error {
 
 		totalRows, err := config.Queries.GetMealsCountByUserIDWithTextFilter(c.Request().Context(), getMealsCountByUserIDWithTextFilter)
 		if err != nil {
-			utils.FmtLogMsg(
+			utils.FmtLogError(
 				"meal_controller.go",
 				"GetMealsByUserID",
 				fmt.Errorf("failed to get meals count: %s", err),
@@ -416,7 +416,7 @@ func GetMealsByUserID(c echo.Context) error {
 		for i, mealWithNut := range mealsWithNut {
 			totalCalories, err := strconv.ParseFloat(mealWithNut.TotalCalories.(string), 64)
 			if err != nil {
-				utils.FmtLogMsg(
+				utils.FmtLogError(
 					"meal_controller.go",
 					"GetMealsByUserID",
 					fmt.Errorf("failed to parse total calories: %s", err),
@@ -427,7 +427,7 @@ func GetMealsByUserID(c echo.Context) error {
 			}
 			totalFat, err := strconv.ParseFloat(mealWithNut.TotalFat.(string), 64)
 			if err != nil {
-				utils.FmtLogMsg(
+				utils.FmtLogError(
 					"meal_controller.go",
 					"GetMealsByUserID",
 					fmt.Errorf("failed to parse total fat: %s", err),
@@ -438,7 +438,7 @@ func GetMealsByUserID(c echo.Context) error {
 			}
 			totalProtein, err := strconv.ParseFloat(mealWithNut.TotalProtein.(string), 64)
 			if err != nil {
-				utils.FmtLogMsg(
+				utils.FmtLogError(
 					"meal_controller.go",
 					"GetMealsByUserID",
 					fmt.Errorf("failed to parse total protein: %s", err),
@@ -449,7 +449,7 @@ func GetMealsByUserID(c echo.Context) error {
 			}
 			totalCarbs, err := strconv.ParseFloat(mealWithNut.TotalCarbs.(string), 64)
 			if err != nil {
-				utils.FmtLogMsg(
+				utils.FmtLogError(
 					"meal_controller.go",
 					"GetMealsByUserID",
 					fmt.Errorf("failed to parse total carbs: %s", err),
@@ -498,7 +498,7 @@ func GetMealsByUserID(c echo.Context) error {
 func GetMealByID(c echo.Context) error {
 	mealID, err := uuid.Parse(c.Param("meal_id"))
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"GetMealByID",
 			fmt.Errorf("failed to parse meal id: %s", err),
@@ -510,7 +510,7 @@ func GetMealByID(c echo.Context) error {
 
 	_, ok := c.Get("user").(database.User)
 	if !ok {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"GetMealByID",
 			fmt.Errorf("reached get meal by id without user"),
@@ -522,7 +522,7 @@ func GetMealByID(c echo.Context) error {
 
 	mealWithNut, err := config.Queries.GetMealByID(c.Request().Context(), mealID)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"GetMealByID",
 			fmt.Errorf("failed to get meal: %s", err),
@@ -534,7 +534,7 @@ func GetMealByID(c echo.Context) error {
 
 	totalCalories, err := strconv.ParseFloat(mealWithNut.TotalCalories.(string), 64)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"GetMealByID",
 			fmt.Errorf("failed to parse total calories: %s", err),
@@ -545,7 +545,7 @@ func GetMealByID(c echo.Context) error {
 	}
 	totalFat, err := strconv.ParseFloat(mealWithNut.TotalFat.(string), 64)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"GetMealByID",
 			fmt.Errorf("failed to parse total fat: %s", err),
@@ -556,7 +556,7 @@ func GetMealByID(c echo.Context) error {
 	}
 	totalProtein, err := strconv.ParseFloat(mealWithNut.TotalProtein.(string), 64)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"GetMealByID",
 			fmt.Errorf("failed to parse total protein: %s", err),
@@ -567,7 +567,7 @@ func GetMealByID(c echo.Context) error {
 	}
 	totalCarbs, err := strconv.ParseFloat(mealWithNut.TotalCarbs.(string), 64)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"GetMealByID",
 			fmt.Errorf("failed to parse total carbs: %s", err),
@@ -593,7 +593,7 @@ func GetMealByID(c echo.Context) error {
 
 	foodItems, err := config.Queries.GetFoodItemsByMealID(c.Request().Context(), getFoodItemsByMealIDParams)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"GetMealByID",
 			fmt.Errorf("failed to get food items by meal id: %s", err),
@@ -669,7 +669,7 @@ type UpdateMealRequest struct {
 func UpdateMeal(c echo.Context) error {
 	user, ok := c.Get("user").(database.User)
 	if !ok {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"UpdateMeal",
 			fmt.Errorf("reached update meal without user"),
@@ -681,7 +681,7 @@ func UpdateMeal(c echo.Context) error {
 
 	updateMealReq := UpdateMealRequest{}
 	if err := c.Bind(&updateMealReq); err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"UpdateMeal",
 			fmt.Errorf("failed to bind update meal request: %s", err),
@@ -693,7 +693,7 @@ func UpdateMeal(c echo.Context) error {
 
 	mealId, err := uuid.Parse(c.Param("meal_id"))
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"UpdateMeal",
 			fmt.Errorf("failed to parse meal id: %s", err),
@@ -704,7 +704,7 @@ func UpdateMeal(c echo.Context) error {
 	}
 
 	if err := config.DB.Ping(); err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"UpdateMeal",
 			fmt.Errorf("connection to database failed : %s", err),
@@ -721,7 +721,7 @@ func UpdateMeal(c echo.Context) error {
 
 	err = config.Queries.DeleteFoodItemsByMealID(c.Request().Context(), deleteFoodItemsByMealIdParams)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"UpdateMeal",
 			fmt.Errorf("failed to delete food items by meal id: %s", err),
@@ -749,7 +749,7 @@ func UpdateMeal(c echo.Context) error {
 
 	meal, err := config.Queries.UpdateMeal(c.Request().Context(), updateMealParams)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"UpdateMeal",
 			fmt.Errorf("failed to update meal: %s", err),
@@ -764,7 +764,7 @@ func UpdateMeal(c echo.Context) error {
 	for _, foodItem := range updateMealReq.FoodItems {
 		foodItemAmountI32, err := utils.SafeParseIntToInt32(foodItem.Amount, 1, math.MaxInt32)
 		if err != nil {
-			utils.FmtLogMsg(
+			utils.FmtLogError(
 				"meal_controller.go",
 				"UpdateMeal",
 				fmt.Errorf("failed to parse food item amount: %s", err),
@@ -785,7 +785,7 @@ func UpdateMeal(c echo.Context) error {
 		Column4: amounts, // Amounts array
 	})
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"UpdateMeal",
 			fmt.Errorf("failed to insert food items for meal: %s", err),
@@ -797,7 +797,7 @@ func UpdateMeal(c echo.Context) error {
 
 	mealWithNutrients, err := config.Queries.GetMealByID(c.Request().Context(), meal.ID)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"UpdateMeal",
 			fmt.Errorf("failed to retrieve meal with food items: %s", err),
@@ -808,7 +808,7 @@ func UpdateMeal(c echo.Context) error {
 	}
 	totalCalories, err := strconv.ParseFloat(mealWithNutrients.TotalCalories.(string), 64)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"UpdateMeal",
 			fmt.Errorf("failed to parse total calories: %s", err),
@@ -819,7 +819,7 @@ func UpdateMeal(c echo.Context) error {
 	}
 	totalFat, err := strconv.ParseFloat(mealWithNutrients.TotalFat.(string), 64)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"UpdateMeal",
 			fmt.Errorf("failed to parse total fat: %s", err),
@@ -830,7 +830,7 @@ func UpdateMeal(c echo.Context) error {
 	}
 	totalProtein, err := strconv.ParseFloat(mealWithNutrients.TotalProtein.(string), 64)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"UpdateMeal",
 			fmt.Errorf("failed to parse total protein: %s", err),
@@ -841,7 +841,7 @@ func UpdateMeal(c echo.Context) error {
 	}
 	totalCarbs, err := strconv.ParseFloat(mealWithNutrients.TotalCarbs.(string), 64)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"UpdateMeal",
 			fmt.Errorf("failed to parse total carbs: %s", err),
@@ -887,7 +887,7 @@ type ConsumeMealRequest struct {
 func ConsumeMeal(c echo.Context) error {
 	user, ok := c.Get("user").(database.User)
 	if !ok {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"ConsumeMeal",
 			fmt.Errorf("reached consume meal without user"),
@@ -899,7 +899,7 @@ func ConsumeMeal(c echo.Context) error {
 
 	consumeMealReq := ConsumeMealRequest{}
 	if err := c.Bind(&consumeMealReq); err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"ConsumeMeal",
 			fmt.Errorf("failed to bind consume meal request: %s", err),
@@ -911,7 +911,7 @@ func ConsumeMeal(c echo.Context) error {
 
 	mealId, err := uuid.Parse(consumeMealReq.MealID)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"ConsumeMeal",
 			fmt.Errorf("failed to parse meal id: %s", err),
@@ -923,7 +923,7 @@ func ConsumeMeal(c echo.Context) error {
 
 	date, err := time.Parse("2006-01-02", strings.Split(consumeMealReq.Date, "T")[0])
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"ConsumeMeal",
 			fmt.Errorf("failed to parse date: %s", err),
@@ -934,7 +934,7 @@ func ConsumeMeal(c echo.Context) error {
 	}
 
 	if err := config.DB.Ping(); err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"ConsumeMeal",
 			fmt.Errorf("connection to database failed : %s", err),
@@ -952,7 +952,7 @@ func ConsumeMeal(c echo.Context) error {
 
 	consumedMeal, err := config.Queries.ConsumeMeal(c.Request().Context(), consumeMealParams)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"ConsumeMeal",
 			fmt.Errorf("failed to consume meal: %s", err),
@@ -977,7 +977,7 @@ func ConsumeMeal(c echo.Context) error {
 func GetConsumedMealsByMealID(c echo.Context) error {
 	_, ok := c.Get("user").(database.User)
 	if !ok {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"ConsumeMeal",
 			fmt.Errorf("reached consume meal without user"),
@@ -989,7 +989,7 @@ func GetConsumedMealsByMealID(c echo.Context) error {
 
 	mealID, err := uuid.Parse(c.Param("meal_id"))
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"GetConsumedMealsByMealID",
 			fmt.Errorf("failed to parse meal id: %s", err),
@@ -1001,7 +1001,7 @@ func GetConsumedMealsByMealID(c echo.Context) error {
 
 	consumedMeals, err := config.Queries.GetConsumedMealsByMealID(c.Request().Context(), mealID)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"GetConsumedMealsByMealID",
 			fmt.Errorf("failed to get consumed meals by meal id: %s", err),
@@ -1033,7 +1033,7 @@ type GetConsumedMealsByDateRequest struct {
 func GetConsumedMealsByDate(c echo.Context) error {
 	_, ok := c.Get("user").(database.User)
 	if !ok {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"ConsumeMeal",
 			fmt.Errorf("reached consume meal without user"),
@@ -1045,7 +1045,7 @@ func GetConsumedMealsByDate(c echo.Context) error {
 
 	consumeMealReq := GetConsumedMealsByDateRequest{}
 	if err := c.Bind(&consumeMealReq); err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"GetConsumedMealsByDate",
 			fmt.Errorf("failed to bind get consumed meals by date request: %s", err),
@@ -1057,7 +1057,7 @@ func GetConsumedMealsByDate(c echo.Context) error {
 
 	date, err := time.Parse("2006-01-02", consumeMealReq.Date)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"GetConsumedMealsByDate",
 			fmt.Errorf("failed to parse date: %s", err),
@@ -1069,7 +1069,7 @@ func GetConsumedMealsByDate(c echo.Context) error {
 
 	consumedMeals, err := config.Queries.GetConsumedMealsByDate(c.Request().Context(), date)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"GetConsumedMealsByDate",
 			fmt.Errorf("failed to get consumed meals by date: %s", err),
@@ -1097,7 +1097,7 @@ func GetConsumedMealsByDate(c echo.Context) error {
 func RemoveConsumedMeal(c echo.Context) error {
 	_, ok := c.Get("user").(database.User)
 	if !ok {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"ConsumeMeal",
 			fmt.Errorf("reached consume meal without user"),
@@ -1109,7 +1109,7 @@ func RemoveConsumedMeal(c echo.Context) error {
 
 	mealID, err := uuid.Parse(c.Param("meal_id"))
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"RemoveConsumedMeal",
 			fmt.Errorf("failed to parse meal id: %s", err),
@@ -1121,7 +1121,7 @@ func RemoveConsumedMeal(c echo.Context) error {
 
 	err = config.Queries.RemoveConsumedMeal(c.Request().Context(), mealID)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"meal_controller.go",
 			"RemoveConsumedMeal",
 			fmt.Errorf("failed to remove consumed meal: %s", err),

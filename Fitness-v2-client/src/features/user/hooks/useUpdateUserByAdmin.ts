@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "react-query";
 import axiosInstance from "~/lib/axios";
 import { QUERY_KEYS, USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 import { type UserEditFormSchema } from "../user.schema";
+import useSocket from "~/features/socket/hooks/useSocket";
 
 type ErrorResponseBody = {
   message: string;
@@ -10,12 +11,21 @@ type ErrorResponseBody = {
 
 function useUpdateUserByAdmin() {
   const queryClient = useQueryClient();
+  const { sendSocketGroupMessage } = useSocket();
   return useMutation<User, Error, UserEditFormSchema & { userId: string }>(
     updateUserByAdmin,
     {
       ...USE_MUTATION_DEFAULT_OPTIONS,
       retry: false,
-      onSuccess: () => {
+      onSuccess: async () => {
+        const stringifiedData = JSON.stringify({
+          group: QUERY_KEYS.USERS.GET_USERS,
+          data: {},
+        });
+        await sendSocketGroupMessage(
+          QUERY_KEYS.USERS.GET_USERS,
+          `${stringifiedData}`,
+        );
         void queryClient.invalidateQueries([QUERY_KEYS.USERS.GET_USERS]);
       },
     },

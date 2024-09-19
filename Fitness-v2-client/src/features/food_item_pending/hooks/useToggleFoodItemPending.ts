@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useMutation, useQueryClient } from "react-query";
+import useSocket from "~/features/socket/hooks/useSocket";
 import axiosInstance from "~/lib/axios";
 import { QUERY_KEYS, USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
@@ -20,6 +21,8 @@ type OptimisticUpdateContext = {
 
 function useToggleFoodItemPending() {
   const queryClient = useQueryClient();
+
+  const { sendSocketGroupMessage } = useSocket();
 
   return useMutation<
     FoodItemsPendingWithPages,
@@ -76,6 +79,16 @@ function useToggleFoodItemPending() {
 
       // Return a context with the previous data to rollback on error
       return { previousFoodItemsPending };
+    },
+    onSuccess: (_data, { limit, offset, text_filter }) => {
+      const stringifiedData = JSON.stringify({
+        group: QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
+        data: { limit, offset, text_filter },
+      });
+      void sendSocketGroupMessage(
+        QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
+        `"${stringifiedData}"`,
+      );
     },
     onError: (_err, { limit, offset }, context) => {
       if (context?.previousFoodItemsPending) {

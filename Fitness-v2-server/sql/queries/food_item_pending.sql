@@ -112,6 +112,13 @@ VALUES (
   $2
 );
 
+-- name: GetFoodItemPendingOwnerId :one
+SELECT u.id as owner_id, fip.name as food_item_pending_name
+FROM food_items_pending fip
+JOIN users u ON u.id = fip.user_id
+WHERE fip.id = $1;
+
+
 -- name: UnlikeFoodItemPendingForUser :exec
 DELETE FROM rel_user_like_food_item_pending
 WHERE user_id = $1

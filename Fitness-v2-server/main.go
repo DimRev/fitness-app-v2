@@ -5,6 +5,7 @@ import (
 
 	"github.com/DimRev/Fitness-v2-server/internal/config"
 	"github.com/DimRev/Fitness-v2-server/internal/routes"
+	"github.com/DimRev/Fitness-v2-server/internal/socket"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 )
@@ -32,6 +33,7 @@ func main() {
 		},
 	}))
 
+	go socket.Hub.RunHub()
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format:           "[${time_rfc3339}] ${status} ${method} ${path} (${remote_ip}) ${latency_human} \n",
 		CustomTimeFormat: "2006-01-02 15:04:05",
@@ -45,6 +47,7 @@ func main() {
 		config.ENV,
 	)
 
+	socket.SocketRoute(e)
 	routes.V1ApiRoutes(e)
 
 	e.GET("/", func(c echo.Context) error {

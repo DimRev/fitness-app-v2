@@ -174,7 +174,7 @@ type UpdateUserByAdminRequest struct {
 func UpdateUserByAdmin(c echo.Context) error {
 	updateUserReq := UpdateUserByAdminRequest{}
 	if err := c.Bind(&updateUserReq); err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"user_controller.go",
 			"UpdateUserByAdmin",
 			fmt.Errorf("failed to bind update user by admin request: %s", err),
@@ -186,7 +186,7 @@ func UpdateUserByAdmin(c echo.Context) error {
 
 	userToUpdateId, err := uuid.Parse(c.Param("userId"))
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"user_controller.go",
 			"UpdateUserByAdmin",
 			fmt.Errorf("failed to parse user id: %s", err),
@@ -198,7 +198,7 @@ func UpdateUserByAdmin(c echo.Context) error {
 
 	user, ok := c.Get("user").(database.User)
 	if !ok {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"user_controller.go",
 			"UpdateUserByAdmin",
 			fmt.Errorf("reached update user by admin without user"),
@@ -209,7 +209,7 @@ func UpdateUserByAdmin(c echo.Context) error {
 	}
 
 	if user.ID == userToUpdateId {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"user_controller.go",
 			"UpdateUserByAdmin",
 			fmt.Errorf("can not update self"),
@@ -233,7 +233,7 @@ func UpdateUserByAdmin(c echo.Context) error {
 	}
 	updatedUser, err := config.Queries.UpdateUserByAdmin(c.Request().Context(), updateUserParams)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"user_controller.go",
 			"UpdateUserByAdmin",
 			fmt.Errorf("failed to update user: %s", err),

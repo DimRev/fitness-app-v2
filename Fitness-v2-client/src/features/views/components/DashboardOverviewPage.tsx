@@ -8,7 +8,7 @@ function DashboardOverviewPage() {
       LucideIcon={LineChart}
       to="/dashboard"
     >
-      <div>This is the overview page</div>
+      <div>Overview</div>
     </DashboardPageWrapper>
   );
 }

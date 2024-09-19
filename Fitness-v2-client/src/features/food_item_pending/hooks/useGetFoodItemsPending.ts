@@ -1,5 +1,7 @@
 import axios from "axios";
+import { useEffect } from "react";
 import { useQuery } from "react-query";
+import useSocket from "~/features/socket/hooks/useSocket";
 import axiosInstance from "~/lib/axios";
 import { QUERY_KEYS, USE_QUERY_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
@@ -14,6 +16,15 @@ type ErrorResponseBody = {
 };
 
 function useGetFoodItemsPending(params: GetMealsByUserIDRequestBody) {
+  const { joinSocketGroup, leaveSocketGroup } = useSocket();
+  useEffect(() => {
+    void joinSocketGroup(QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING);
+    return () => {
+      void leaveSocketGroup(
+        QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
+      );
+    };
+  }, [joinSocketGroup, leaveSocketGroup]);
   return useQuery<FoodItemsPendingWithPages, Error>({
     ...USE_QUERY_DEFAULT_OPTIONS,
     queryKey: [

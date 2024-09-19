@@ -29,7 +29,7 @@ func Login(c echo.Context) error {
 	}
 
 	if err := config.DB.Ping(); err != nil {
-		utils.FmtLogMsg("auth_controllers.go", "Login", fmt.Errorf("connection to database failed : %s", err))
+		utils.FmtLogError("auth_controllers.go", "Login", fmt.Errorf("connection to database failed : %s", err))
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 			"message": "Failed to login, trouble with server",
 		})
@@ -42,7 +42,7 @@ func Login(c echo.Context) error {
 				"message": "Failed to login, wrong email or password",
 			})
 		}
-		utils.FmtLogMsg("auth_controllers.go", "Login", fmt.Errorf("failed to get user by email: %s", err))
+		utils.FmtLogError("auth_controllers.go", "Login", fmt.Errorf("failed to get user by email: %s", err))
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 			"message": "Failed to login, trouble with server",
 		})
@@ -50,7 +50,7 @@ func Login(c echo.Context) error {
 
 	err = services.ComparePassword(loginReq.Password, user.PasswordHash)
 	if err != nil {
-		utils.FmtLogMsg("auth_controllers.go", "Login", fmt.Errorf("failed to compare password: %s", err))
+		utils.FmtLogError("auth_controllers.go", "Login", fmt.Errorf("failed to compare password: %s", err))
 		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
 			"message": "Failed to login, wrong email or password",
 		})
@@ -58,7 +58,7 @@ func Login(c echo.Context) error {
 
 	sessionToken, err := services.GenerateAndRefresh(c, user.ID)
 	if err != nil {
-		utils.FmtLogMsg("auth_controllers.go", "Login", fmt.Errorf("failed to generate session: %s", err))
+		utils.FmtLogError("auth_controllers.go", "Login", fmt.Errorf("failed to generate session: %s", err))
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 			"message": "Failed to login, trouble with session",
 		})
@@ -67,7 +67,7 @@ func Login(c echo.Context) error {
 	token := services.CreateJwt(user.ID)
 	cookie, err := services.GenerateAndSignCookie(token)
 	if err != nil {
-		utils.FmtLogMsg("auth_controllers.go", "Login", fmt.Errorf("failed to create cookie: %s", err))
+		utils.FmtLogError("auth_controllers.go", "Login", fmt.Errorf("failed to create cookie: %s", err))
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 			"message": "Failed to login, trouble with cookie",
 		})
@@ -98,7 +98,7 @@ func Login(c echo.Context) error {
 func Logout(c echo.Context) error {
 	sessionToken, ok := c.Get("session_token").(string)
 	if !ok {
-		utils.FmtLogMsg("auth_controllers.go", "Logout", fmt.Errorf("reached logout without user"))
+		utils.FmtLogError("auth_controllers.go", "Logout", fmt.Errorf("reached logout without user"))
 		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
 			"message": "Failed to logout, unauthorized",
 		})
@@ -123,7 +123,7 @@ func Logout(c echo.Context) error {
 
 	err := services.DeleteSession(c, sessionToken)
 	if err != nil {
-		utils.FmtLogMsg("auth_controllers.go", "Logout", fmt.Errorf("failed to delete session: %s", err))
+		utils.FmtLogError("auth_controllers.go", "Logout", fmt.Errorf("failed to delete session: %s", err))
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 			"message": "Failed to logout, trouble with session",
 		})
@@ -150,7 +150,7 @@ func Register(c echo.Context) error {
 
 	hash, err := services.HashPassword(registerReq.Password)
 	if err != nil {
-		utils.FmtLogMsg("auth_controllers.go", "Register", fmt.Errorf("failed to hash password: %s", err))
+		utils.FmtLogError("auth_controllers.go", "Register", fmt.Errorf("failed to hash password: %s", err))
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 			"message": "Failed to register, trouble with server",
 		})
@@ -163,7 +163,7 @@ func Register(c echo.Context) error {
 	}
 
 	if err := config.DB.Ping(); err != nil {
-		utils.FmtLogMsg("auth_controllers.go", "Register", fmt.Errorf("connection to database failed : %s", err))
+		utils.FmtLogError("auth_controllers.go", "Register", fmt.Errorf("connection to database failed : %s", err))
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 			"message": "Failed to register, trouble with server",
 		})
@@ -171,7 +171,7 @@ func Register(c echo.Context) error {
 
 	user, err := config.Queries.CreateUser(c.Request().Context(), createUserParams)
 	if err != nil {
-		utils.FmtLogMsg("auth_controllers.go", "Register", fmt.Errorf("failed to create user: %s", err))
+		utils.FmtLogError("auth_controllers.go", "Register", fmt.Errorf("failed to create user: %s", err))
 		if pgErr, ok := err.(*pq.Error); ok {
 			switch pgErr.Code {
 			case "23505":
@@ -192,7 +192,7 @@ func Register(c echo.Context) error {
 
 	sessionToken, err := services.GenerateAndRefresh(c, user.ID)
 	if err != nil {
-		utils.FmtLogMsg("auth_controllers.go", "Register", fmt.Errorf("failed to generate session: %s", err))
+		utils.FmtLogError("auth_controllers.go", "Register", fmt.Errorf("failed to generate session: %s", err))
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 			"message": "Failed to register, trouble with session",
 		})
@@ -201,7 +201,7 @@ func Register(c echo.Context) error {
 	token := services.CreateJwt(user.ID)
 	cookie, err := services.GenerateAndSignCookie(token)
 	if err != nil {
-		utils.FmtLogMsg("auth_controllers.go", "Register", fmt.Errorf("failed to create cookie: %s", err))
+		utils.FmtLogError("auth_controllers.go", "Register", fmt.Errorf("failed to create cookie: %s", err))
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 			"message": "Failed to register, trouble with cookie",
 		})
@@ -231,7 +231,7 @@ func Register(c echo.Context) error {
 func LoginFromCookie(c echo.Context) error {
 	user, ok := c.Get("user").(database.User)
 	if !ok {
-		utils.FmtLogMsg("auth_controllers.go", "LoginFromCookie", fmt.Errorf("reached login from cookie without user"))
+		utils.FmtLogError("auth_controllers.go", "LoginFromCookie", fmt.Errorf("reached login from cookie without user"))
 		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
 			"message": "Failed to login, unauthorized",
 		})
@@ -239,7 +239,7 @@ func LoginFromCookie(c echo.Context) error {
 
 	sessionToken, err := services.GenerateAndRefresh(c, user.ID)
 	if err != nil {
-		utils.FmtLogMsg("auth_controllers.go", "LoginFromCookie", fmt.Errorf("failed to generate session: %s", err))
+		utils.FmtLogError("auth_controllers.go", "LoginFromCookie", fmt.Errorf("failed to generate session: %s", err))
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 			"message": "Failed to login, trouble with session",
 		})
@@ -280,7 +280,7 @@ func LoginWithSession(c echo.Context) error {
 
 	userId, err := services.ValidateSession(c, loginWithSessionReq.SessionToken)
 	if err != nil {
-		utils.FmtLogMsg("auth_controllers.go", "LoginWithSession", fmt.Errorf("failed to validate session: %s", err))
+		utils.FmtLogError("auth_controllers.go", "LoginWithSession", fmt.Errorf("failed to validate session: %s", err))
 		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
 			"message": "Failed to login, invalid session token",
 		})
@@ -288,7 +288,7 @@ func LoginWithSession(c echo.Context) error {
 
 	user, err := config.Queries.GetUserByID(c.Request().Context(), userId)
 	if err != nil {
-		utils.FmtLogMsg("auth_controllers.go", "LoginWithSession", fmt.Errorf("failed to get user: %s", err))
+		utils.FmtLogError("auth_controllers.go", "LoginWithSession", fmt.Errorf("failed to get user: %s", err))
 		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
 			"message": "Failed to login, invalid session token",
 		})
@@ -297,7 +297,7 @@ func LoginWithSession(c echo.Context) error {
 	token := services.CreateJwt(user.ID)
 	cookie, err := services.GenerateAndSignCookie(token)
 	if err != nil {
-		utils.FmtLogMsg("auth_controllers.go", "LoginWithSession", fmt.Errorf("failed to create cookie: %s", err))
+		utils.FmtLogError("auth_controllers.go", "LoginWithSession", fmt.Errorf("failed to create cookie: %s", err))
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 			"message": "Failed to login, failed to create cookie",
 		})
