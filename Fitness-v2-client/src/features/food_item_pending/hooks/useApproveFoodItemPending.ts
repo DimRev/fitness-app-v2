@@ -33,12 +33,20 @@ function useApproveFoodItemPending() {
         group: QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
         data: {},
       });
-      sendSocketGroupMessage(
+      void sendSocketGroupMessage(
         QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
+        `"${stringifiedData}"`,
+      );
+      void sendSocketGroupMessage(
+        QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS,
         `"${stringifiedData}"`,
       );
       void queryClient.invalidateQueries([
         QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
+        {},
+      ]);
+      void queryClient.invalidateQueries([
+        QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS,
         {},
       ]);
     },

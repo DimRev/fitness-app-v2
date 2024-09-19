@@ -1,7 +1,14 @@
 import axios from "axios";
-import { useInfiniteQuery } from "react-query";
+import { useLayoutEffect } from "react";
+import { useInfiniteQuery, useQueryClient } from "react-query";
+import useSocket from "~/features/socket/hooks/useSocket";
 import axiosInstance from "~/lib/axios";
 import { QUERY_KEYS } from "~/lib/reactQuery";
+import {
+  type BroadcastData,
+  type Message,
+  parseSocketData,
+} from "~/lib/socket";
 
 type GetFoodItemsRequestBody = {
   limit: number;
@@ -14,6 +21,47 @@ type ErrorResponseBody = {
 };
 
 export function useGetFoodItems(params: GetFoodItemsRequestBody) {
+  const { joinSocketGroup, leaveSocketGroup, socket } = useSocket();
+  const queryClient = useQueryClient();
+  useLayoutEffect(() => {
+    void joinSocketGroup(QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS);
+
+    if (socket) {
+      try {
+        socket.onmessage = (event: MessageEvent<string>) => {
+          const message = JSON.parse(event.data) as Message;
+          switch (message.action) {
+            case "broadcast-group":
+            case "broadcast-global":
+            case "broadcast-all":
+              if (message.data) {
+                const broadcastData = parseSocketData<BroadcastData>(
+                  message.data,
+                );
+                console.log("Received data:", broadcastData);
+                if (
+                  broadcastData.group === QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS
+                ) {
+                  void queryClient.invalidateQueries([
+                    QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS,
+                    broadcastData.data,
+                  ]);
+                }
+              }
+              break;
+          }
+        };
+      } catch (err) {
+        console.log("Failed to parse WebSocket message", err);
+      }
+    }
+
+    return () => {
+      void leaveSocketGroup(QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return useInfiniteQuery<FoodItemWithPages, Error>(
     [
       QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS,

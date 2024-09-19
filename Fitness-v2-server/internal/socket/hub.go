@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/DimRev/Fitness-v2-server/internal/utils"
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
 
@@ -145,6 +146,34 @@ func (h *SocketHub) BroadcastGlobal(action MessageActions, data string) {
 	}
 
 	for client := range h.Clients {
+		msgBytes, err := json.Marshal(msg)
+		if err != nil {
+			client.Socket.Close()
+			delete(h.Clients, client)
+			continue
+		}
+		err = client.Socket.WriteMessage(websocket.TextMessage, msgBytes)
+		if err != nil {
+			client.Socket.Close()
+			delete(h.Clients, client)
+		}
+	}
+}
+
+func (h *SocketHub) BroadcastToUser(userID uuid.UUID, action MessageActions, data string) {
+	h.Mux.Lock()
+	defer h.Mux.Unlock()
+
+	msg := Message{
+		Action: action,
+		Data:   data,
+	}
+
+	for client := range h.Clients {
+		if client.User.ID != userID {
+			continue
+		}
+		fmt.Println(client.User.ID, userID)
 		msgBytes, err := json.Marshal(msg)
 		if err != nil {
 			client.Socket.Close()

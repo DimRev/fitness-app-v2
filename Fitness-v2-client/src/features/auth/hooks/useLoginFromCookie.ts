@@ -1,5 +1,10 @@
 import axios from "axios";
-import { useMutation, type UseMutationResult } from "react-query";
+import {
+  useMutation,
+  useQueryClient,
+  type UseMutationResult,
+} from "react-query";
+import useSocket from "~/features/socket/hooks/useSocket";
 import axiosInstance from "~/lib/axios";
 import { USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
@@ -8,9 +13,16 @@ type ErrorResponseBody = {
 };
 
 function useLoginFromCookie(): UseMutationResult<AuthUser, Error, void> {
+  const { signInSocket } = useSocket();
+  const queryClient = useQueryClient();
+
   return useMutation<AuthUser, Error, void>(loginFromCookie, {
     ...USE_MUTATION_DEFAULT_OPTIONS,
     retry: false,
+    onSuccess: async (data) => {
+      void signInSocket(data.email);
+      await queryClient.invalidateQueries();
+    },
   });
 }
 

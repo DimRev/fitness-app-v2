@@ -12,7 +12,8 @@ type MessageActions =
   | "sign-in"
   | "sign-out"
   | "join-group"
-  | "leave-group";
+  | "leave-group"
+  | "user-notification";
 
 export type BroadcastData = {
   group: string;
@@ -20,6 +21,13 @@ export type BroadcastData = {
     limit: number;
     offset: number;
     text_filter?: string | null;
+  };
+};
+
+export type UserNotificationData = {
+  action: string;
+  data: {
+    description: string;
   };
 };
 

@@ -9,6 +9,7 @@ import (
 	"github.com/DimRev/Fitness-v2-server/internal/config"
 	"github.com/DimRev/Fitness-v2-server/internal/database"
 	"github.com/DimRev/Fitness-v2-server/internal/models"
+	"github.com/DimRev/Fitness-v2-server/internal/socket"
 	"github.com/DimRev/Fitness-v2-server/internal/utils"
 	"github.com/google/uuid"
 	"github.com/labstack/echo"
@@ -480,6 +481,25 @@ func ToggleFoodItemPending(c echo.Context) error {
 					"message": "Failed to toggle food item pending, trouble with server",
 				})
 			}
+
+			foodItemPending, err := config.Queries.GetFoodItemPendingOwnerId(c.Request().Context(), foodItemPendingID)
+			if err != nil {
+				utils.FmtLogError(
+					"food_item_pending_controller.go",
+					"ToggleFoodItemPending",
+					fmt.Errorf("failed to get food item pending owner id: %s", err),
+				)
+				return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+					"message": "Failed to toggle food item pending, trouble with server",
+				})
+			}
+
+			socket.Hub.BroadcastToUser(
+				foodItemPending.OwnerID,
+				socket.UserNotification,
+				fmt.Sprintf(`{"action": "A food item gained a like!", "data": {"description": "Your food item %s gained a like!"}}`, foodItemPending.FoodItemPendingName),
+			)
+
 			return c.JSON(http.StatusOK, map[string]string{
 				"message": "Food item pending liked",
 			})

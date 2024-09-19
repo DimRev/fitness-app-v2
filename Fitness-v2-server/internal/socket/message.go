@@ -3,14 +3,19 @@ package socket
 type MessageActions string
 
 const (
-	Greet           MessageActions = "greet"
+	Greet MessageActions = "greet"
+
 	BroadcastAll    MessageActions = "broadcast-all"
 	BroadcastGroup  MessageActions = "broadcast-group"
 	BroadcastGlobal MessageActions = "broadcast-global"
-	SignIn          MessageActions = "sign-in"
-	SignOut         MessageActions = "sign-out"
-	JoinGroup       MessageActions = "join-group"
-	LeaveGroup      MessageActions = "leave-group"
+
+	SignIn  MessageActions = "sign-in"
+	SignOut MessageActions = "sign-out"
+
+	JoinGroup  MessageActions = "join-group"
+	LeaveGroup MessageActions = "leave-group"
+
+	UserNotification MessageActions = "user-notification"
 )
 
 type Message struct {

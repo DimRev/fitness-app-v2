@@ -85,7 +85,7 @@ function useToggleFoodItemPending() {
         group: QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
         data: { limit, offset, text_filter },
       });
-      sendSocketGroupMessage(
+      void sendSocketGroupMessage(
         QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
         `"${stringifiedData}"`,
       );

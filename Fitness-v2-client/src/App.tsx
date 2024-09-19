@@ -52,12 +52,18 @@ function App() {
   }, []);
 
   useEffect(() => {
-    console.log(
-      `App is running in ${import.meta.env.MODE} connected to ${import.meta.env.VITE_API_URL}`,
-    );
-    connSocket();
+    let socket: WebSocket | null = null;
+
+    const connectSocket = async () => {
+      socket = await connSocket();
+    };
+
+    void connectSocket();
+
     return () => {
-      disconnectSocket();
+      if (socket) {
+        void disconnectSocket();
+      }
     };
   }, []);
 

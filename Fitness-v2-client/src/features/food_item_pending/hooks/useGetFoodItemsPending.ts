@@ -24,7 +24,7 @@ function useGetFoodItemsPending(params: GetMealsByUserIDRequestBody) {
   const { joinSocketGroup, leaveSocketGroup, socket } = useSocket();
   const queryClient = useQueryClient();
   useLayoutEffect(() => {
-    joinSocketGroup(QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING);
+    void joinSocketGroup(QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING);
 
     if (socket) {
       try {
@@ -35,15 +35,17 @@ function useGetFoodItemsPending(params: GetMealsByUserIDRequestBody) {
             case "broadcast-global":
             case "broadcast-all":
               if (message.data) {
-                const data = parseSocketData<BroadcastData>(message.data);
-                console.log("Received data:", data);
+                const broadcastData = parseSocketData<BroadcastData>(
+                  message.data,
+                );
+                console.log("Received data:", broadcastData);
                 if (
-                  data.group ===
+                  broadcastData.group ===
                   QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING
                 ) {
                   void queryClient.invalidateQueries([
                     QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
-                    data.data,
+                    broadcastData.data,
                   ]);
                 }
               }
@@ -56,9 +58,12 @@ function useGetFoodItemsPending(params: GetMealsByUserIDRequestBody) {
     }
 
     return () => {
-      leaveSocketGroup(QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING);
+      void leaveSocketGroup(
+        QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
+      );
     };
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return useQuery<FoodItemsPendingWithPages, Error>({
     ...USE_QUERY_DEFAULT_OPTIONS,

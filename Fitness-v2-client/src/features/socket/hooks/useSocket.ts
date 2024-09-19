@@ -1,29 +1,44 @@
+import { toast } from "sonner";
 import { create } from "zustand";
-import { type Message } from "~/lib/socket";
+import {
+  parseSocketData,
+  type UserNotificationData,
+  type Message,
+} from "~/lib/socket";
 
 type SocketState = {
   socket: WebSocket | null;
 };
 
 type SocketActions = {
-  connSocket: () => void;
-  disconnectSocket: () => void;
-  sendSocketMessage: (msg: string) => void;
-  joinSocketGroup: (group: string) => void;
-  leaveSocketGroup: (group: string) => void;
-  sendSocketGroupMessage: (group: string, msg: string) => void;
-  sendSocketAllGroupsMessage: (msg: string) => void;
-  sendSocketGlobalMessage: (msg: string) => void;
-  signInSocket: (email: string) => void;
-  signOutSocket: () => void;
+  connSocket: () => Promise<WebSocket | null>;
+  disconnectSocket: () => Promise<void>;
+  sendSocketMessage: (msg: string) => Promise<void>;
+  joinSocketGroup: (group: string) => Promise<void>;
+  leaveSocketGroup: (group: string) => Promise<void>;
+  sendSocketGroupMessage: (group: string, msg: string) => Promise<void>;
+  sendSocketAllGroupsMessage: (msg: string) => Promise<void>;
+  sendSocketGlobalMessage: (msg: string) => Promise<void>;
+  signInSocket: (email: string) => Promise<void>;
+  signOutSocket: () => Promise<void>;
 };
 
 type SocketStore = SocketState & SocketActions;
 
 const useSocket = create<SocketStore>((set, get) => ({
   socket: null,
-  connSocket: () => {
+  connSocket: async () => {
     const ws = new WebSocket(import.meta.env.VITE_WS_URL);
+    const retryCount = 3;
+    let retry = 0;
+    while (ws.readyState !== WebSocket.OPEN) {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      retry++;
+      if (retry >= retryCount) {
+        console.log("Failed to connect to websocket");
+        return null;
+      }
+    }
 
     ws.onopen = () => {
       console.log("Connected to websocket");
@@ -32,13 +47,27 @@ const useSocket = create<SocketStore>((set, get) => ({
     ws.onmessage = (event: MessageEvent<string>) => {
       try {
         const message: Message = JSON.parse(event.data) as Message;
-
         switch (message.action) {
           case "greet":
             console.log("Received greet from websocket:", message.data);
             break;
-          default:
-            console.log("Received other message from websocket:", message);
+          case "user-notification":
+            if (!message.data) {
+              break;
+            }
+            // eslint-disable-next-line no-case-declarations
+            const broadcastData = parseSocketData<UserNotificationData>(
+              message.data,
+            );
+            console.log(
+              "Received user-notification from websocket:",
+              broadcastData,
+            );
+            toast.info(broadcastData.action, {
+              description: broadcastData.data.description,
+              dismissible: true,
+            });
+            break;
         }
       } catch (error) {
         console.log("Failed to parse WebSocket message", error);
@@ -54,12 +83,26 @@ const useSocket = create<SocketStore>((set, get) => ({
     };
 
     set(() => ({ socket: ws }));
+
+    return ws;
   },
-  disconnectSocket: () => {
+  disconnectSocket: async () => {
     get().socket?.close();
+
+    while (get().socket?.readyState !== WebSocket.CLOSED) {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+
     set({ socket: null });
   },
-  sendSocketMessage: (msg: string) => {
+  sendSocketMessage: async (msg: string) => {
+    const retryCount = 3;
+    let retry = 0;
+    while (get().socket == null && retry < retryCount) {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      retry++;
+    }
+
     const ws = get().socket;
     if (ws && ws.readyState === WebSocket.OPEN) {
       const message: Message = { action: "greet", data: msg };
@@ -70,7 +113,13 @@ const useSocket = create<SocketStore>((set, get) => ({
       console.log("WebSocket is not open. Cannot send message.");
     }
   },
-  joinSocketGroup: (group: string) => {
+  joinSocketGroup: async (group: string) => {
+    const retryCount = 3;
+    let retry = 0;
+    while (get().socket == null && retry < retryCount) {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      retry++;
+    }
     const ws = get().socket;
     if (ws && ws.readyState === WebSocket.OPEN) {
       const message: Message = {
@@ -84,7 +133,13 @@ const useSocket = create<SocketStore>((set, get) => ({
       console.log("WebSocket is not open. Cannot send message.");
     }
   },
-  leaveSocketGroup: (group: string) => {
+  leaveSocketGroup: async (group: string) => {
+    const retryCount = 3;
+    let retry = 0;
+    while (get().socket == null && retry < retryCount) {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      retry++;
+    }
     const ws = get().socket;
     if (ws && ws.readyState === WebSocket.OPEN) {
       const message: Message = { action: "leave-group", data: group };
@@ -95,7 +150,13 @@ const useSocket = create<SocketStore>((set, get) => ({
       console.log("WebSocket is not open. Cannot send message.");
     }
   },
-  sendSocketGroupMessage: (group: string, data: string) => {
+  sendSocketGroupMessage: async (group: string, data: string) => {
+    const retryCount = 3;
+    let retry = 0;
+    while (get().socket == null && retry < retryCount) {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      retry++;
+    }
     const ws = get().socket;
     if (ws && ws.readyState === WebSocket.OPEN) {
       const message: Message = {
@@ -110,7 +171,13 @@ const useSocket = create<SocketStore>((set, get) => ({
       console.log("WebSocket is not open. Cannot send message.");
     }
   },
-  sendSocketAllGroupsMessage: (msg: string) => {
+  sendSocketAllGroupsMessage: async (msg: string) => {
+    const retryCount = 3;
+    let retry = 0;
+    while (get().socket == null && retry < retryCount) {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      retry++;
+    }
     const ws = get().socket;
     if (ws && ws.readyState === WebSocket.OPEN) {
       const message: Message = {
@@ -124,7 +191,13 @@ const useSocket = create<SocketStore>((set, get) => ({
       console.log("WebSocket is not open. Cannot send message.");
     }
   },
-  sendSocketGlobalMessage: (msg: string) => {
+  sendSocketGlobalMessage: async (msg: string) => {
+    const retryCount = 3;
+    let retry = 0;
+    while (get().socket == null && retry < retryCount) {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      retry++;
+    }
     const ws = get().socket;
     if (ws && ws.readyState === WebSocket.OPEN) {
       const message: Message = {
@@ -138,9 +211,18 @@ const useSocket = create<SocketStore>((set, get) => ({
       console.log("WebSocket is not open. Cannot send message.");
     }
   },
-  signInSocket: (email: string) => {
+  signInSocket: async (email: string) => {
+    const retryCount = 3;
+    let retry = 0;
+    while (get().socket === null && retry < retryCount) {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      retry++;
+    }
+
     const ws = get().socket;
+    console.log(ws);
     if (ws && ws.readyState === WebSocket.OPEN) {
+      console.log("signing socket", email);
       const message: Message = { action: "sign-in", data: email };
       const messageString = JSON.stringify(message);
       console.log("Sending message:", messageString);
@@ -149,7 +231,13 @@ const useSocket = create<SocketStore>((set, get) => ({
       console.log("WebSocket is not open. Cannot send message.");
     }
   },
-  signOutSocket: () => {
+  signOutSocket: async () => {
+    const retryCount = 3;
+    let retry = 0;
+    while (get().socket == null && retry < retryCount) {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      retry++;
+    }
     const ws = get().socket;
     if (ws && ws.readyState === WebSocket.OPEN) {
       const message: Message = { action: "sign-out" };

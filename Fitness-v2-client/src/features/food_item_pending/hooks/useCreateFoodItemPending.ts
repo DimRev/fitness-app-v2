@@ -21,7 +21,7 @@ function useCreateFoodItemPending() {
           group: QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
           data: {},
         });
-        sendSocketGroupMessage(
+        void sendSocketGroupMessage(
           QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
           `"${stringifiedData}"`,
         );
