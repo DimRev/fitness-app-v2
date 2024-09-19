@@ -5,13 +5,13 @@ import { DashboardContentCards } from "~/features/shared/components/CustomCards"
 import ListPaginationButtons from "~/features/shared/components/ListPaginationButtons";
 import { buttonVariants } from "~/features/shared/components/ui/button";
 import { Input } from "~/features/shared/components/ui/input";
+import { useDebounce } from "~/features/shared/hooks/useDebounce";
 import useGetFoodItemsPending from "../hooks/useGetFoodItemsPending";
 import useToggleFoodItemPending from "../hooks/useToggleFoodItemPending";
 import FoodItemPendingPreview, {
   FoodItemPendingPreviewEmpty,
   FoodItemPendingPreviewSkeleton,
 } from "./FoodItemPendingPreview";
-import { useDebounce } from "~/features/shared/hooks/useDebounce";
 
 function FoodItemsPendingList() {
   const [page, setPage] = useState(1);
