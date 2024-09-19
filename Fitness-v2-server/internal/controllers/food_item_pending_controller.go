@@ -497,7 +497,7 @@ func ToggleFoodItemPending(c echo.Context) error {
 			socket.Hub.BroadcastToUser(
 				foodItemPending.OwnerID,
 				socket.UserNotification,
-				fmt.Sprintf(`{"action": "A food item gained a like!", "data": {"description": "Your food item %s gained a like!"}}`, foodItemPending.FoodItemPendingName),
+				fmt.Sprintf(`{"action": "food-item-pending-got-like", "data": {"title": "Food item pending liked", "description": "Your food item %s gained a like!"}}`, foodItemPending.FoodItemPendingName),
 			)
 
 			return c.JSON(http.StatusOK, map[string]string{

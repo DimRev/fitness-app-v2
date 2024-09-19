@@ -1,17 +1,21 @@
+import { type QueryClient } from "react-query";
 import { toast } from "sonner";
-import { create } from "zustand";
+import { create, type StoreApi } from "zustand";
+import { QUERY_KEYS } from "~/lib/reactQuery";
 import {
+  type BroadcastData,
   parseSocketData,
-  type UserNotificationData,
   type Message,
+  type UserNotificationData,
 } from "~/lib/socket";
 
 type SocketState = {
   socket: WebSocket | null;
+  isConnecting: boolean;
 };
 
 type SocketActions = {
-  connSocket: () => Promise<WebSocket | null>;
+  connSocket: (queryClient: QueryClient) => Promise<WebSocket | null>;
   disconnectSocket: () => Promise<void>;
   sendSocketMessage: (msg: string) => Promise<void>;
   joinSocketGroup: (group: string) => Promise<void>;
@@ -25,53 +29,23 @@ type SocketActions = {
 
 type SocketStore = SocketState & SocketActions;
 
-const useSocket = create<SocketStore>((set, get) => ({
+const useSocket = create<SocketStore>((set, get, store) => ({
   socket: null,
-  connSocket: async () => {
-    const ws = new WebSocket(import.meta.env.VITE_WS_URL);
-    const retryCount = 3;
-    let retry = 0;
-    while (ws.readyState !== WebSocket.OPEN) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      retry++;
-      if (retry >= retryCount) {
-        console.log("Failed to connect to websocket");
-        return null;
-      }
+  isConnecting: false,
+  connSocket: async (queryClient: QueryClient) => {
+    if (get().isConnecting) {
+      return null;
     }
+    set({ isConnecting: true });
+    const ws = await blockUntilConnect();
+    set({ isConnecting: false });
 
     ws.onopen = () => {
       console.log("Connected to websocket");
     };
 
     ws.onmessage = (event: MessageEvent<string>) => {
-      try {
-        const message: Message = JSON.parse(event.data) as Message;
-        switch (message.action) {
-          case "greet":
-            console.log("Received greet from websocket:", message.data);
-            break;
-          case "user-notification":
-            if (!message.data) {
-              break;
-            }
-            // eslint-disable-next-line no-case-declarations
-            const broadcastData = parseSocketData<UserNotificationData>(
-              message.data,
-            );
-            console.log(
-              "Received user-notification from websocket:",
-              broadcastData,
-            );
-            toast.info(broadcastData.action, {
-              description: broadcastData.data.description,
-              dismissible: true,
-            });
-            break;
-        }
-      } catch (error) {
-        console.log("Failed to parse WebSocket message", error);
-      }
+      handleEventMessage(event, queryClient);
     };
 
     ws.onclose = (event) => {
@@ -96,158 +70,150 @@ const useSocket = create<SocketStore>((set, get) => ({
     set({ socket: null });
   },
   sendSocketMessage: async (msg: string) => {
-    const retryCount = 3;
-    let retry = 0;
-    while (get().socket == null && retry < retryCount) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      retry++;
-    }
-
-    const ws = get().socket;
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      const message: Message = { action: "greet", data: msg };
-      const messageString = JSON.stringify(message);
-      console.log("Sending message:", messageString);
-      ws.send(messageString);
-    } else {
-      console.log("WebSocket is not open. Cannot send message.");
-    }
+    const message: Message = { action: "greet", data: msg };
+    await sendMessage(store, message);
   },
   joinSocketGroup: async (group: string) => {
-    const retryCount = 3;
-    let retry = 0;
-    while (get().socket == null && retry < retryCount) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      retry++;
-    }
-    const ws = get().socket;
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      const message: Message = {
-        action: "join-group",
-        data: group,
-      };
-      const messageString = JSON.stringify(message);
-      console.log("Sending message:", messageString);
-      ws.send(messageString);
-    } else {
-      console.log("WebSocket is not open. Cannot send message.");
-    }
+    const message: Message = {
+      action: "join-group",
+      data: group,
+    };
+    await sendMessage(store, message);
   },
   leaveSocketGroup: async (group: string) => {
-    const retryCount = 3;
-    let retry = 0;
-    while (get().socket == null && retry < retryCount) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      retry++;
-    }
-    const ws = get().socket;
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      const message: Message = { action: "leave-group", data: group };
-      const messageString = JSON.stringify(message);
-      console.log("Sending message:", messageString);
-      ws.send(messageString);
-    } else {
-      console.log("WebSocket is not open. Cannot send message.");
-    }
+    const message: Message = { action: "leave-group", data: group };
+    await sendMessage(store, message);
   },
   sendSocketGroupMessage: async (group: string, data: string) => {
-    const retryCount = 3;
-    let retry = 0;
-    while (get().socket == null && retry < retryCount) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      retry++;
-    }
-    const ws = get().socket;
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      const message: Message = {
-        action: "broadcast-group",
-        data: data,
-        group: group,
-      };
-      const messageString = JSON.stringify(message);
-      console.log("Sending message:", messageString);
-      ws.send(messageString);
-    } else {
-      console.log("WebSocket is not open. Cannot send message.");
-    }
+    const message: Message = {
+      action: "broadcast-group",
+      data: data,
+      group: group,
+    };
+    await sendMessage(store, message);
   },
   sendSocketAllGroupsMessage: async (msg: string) => {
-    const retryCount = 3;
-    let retry = 0;
-    while (get().socket == null && retry < retryCount) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      retry++;
-    }
-    const ws = get().socket;
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      const message: Message = {
-        action: "broadcast-all",
-        data: msg,
-      };
-      const messageString = JSON.stringify(message);
-      console.log("Sending message:", messageString);
-      ws.send(messageString);
-    } else {
-      console.log("WebSocket is not open. Cannot send message.");
-    }
+    const message: Message = {
+      action: "broadcast-all",
+      data: msg,
+    };
+    await sendMessage(store, message);
   },
   sendSocketGlobalMessage: async (msg: string) => {
-    const retryCount = 3;
-    let retry = 0;
-    while (get().socket == null && retry < retryCount) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      retry++;
-    }
-    const ws = get().socket;
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      const message: Message = {
-        action: "broadcast-global",
-        data: msg,
-      };
-      const messageString = JSON.stringify(message);
-      console.log("Sending message:", messageString);
-      ws.send(messageString);
-    } else {
-      console.log("WebSocket is not open. Cannot send message.");
-    }
+    const message: Message = {
+      action: "broadcast-global",
+      data: msg,
+    };
+    await sendMessage(store, message);
   },
   signInSocket: async (email: string) => {
-    const retryCount = 3;
-    let retry = 0;
-    while (get().socket === null && retry < retryCount) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      retry++;
-    }
-
-    const ws = get().socket;
-    console.log(ws);
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      console.log("signing socket", email);
-      const message: Message = { action: "sign-in", data: email };
-      const messageString = JSON.stringify(message);
-      console.log("Sending message:", messageString);
-      ws.send(messageString);
-    } else {
-      console.log("WebSocket is not open. Cannot send message.");
-    }
+    const message: Message = { action: "sign-in", data: email };
+    await sendMessage(store, message);
   },
   signOutSocket: async () => {
-    const retryCount = 3;
-    let retry = 0;
-    while (get().socket == null && retry < retryCount) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      retry++;
-    }
-    const ws = get().socket;
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      const message: Message = { action: "sign-out" };
-      const messageString = JSON.stringify(message);
-      console.log("Sending message:", messageString);
-      ws.send(messageString);
-    } else {
-      console.log("WebSocket is not open. Cannot send message.");
-    }
+    const message: Message = { action: "sign-out" };
+    await sendMessage(store, message);
   },
 }));
+
+const MAX_RETRY = 3;
+const RETRY_DELAY = 300;
+
+async function blockUntilConnect() {
+  const ws = new WebSocket(import.meta.env.VITE_WS_URL);
+  while (ws.readyState !== WebSocket.OPEN) {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+  }
+  return ws;
+}
+
+async function sendMessage(store: StoreApi<SocketStore>, message: Message) {
+  let retry = 0;
+  while (store.getState().socket == null && retry < MAX_RETRY) {
+    await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
+    retry++;
+  }
+  const ws = store.getState().socket;
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    const messageString = JSON.stringify(message);
+    if (import.meta.env.MODE === "development") {
+      console.log("(ws)-> Sending message:", message);
+    }
+    ws.send(messageString);
+  } else {
+    console.error("WebSocket is not open. Cannot send message.");
+  }
+}
+
+function handleEventMessage(
+  event: MessageEvent<string>,
+  queryClient: QueryClient,
+) {
+  const message: Message = JSON.parse(event.data) as Message;
+  switch (message.action) {
+    case "greet":
+      if (import.meta.env.MODE === "development") {
+        console.log("<-(ws) Greet:", message.data);
+      }
+      break;
+    case "user-notification":
+      if (message.data) {
+        const broadcastData = parseSocketData<UserNotificationData>(
+          message.data,
+        );
+        handleUserNotification(broadcastData);
+      }
+      break;
+    case "broadcast-group":
+    case "broadcast-global":
+    case "broadcast-all":
+      if (message.data) {
+        const broadcastData = parseSocketData<BroadcastData>(message.data);
+        handleBroadcasts(broadcastData, queryClient);
+      }
+  }
+}
+
+function handleBroadcasts(
+  broadcastData: BroadcastData,
+  queryClient: QueryClient,
+) {
+  if (import.meta.env.MODE === "development") {
+    console.log("<-(ws) Broadcast:", broadcastData);
+  }
+  switch (broadcastData.group) {
+    case QUERY_KEYS.USERS.GET_USERS:
+      void queryClient.invalidateQueries([
+        QUERY_KEYS.USERS.GET_USERS,
+        broadcastData.data,
+      ]);
+      break;
+    case QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS:
+      void queryClient.invalidateQueries([
+        QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS,
+        broadcastData.data,
+      ]);
+      break;
+    case QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING:
+      void queryClient.invalidateQueries([
+        QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
+        broadcastData.data,
+      ]);
+  }
+}
+
+function handleUserNotification(broadcastData: UserNotificationData) {
+  if (import.meta.env.MODE === "development") {
+    console.log("<-(ws) User notification:", broadcastData);
+  }
+  switch (broadcastData.action) {
+    case "food-item-pending-got-like":
+      toast.info(broadcastData.data.title, {
+        description: broadcastData.data.description,
+        dismissible: true,
+      });
+      break;
+  }
+}
 
 export default useSocket;

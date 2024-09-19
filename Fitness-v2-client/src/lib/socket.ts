@@ -25,11 +25,14 @@ export type BroadcastData = {
 };
 
 export type UserNotificationData = {
-  action: string;
+  action: UserNotificationDataAction;
   data: {
+    title: string;
     description: string;
   };
 };
+
+type UserNotificationDataAction = "food-item-pending-got-like";
 
 export function SendSocketMessage(message: Message, socket: WebSocket | null) {
   if (socket && socket.readyState === WebSocket.OPEN) {

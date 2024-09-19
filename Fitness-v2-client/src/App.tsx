@@ -34,8 +34,7 @@ const queryClient = new QueryClient();
 
 function App() {
   const { isDarkMode, setIsDarkMode } = useLayoutStore();
-  const { connSocket, disconnectSocket } = useSocket();
-
+  const { connSocket, disconnectSocket, socket } = useSocket();
   const isFirstLoad = useRef(true);
 
   // Set the initial theme based on the user's preferences
@@ -56,7 +55,7 @@ function App() {
   useEffect(() => {
     if (isFirstLoad.current) {
       isFirstLoad.current = false;
-      void connSocket();
+      void connSocket(queryClient);
       return;
     }
 
@@ -67,6 +66,13 @@ function App() {
     };
   }, [connSocket, disconnectSocket]);
 
+  useEffect(() => {
+    if (!socket) {
+      void connSocket(queryClient);
+    }
+  }, [socket, connSocket]);
+
+  // test
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
