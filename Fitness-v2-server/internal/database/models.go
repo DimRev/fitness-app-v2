@@ -58,6 +58,47 @@ func (ns NullFoodItemType) Value() (driver.Value, error) {
 	return string(ns.FoodItemType), nil
 }
 
+type NotificationType string
+
+const (
+	NotificationTypeUserLikeFoodItemPending NotificationType = "user-like-food-item-pending"
+)
+
+func (e *NotificationType) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = NotificationType(s)
+	case string:
+		*e = NotificationType(s)
+	default:
+		return fmt.Errorf("unsupported scan type for NotificationType: %T", src)
+	}
+	return nil
+}
+
+type NullNotificationType struct {
+	NotificationType NotificationType
+	Valid            bool // Valid is true if NotificationType is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullNotificationType) Scan(value interface{}) error {
+	if value == nil {
+		ns.NotificationType, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.NotificationType.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullNotificationType) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.NotificationType), nil
+}
+
 type UserRole string
 
 const (
@@ -146,6 +187,16 @@ type MealConsumed struct {
 	Date      time.Time
 	CreatedAt time.Time
 	UpdatedAt time.Time
+}
+
+type Notification struct {
+	ID        uuid.UUID
+	Type      NotificationType
+	Data      json.RawMessage
+	IsNew     bool
+	CreatedAt sql.NullTime
+	UpdatedAt sql.NullTime
+	UserID    uuid.UUID
 }
 
 type RelMealFood struct {

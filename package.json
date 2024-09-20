@@ -10,6 +10,7 @@
     "fly:deploy": "cd Fitness-v2-server && fly deploy",
     "dev:client": "cd Fitness-v2-client && npm run dev",
     "dev:server": "cd Fitness-v2-server && go run .",
+    "db:generate": "cd Fitness-v2-server && sqlc generate",
     "lint:client": "cd Fitness-v2-client && pnpm run lint",
     "lint:server": "cd Fitness-v2-server && gosec -exclude-generated ./...",
     "prettier:client": "cd Fitness-v2-client && pnpm run prettier:write && pnpm run prettier:check",

@@ -161,7 +161,7 @@ function handleEventMessage(
         const broadcastData = parseSocketData<UserNotificationData>(
           message.data,
         );
-        handleUserNotification(broadcastData);
+        handleUserNotification(broadcastData, queryClient);
       }
       break;
     case "broadcast-group":
@@ -202,12 +202,18 @@ function handleBroadcasts(
   }
 }
 
-function handleUserNotification(broadcastData: UserNotificationData) {
+function handleUserNotification(
+  broadcastData: UserNotificationData,
+  queryClient: QueryClient,
+) {
   if (import.meta.env.MODE === "development") {
     console.log("<-(ws) User notification:", broadcastData);
   }
   switch (broadcastData.action) {
     case "food-item-pending-got-like":
+      void queryClient.invalidateQueries([
+        QUERY_KEYS.NOTIFICATION.GET_NEW_USER_NOTIFICATIONS,
+      ]);
       toast.info(broadcastData.data.title, {
         description: broadcastData.data.description,
         dismissible: true,
