@@ -466,22 +466,27 @@ func ToggleFoodItemPending(c echo.Context) error {
 		FoodItemID: foodItemPendingID,
 	}
 
+	// Check if user already liked the food item pending
 	_, err = config.Queries.GetFoodItemPendingLikeForUser(
 		c.Request().Context(),
 		getFoodItemPendingLikeForUserParams,
 	)
 	if err != nil {
+		// If user doesn't like the food item pending
 		if err == sql.ErrNoRows {
 			likeFoodItemPendingForUserParams := database.LikeFoodItemPendingForUserParams{
 				UserID:     user.ID,
 				FoodItemID: foodItemPendingID,
 			}
+
+			// Like the food item pending
 			if err := config.Queries.LikeFoodItemPendingForUser(c.Request().Context(), likeFoodItemPendingForUserParams); err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 					"message": "Failed to toggle food item pending, trouble with server",
 				})
 			}
 
+			// Get food item pending owner id
 			foodItemPending, err := config.Queries.GetFoodItemPendingOwnerId(c.Request().Context(), foodItemPendingID)
 			if err != nil {
 				utils.FmtLogError(
@@ -494,6 +499,47 @@ func ToggleFoodItemPending(c echo.Context) error {
 				})
 			}
 
+			// Only sends notification to owner if the user liking is not the owner
+			if user.ID != foodItemPending.OwnerID {
+				notificationData := models.NotificationDataUserLikeFoodItemPending{
+					Title:        "Food item pending liked",
+					Description:  "Your food item %s gained a like!",
+					FoodItemName: foodItemPending.FoodItemPendingName,
+					FoodItemID:   foodItemPendingID,
+				}
+
+				notificationDataJSON, err := notificationData.MarshalJSON()
+				if err != nil {
+					utils.FmtLogError(
+						"food_item_pending_controller.go",
+						"ToggleFoodItemPending",
+						fmt.Errorf("failed to marshal notification data: %s", err),
+					)
+					return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+						"message": "Failed to toggle food item pending, trouble with server",
+					})
+				}
+
+				createNotificationParams := database.CreateNotificationParams{
+					Type:   database.NotificationTypeUserLikeFoodItemPending,
+					Data:   notificationDataJSON,
+					UserID: foodItemPending.OwnerID,
+				}
+
+				err = config.Queries.CreateNotification(c.Request().Context(), createNotificationParams)
+				if err != nil {
+					utils.FmtLogError(
+						"food_item_pending_controller.go",
+						"ToggleFoodItemPending",
+						fmt.Errorf("failed to create notification: %s", err),
+					)
+					return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+						"message": "Failed to toggle food item pending, trouble with server",
+					})
+				}
+			}
+
+			// Notify owner if connected | May be changed later on
 			socket.Hub.BroadcastToUser(
 				foodItemPending.OwnerID,
 				socket.UserNotification,
@@ -514,6 +560,8 @@ func ToggleFoodItemPending(c echo.Context) error {
 		})
 	}
 
+	// If reached here user has liked the food item pending
+	// Unlike the food item pending
 	unlikeFoodItemPendingForUserParams := database.UnlikeFoodItemPendingForUserParams{
 		UserID:     user.ID,
 		FoodItemID: foodItemPendingID,
