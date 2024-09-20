@@ -188,9 +188,9 @@ function handleBroadcasts(
         broadcastData.data,
       ]);
       break;
-    case QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS:
+    case QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS_INF_QUERY:
       void queryClient.invalidateQueries([
-        QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS,
+        QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS_INF_QUERY,
         broadcastData.data,
       ]);
       break;

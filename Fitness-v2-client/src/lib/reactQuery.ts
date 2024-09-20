@@ -33,6 +33,7 @@ export const QUERY_KEYS = {
     GET_MEALS_CONSUMED_BY_DATE: "getMealsConsumedByDate",
   },
   FOOD_ITEMS: {
+    GET_FOOD_ITEMS_INF_QUERY: "getFoodItemsInfiniteQuery",
     GET_FOOD_ITEMS: "getFoodItems",
   },
   FOOD_ITEMS_PENDING: {

@@ -1,9 +1,9 @@
 import axios from "axios";
 import { useEffect } from "react";
-import { useInfiniteQuery } from "react-query";
+import { useQuery } from "react-query";
 import useSocket from "~/features/socket/hooks/useSocket";
 import axiosInstance from "~/lib/axios";
-import { QUERY_KEYS } from "~/lib/reactQuery";
+import { QUERY_KEYS, USE_QUERY_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
 type GetFoodItemsRequestBody = {
   limit: number;
@@ -15,7 +15,7 @@ type ErrorResponseBody = {
   message: string;
 };
 
-export function useGetFoodItems(params: GetFoodItemsRequestBody) {
+function useGetFoodItems(params: GetFoodItemsRequestBody) {
   const { joinSocketGroup, leaveSocketGroup } = useSocket();
   useEffect(() => {
     void joinSocketGroup(QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS);
@@ -23,39 +23,29 @@ export function useGetFoodItems(params: GetFoodItemsRequestBody) {
       void leaveSocketGroup(QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS);
     };
   }, [joinSocketGroup, leaveSocketGroup]);
-  return useInfiniteQuery<FoodItemWithPages, Error>(
-    [
+  return useQuery<FoodItemWithPages, Error>({
+    ...USE_QUERY_DEFAULT_OPTIONS,
+    queryKey: [
       QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS,
-      { limit: params.limit, text_filter: params.text_filter },
-    ],
-    async ({ pageParam = 0 }: { pageParam?: number }) => {
-      return await getFoodItems({
+      {
         limit: params.limit,
-        offset: pageParam,
-        text_filter: params.text_filter ?? null,
-      });
-    },
-    {
-      getNextPageParam: (lastPage, pages) => {
-        const totalLoadedItems = pages.flatMap(
-          (page) => page.food_items,
-        ).length;
-        if (totalLoadedItems >= lastPage.total_pages) {
-          return undefined; // No more pages
-        }
-        return totalLoadedItems; // Return the next offset
+        offset: params.offset,
+        text_filter: params.text_filter,
       },
-    },
-  );
+    ],
+
+    queryFn: () => getFoodItemsPending(params),
+    enabled: !!params,
+  });
 }
 
-async function getFoodItems({
+async function getFoodItemsPending({
   limit,
   offset,
   text_filter,
 }: GetFoodItemsRequestBody): Promise<FoodItemWithPages> {
   try {
-    const response = await axiosInstance.get<FoodItemWithPages>("/food_items", {
+    const response = await axiosInstance.get<FoodItemWithPages>(`/food_items`, {
       params: { limit, offset, text_filter },
     });
     return response.data;
@@ -69,3 +59,5 @@ async function getFoodItems({
     }
   }
 }
+
+export default useGetFoodItems;

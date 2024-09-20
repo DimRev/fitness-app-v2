@@ -38,7 +38,7 @@ function useApproveFoodItemPending() {
         `"${stringifiedData}"`,
       );
       void sendSocketGroupMessage(
-        QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS,
+        QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS_INF_QUERY,
         `"${stringifiedData}"`,
       );
       void queryClient.invalidateQueries([
@@ -46,7 +46,7 @@ function useApproveFoodItemPending() {
         {},
       ]);
       void queryClient.invalidateQueries([
-        QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS,
+        QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS_INF_QUERY,
         {},
       ]);
     },

@@ -5,7 +5,7 @@ import useSocket from "~/features/socket/hooks/useSocket";
 import axiosInstance from "~/lib/axios";
 import { QUERY_KEYS, USE_QUERY_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
-type GetMealsByUserIDRequestBody = {
+type GetFoodItemsPendingRequestBody = {
   limit: number;
   offset: number;
   text_filter?: string | null;
@@ -15,7 +15,7 @@ type ErrorResponseBody = {
   message: string;
 };
 
-function useGetFoodItemsPending(params: GetMealsByUserIDRequestBody) {
+function useGetFoodItemsPending(params: GetFoodItemsPendingRequestBody) {
   const { joinSocketGroup, leaveSocketGroup } = useSocket();
   useEffect(() => {
     void joinSocketGroup(QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING);
@@ -45,7 +45,7 @@ async function getFoodItemsPending({
   limit,
   offset,
   text_filter,
-}: GetMealsByUserIDRequestBody): Promise<FoodItemsPendingWithPages> {
+}: GetFoodItemsPendingRequestBody): Promise<FoodItemsPendingWithPages> {
   try {
     const response = await axiosInstance.get<FoodItemsPendingWithPages>(
       `/food_items_pending`,
