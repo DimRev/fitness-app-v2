@@ -74,19 +74,19 @@ func (q *Queries) GetNewUserNotifications(ctx context.Context, userID uuid.UUID)
 	return items, nil
 }
 
-const markNotificationAsRead = `-- name: MarkNotificationAsRead :exec
+const markNotificationAsReadByFoodItemPendingID = `-- name: MarkNotificationAsReadByFoodItemPendingID :exec
 UPDATE notifications
 SET is_new = FALSE
-WHERE id = $1
-AND user_id = $2
+WHERE user_id = $1
+AND data->>'food_item_id' = $2::text
 `
 
-type MarkNotificationAsReadParams struct {
-	ID     uuid.UUID
-	UserID uuid.UUID
+type MarkNotificationAsReadByFoodItemPendingIDParams struct {
+	UserID  uuid.UUID
+	Column2 string
 }
 
-func (q *Queries) MarkNotificationAsRead(ctx context.Context, arg MarkNotificationAsReadParams) error {
-	_, err := q.db.ExecContext(ctx, markNotificationAsRead, arg.ID, arg.UserID)
+func (q *Queries) MarkNotificationAsReadByFoodItemPendingID(ctx context.Context, arg MarkNotificationAsReadByFoodItemPendingIDParams) error {
+	_, err := q.db.ExecContext(ctx, markNotificationAsReadByFoodItemPendingID, arg.UserID, arg.Column2)
 	return err
 }

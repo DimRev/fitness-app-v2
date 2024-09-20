@@ -58,9 +58,9 @@ func GetNewUserNotifications(c echo.Context) error {
 			}
 
 			notificationFoodItemPendingLikeCount[notificationData.FoodItemID] = models.NotificationNewFoodItemLikes{
-				ID:         notification.ID.String(),
 				FoodItemID: notificationData.FoodItemID.String(),
 				Name:       notificationData.FoodItemName,
+				Type:       models.NotificationTypeUserLikeFoodItemPending,
 				Count:      notificationFoodItemPendingLikeCount[notificationData.FoodItemID].Count + 1,
 			}
 		}
@@ -73,6 +73,11 @@ func GetNewUserNotifications(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, respNotifications)
+}
+
+type MarkNotificationAsReadRequest struct {
+	FoodItemPendingID string                   `json:"food_item_pending_id,omitempty"`
+	Type              models.NotificationTypes `json:"type,omitempty"`
 }
 
 func MarkNotificationAsRead(c echo.Context) error {
@@ -88,36 +93,38 @@ func MarkNotificationAsRead(c echo.Context) error {
 		})
 	}
 
-	notificationID, err := uuid.Parse(c.Param("notification_id"))
-	if err != nil {
-		utils.FmtLogError(
-			"notification_controller.go",
-			"MarkNotificationAsRead",
-			fmt.Errorf("failed to parse notification id: %s", err),
-		)
+	markNotificationAsReadReq := MarkNotificationAsReadRequest{}
+	if err := c.Bind(&markNotificationAsReadReq); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
-			"message": "Failed to mark notification as read, invalid notification id",
+			"message": "Failed to mark notification as read, malformed request",
 		})
 	}
 
-	markNotificationAsReadParams := database.MarkNotificationAsReadParams{
-		ID:     notificationID,
-		UserID: user.ID,
-	}
+	switch markNotificationAsReadReq.Type {
+	case models.NotificationTypeUserLikeFoodItemPending:
+		markNotificationAsReadParams := database.MarkNotificationAsReadByFoodItemPendingIDParams{
+			UserID:  user.ID,
+			Column2: markNotificationAsReadReq.FoodItemPendingID,
+		}
 
-	err = config.Queries.MarkNotificationAsRead(c.Request().Context(), markNotificationAsReadParams)
-	if err != nil {
-		utils.FmtLogError(
-			"notification_controller.go",
-			"MarkNotificationAsRead",
-			fmt.Errorf("failed to mark notification as read: %s", err),
-		)
-		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-			"message": "Failed to mark notification as read, trouble with server",
+		err := config.Queries.MarkNotificationAsReadByFoodItemPendingID(c.Request().Context(), markNotificationAsReadParams)
+		if err != nil {
+			utils.FmtLogError(
+				"notification_controller.go",
+				"MarkNotificationAsRead",
+				fmt.Errorf("failed to mark notification as read: %s", err),
+			)
+			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+				"message": "Failed to mark notification as read, trouble with server",
+			})
+		}
+
+		return c.JSON(http.StatusOK, map[string]string{
+			"message": "Notification marked as read",
+		})
+	default:
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to mark notification as read, invalid type",
 		})
 	}
-
-	return c.JSON(http.StatusOK, map[string]string{
-		"message": "Notification marked as read",
-	})
 }

@@ -11,6 +11,6 @@ func NotificationRoutesV1(e *echo.Group) {
 	notification := e.Group("/notifications", middleware.ProtectedRoute)
 	{
 		notification.GET("", controllers.GetNewUserNotifications)
-		notification.PUT("/read/:notification_id", controllers.MarkNotificationAsRead)
+		notification.PUT("/read", controllers.MarkNotificationAsRead)
 	}
 }

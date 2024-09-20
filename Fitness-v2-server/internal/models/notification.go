@@ -41,8 +41,8 @@ func (n *NotificationDataUserLikeFoodItemPending) Print() {
 }
 
 type NotificationNewFoodItemLikes struct {
-	ID         string `json:"id"`
-	FoodItemID string `json:"food_item_id"`
-	Name       string `json:"food_item_name"`
-	Count      int    `json:"count"`
+	Type       NotificationTypes `json:"type"`
+	FoodItemID string            `json:"food_item_id"`
+	Name       string            `json:"food_item_name"`
+	Count      int               `json:"count"`
 }

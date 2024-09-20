@@ -10,10 +10,20 @@ import {
 import { Separator } from "~/features/shared/components/ui/separator";
 import { cn } from "~/lib/utils";
 import useGetNewUserNotifications from "../hooks/useGetNewUserNotifications";
+import useMarkNotificationAsRead from "../hooks/useMarkNotificationAsRead";
 
 function NotificationButton() {
   const { isDarkMode } = useLayoutStore();
   const { data: notifications, isLoading } = useGetNewUserNotifications();
+  const { mutateAsync: markNotificationAsRead } = useMarkNotificationAsRead();
+
+  function handleClickNotification(notification: NotificationNewFoodItemLikes) {
+    void markNotificationAsRead({
+      type: notification.type,
+      food_item_pending_id: notification.food_item_id,
+    });
+  }
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -30,10 +40,10 @@ function NotificationButton() {
                 "fill-orange-500",
             )}
           />
-          {!isLoading && (
+          {!isLoading && notifications && notifications.length > 0 && (
             <div className="-top-1 absolute flex justify-center items-center border-foreground bg-orange-500 dark:bg-orange-800 border rounded-full -end-1 size-4">
               <span className="font-extrabold text-foreground text-xs">
-                {notifications?.length}
+                {notifications.length}
               </span>
             </div>
           )}
@@ -44,14 +54,17 @@ function NotificationButton() {
         <Separator />
         <div>
           {notifications && notifications.length > 0 ? (
-            <div>
-              {notifications.map((notification) => (
-                <p key={notification.id}>
-                  {notification.food_item_name} gained {notification.count}{" "}
-                  likes!
+            notifications.map((notification) => (
+              <div
+                key={notification.type + notification.food_item_id}
+                className="hover:cursor-pointer"
+                onClick={() => handleClickNotification(notification)}
+              >
+                <p>
+                  {`${notification.food_item_name} gained ${notification.count} likes!`}
                 </p>
-              ))}
-            </div>
+              </div>
+            ))
           ) : (
             <p>You have no notifications.</p>
           )}
