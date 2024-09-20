@@ -1,3 +1,5 @@
+import { type ConstQueryKeys } from "./reactQuery";
+
 export type Message = {
   action: MessageActions;
   data?: string;
@@ -16,7 +18,7 @@ type MessageActions =
   | "user-notification";
 
 export type BroadcastData = {
-  group: string;
+  group: ConstQueryKeys;
   data: {
     limit: number;
     offset: number;
@@ -33,16 +35,6 @@ export type UserNotificationData = {
 };
 
 type UserNotificationDataAction = "food-item-pending-got-like";
-
-export function SendSocketMessage(message: Message, socket: WebSocket | null) {
-  if (socket && socket.readyState === WebSocket.OPEN) {
-    const messageString = JSON.stringify(message);
-    console.log("Sending message:", messageString);
-    socket.send(messageString);
-  } else {
-    console.log("WebSocket is not open. Cannot send message.");
-  }
-}
 
 export function parseSocketData<T>(loggedMessage: string) {
   if (

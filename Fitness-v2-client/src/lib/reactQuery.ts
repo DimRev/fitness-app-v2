@@ -39,3 +39,12 @@ export const QUERY_KEYS = {
     GET_FOOD_ITEMS_PENDING: "getFoodItemsPending",
   },
 } as const;
+
+type QueryKeyValues<T> =
+  T extends Record<string, infer U>
+    ? U extends string
+      ? U
+      : QueryKeyValues<U>
+    : never;
+
+export type ConstQueryKeys = QueryKeyValues<typeof QUERY_KEYS>;
