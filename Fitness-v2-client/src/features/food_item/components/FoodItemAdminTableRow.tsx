@@ -1,4 +1,5 @@
-import { Check } from "lucide-react";
+import { X } from "lucide-react";
+import useLayoutStore from "~/features/layout/hooks/useLayoutStore";
 import { Button } from "~/features/shared/components/ui/button";
 import {
   HoverCard,
@@ -15,6 +16,16 @@ type Props = {
 };
 
 function FoodItemAdminTableRow({ foodItem, isPending }: Props) {
+  const { setIsConfirmationDialogOpen } = useLayoutStore();
+  function onDeleteFoodItem() {
+    setIsConfirmationDialogOpen(
+      true,
+      "Are you sure you want to delete this food item?",
+      () => {
+        console.log("Delete food item");
+      },
+    );
+  }
   return (
     <TableRow className={cn(isPending && "opacity-50 hover:bg-transparent")}>
       <TableCell className="py-4">
@@ -51,10 +62,11 @@ function FoodItemAdminTableRow({ foodItem, isPending }: Props) {
           <Button
             size="icon"
             className="rounded-full size-8"
-            variant="constructive"
+            variant="destructive"
             disabled={isPending}
+            onClick={onDeleteFoodItem}
           >
-            <Check />
+            <X />
           </Button>
         </div>
       </TableCell>

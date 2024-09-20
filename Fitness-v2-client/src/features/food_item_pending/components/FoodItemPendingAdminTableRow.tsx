@@ -1,4 +1,5 @@
 import { Check, X } from "lucide-react";
+import useLayoutStore from "~/features/layout/hooks/useLayoutStore";
 import { Button } from "~/features/shared/components/ui/button";
 import {
   HoverCard,
@@ -22,12 +23,26 @@ function FoodItemPendingAdminTableRow({
   handleRejectFoodItemPending,
   isPending,
 }: Props) {
+  const { setIsConfirmationDialogOpen } = useLayoutStore();
+
   function onApproveFoodItemPending() {
-    handleApproveFoodItemPending(foodItemPending.id);
+    setIsConfirmationDialogOpen(
+      true,
+      "Are you sure you want to approve this food item?",
+      () => {
+        handleApproveFoodItemPending(foodItemPending.id);
+      },
+    );
   }
 
   function onRejectFoodItemPending() {
-    handleRejectFoodItemPending(foodItemPending.id);
+    setIsConfirmationDialogOpen(
+      true,
+      "Are you sure you want to reject this food item?",
+      () => {
+        handleRejectFoodItemPending(foodItemPending.id);
+      },
+    );
   }
 
   return (

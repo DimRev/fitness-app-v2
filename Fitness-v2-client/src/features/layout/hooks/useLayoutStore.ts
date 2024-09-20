@@ -4,12 +4,20 @@ type LayoutState = {
   isSidebarOpen: boolean;
   isDarkMode: boolean;
   settingsDialogOpen: boolean;
+  isConfirmationDialogOpen: boolean;
+  confirmationQuestion: string | null;
+  confirmationCallback: (() => void) | null;
 };
 
 type LayoutActions = {
   setIsSidebarOpen: () => void;
   setIsDarkMode: (newIsDarkMode: boolean) => void;
   setSettingsDialogOpen: (open: boolean) => void;
+  setIsConfirmationDialogOpen: (
+    open: boolean,
+    confirmationQuestion?: string,
+    confirmationCallback?: () => void,
+  ) => void;
 };
 
 type LayoutStore = LayoutState & LayoutActions;
@@ -18,6 +26,9 @@ const useLayoutStore = create<LayoutStore>((set) => ({
   isSidebarOpen: true,
   isDarkMode: false,
   settingsDialogOpen: false,
+  isConfirmationDialogOpen: false,
+  confirmationCallback: null,
+  confirmationQuestion: null,
   setIsSidebarOpen: () =>
     set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
   setIsDarkMode: (newIsDarkMode) => {
@@ -38,6 +49,24 @@ const useLayoutStore = create<LayoutStore>((set) => ({
   },
   setSettingsDialogOpen(open) {
     set(() => ({ settingsDialogOpen: open }));
+  },
+  setIsConfirmationDialogOpen(
+    open,
+    confirmationQuestion,
+    confirmationCallback,
+  ) {
+    if (!open) {
+      return set(() => ({
+        isConfirmationDialogOpen: false,
+        confirmationQuestion: null,
+        confirmationCallback: null,
+      }));
+    }
+    set(() => ({
+      isConfirmationDialogOpen: open,
+      confirmationQuestion,
+      confirmationCallback,
+    }));
   },
 }));
 
