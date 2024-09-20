@@ -70,10 +70,10 @@ function FoodItemPendingAdminTableRow({
         <div className="line-clamp-1 break-words">{foodItemPending.likes}</div>
       </TableCell>
       <TableCell className="py-2">
-        <div className="line-clamp-1 flex items-center gap-2 break-words">
+        <div className="flex items-center gap-2 line-clamp-1 break-words">
           <Button
             size="icon"
-            className="size-8 rounded-full"
+            className="rounded-full size-8"
             variant="constructive"
             onClick={onApproveFoodItemPending}
             disabled={isPending}
@@ -82,7 +82,7 @@ function FoodItemPendingAdminTableRow({
           </Button>
           <Button
             size="icon"
-            className="size-8 rounded-full"
+            className="rounded-full size-8"
             variant="destructive"
             onClick={onRejectFoodItemPending}
             disabled={isPending}
@@ -99,31 +99,31 @@ export function FoodItemPendingAdminTableRowSkeleton() {
   return (
     <TableRow>
       <TableCell>
-        <Skeleton className="h-[16px] w-full" />
+        <Skeleton className="w-full h-[20px]" />
       </TableCell>
       <TableCell>
-        <Skeleton className="h-[16px] w-full" />
+        <Skeleton className="w-full h-[20px]" />
       </TableCell>
       <TableCell>
-        <Skeleton className="h-[16px] w-full" />
+        <Skeleton className="w-full h-[20px]" />
       </TableCell>
       <TableCell>
-        <Skeleton className="h-[16px] w-full" />
+        <Skeleton className="w-full h-[20px]" />
       </TableCell>
       <TableCell>
-        <Skeleton className="h-[16px] w-full" />
+        <Skeleton className="w-full h-[20px]" />
       </TableCell>
       <TableCell>
-        <Skeleton className="h-[16px] w-full" />
+        <Skeleton className="w-full h-[20px]" />
       </TableCell>
       <TableCell>
-        <Skeleton className="h-[16px] w-full" />
+        <Skeleton className="w-full h-[20px]" />
       </TableCell>
       <TableCell>
-        <Skeleton className="h-[16px] w-full" />
+        <Skeleton className="w-full h-[20px]" />
       </TableCell>
       <TableCell>
-        <Skeleton className="h-[16px] w-full" />
+        <Skeleton className="w-full h-[20px]" />
       </TableCell>
     </TableRow>
   );

@@ -1,8 +1,11 @@
+import { Check } from "lucide-react";
+import { Button } from "~/features/shared/components/ui/button";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "~/features/shared/components/ui/hover-card";
+import { Skeleton } from "~/features/shared/components/ui/skeleton";
 import { TableCell, TableRow } from "~/features/shared/components/ui/table";
 import { cn } from "~/lib/utils";
 
@@ -14,7 +17,7 @@ type Props = {
 function FoodItemAdminTableRow({ foodItem, isPending }: Props) {
   return (
     <TableRow className={cn(isPending && "opacity-50 hover:bg-transparent")}>
-      <TableCell className="py-2">
+      <TableCell className="py-4">
         <div className="line-clamp-1 break-words">{foodItem.name}</div>
       </TableCell>
       <TableCell className="py-2">
@@ -45,8 +48,77 @@ function FoodItemAdminTableRow({ foodItem, isPending }: Props) {
 
       <TableCell className="py-2">
         <div className="flex items-center gap-2 line-clamp-1 break-words">
-          actions...
+          <Button
+            size="icon"
+            className="rounded-full size-8"
+            variant="constructive"
+            disabled={isPending}
+          >
+            <Check />
+          </Button>
         </div>
+      </TableCell>
+    </TableRow>
+  );
+}
+
+export function FoodItemAdminTableRowSkeleton() {
+  return (
+    <TableRow>
+      <TableCell>
+        <Skeleton className="w-full h-[20px]" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="w-full h-[20px]" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="w-full h-[20px]" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="w-full h-[20px]" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="w-full h-[20px]" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="w-full h-[20px]" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="w-full h-[20px]" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="w-full h-[20px]" />
+      </TableCell>
+    </TableRow>
+  );
+}
+
+export function FoodItemAdminTableRowEmpty() {
+  return (
+    <TableRow>
+      <TableCell>
+        <div className="py-[10.25px]"></div>
+      </TableCell>
+      <TableCell>
+        <div className="py-[10.25px]"></div>
+      </TableCell>
+      <TableCell>
+        <div className="py-[10.25px]"></div>
+      </TableCell>
+      <TableCell>
+        <div className="py-[10.25px]"></div>
+      </TableCell>
+      <TableCell>
+        <div className="py-[10.25px]"></div>
+      </TableCell>
+      <TableCell>
+        <div className="py-[10.25px]"></div>
+      </TableCell>
+      <TableCell>
+        <div className="py-[10.25px]"></div>
+      </TableCell>
+      <TableCell>
+        <div className="py-[10.25px]"></div>
       </TableCell>
     </TableRow>
   );

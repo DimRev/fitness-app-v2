@@ -9,7 +9,10 @@ import {
   TableRow,
 } from "~/features/shared/components/ui/table";
 import useGetFoodItems from "../hooks/useGetFoodItems";
-import FoodItemAdminTableRow from "./FoodItemAdminTableRow";
+import FoodItemAdminTableRow, {
+  FoodItemAdminTableRowEmpty,
+  FoodItemAdminTableRowSkeleton,
+} from "./FoodItemAdminTableRow";
 
 function FoodItemsAdminTable() {
   const [page, setPage] = useState(1);
@@ -41,7 +44,41 @@ function FoodItemsAdminTable() {
   }
 
   if (foodItemsLoading) {
-    return <div> Loading...</div>;
+    return (
+      <DashboardContentCards title="Pending Food Items">
+        <div className="border rounded-md">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="truncate">Name</TableHead>
+                <TableHead className="truncate">Description</TableHead>
+                <TableHead className="truncate">Food Type</TableHead>
+                <TableHead className="truncate">Calories</TableHead>
+                <TableHead className="truncate">Fat</TableHead>
+                <TableHead className="truncate">Protein</TableHead>
+                <TableHead className="truncate">Carbs</TableHead>
+                <TableHead className="truncate">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <FoodItemAdminTableRowSkeleton />
+              <FoodItemAdminTableRowSkeleton />
+              <FoodItemAdminTableRowSkeleton />
+              <FoodItemAdminTableRowSkeleton />
+              <FoodItemAdminTableRowSkeleton />
+              <FoodItemAdminTableRowSkeleton />
+              <FoodItemAdminTableRowSkeleton />
+              <FoodItemAdminTableRowSkeleton />
+            </TableBody>
+          </Table>
+        </div>
+        <ListPaginationButtons
+          page={page}
+          onChangePage={onChangePage}
+          totalPages={foodItems}
+        />
+      </DashboardContentCards>
+    );
   }
 
   if (isFoodItemsError || !foodItems?.food_items) {
@@ -72,20 +109,11 @@ function FoodItemsAdminTable() {
                 foodItem={foodItem}
               />
             ))}
-            {/* {foodItemsPending.food_items_pending.map((foodItemPending) => (
-              <FoodItemPendingAdminTableRow
-                isPending={pendingIds.includes(foodItemPending.id)}
-                key={foodItemPending.id}
-                foodItemPending={foodItemPending}
-                handleApproveFoodItemPending={handleApproveFoodItemPending}
-                handleRejectFoodItemPending={handleRejectFoodItemPending}
-              />
-            ))} */}
-            {/* {new Array(pageSize - foodItemsPending.food_items_pending.length)
+            {new Array(pageSize - foodItems.food_items.length)
               .fill(null)
               .map((_, i) => (
-                <FoodItemPendingAdminTableRowEmpty key={`empty-${i}`} />
-              ))} */}
+                <FoodItemAdminTableRowEmpty key={`empty-${i}`} />
+              ))}
           </TableBody>
         </Table>
       </div>
