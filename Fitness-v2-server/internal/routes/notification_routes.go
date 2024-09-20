@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/echo"
 )
 
-func NotificationRoutes(e *echo.Echo) {
+func NotificationRoutesV1(e *echo.Group) {
 
 	notification := e.Group("/notifications", middleware.ProtectedRoute)
 	{

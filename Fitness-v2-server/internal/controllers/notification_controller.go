@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -43,7 +44,9 @@ func GetNewUserNotifications(c echo.Context) error {
 		switch notification.Type {
 		case database.NotificationTypeUserLikeFoodItemPending:
 			var notificationData models.NotificationDataUserLikeFoodItemPending
-			if err := notification.Data.UnmarshalJSON(notification.Data); err != nil {
+
+			err := json.Unmarshal(notification.Data, &notificationData)
+			if err != nil {
 				utils.FmtLogError(
 					"notification_controller.go",
 					"GetUserNotifications",

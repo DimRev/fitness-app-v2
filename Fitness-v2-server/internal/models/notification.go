@@ -1,7 +1,6 @@
 package models
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/google/uuid"
@@ -24,8 +23,7 @@ type Notification struct {
 }
 
 type NotificationDataInterface interface {
-	UnmarshalJSON([]byte) error
-	MarshalJSON() ([]byte, error)
+	Print()
 }
 
 type NotificationDataUserLikeFoodItemPending struct {
@@ -35,26 +33,11 @@ type NotificationDataUserLikeFoodItemPending struct {
 	FoodItemID   uuid.UUID `json:"food_item_id"`
 }
 
-func (n *NotificationDataUserLikeFoodItemPending) UnmarshalJSON(data []byte) error {
-	notificationData := NotificationDataUserLikeFoodItemPending{}
-	if err := json.Unmarshal(data, &notificationData); err != nil {
-		return fmt.Errorf("failed to unmarshal notification data: %s", err)
-	}
-	n.Title = notificationData.Title
-	n.Description = notificationData.Description
-	n.FoodItemName = notificationData.FoodItemName
-	n.FoodItemID = notificationData.FoodItemID
-	return nil
-}
-
-func (n *NotificationDataUserLikeFoodItemPending) MarshalJSON() ([]byte, error) {
-	notificationData := NotificationDataUserLikeFoodItemPending{
-		Title:        n.Title,
-		Description:  n.Description,
-		FoodItemName: n.FoodItemName,
-		FoodItemID:   n.FoodItemID,
-	}
-	return json.Marshal(notificationData)
+func (n *NotificationDataUserLikeFoodItemPending) Print() {
+	fmt.Printf("Title: %s\n", n.Title)
+	fmt.Printf("Description: %s\n", n.Description)
+	fmt.Printf("FoodItemName: %s\n", n.FoodItemName)
+	fmt.Printf("FoodItemID: %s\n", n.FoodItemID)
 }
 
 type NotificationNewFoodItemLikes struct {

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"math"
 	"net/http"
@@ -508,7 +509,7 @@ func ToggleFoodItemPending(c echo.Context) error {
 					FoodItemID:   foodItemPendingID,
 				}
 
-				notificationDataJSON, err := notificationData.MarshalJSON()
+				notificationDataJSON, err := json.Marshal(notificationData)
 				if err != nil {
 					utils.FmtLogError(
 						"food_item_pending_controller.go",
