@@ -131,6 +131,25 @@ func (q *Queries) GetFoodItemPendingLikeForUser(ctx context.Context, arg GetFood
 	return i, err
 }
 
+const getFoodItemPendingOwnerId = `-- name: GetFoodItemPendingOwnerId :one
+SELECT u.id as owner_id, fip.name as food_item_pending_name
+FROM food_items_pending fip
+JOIN users u ON u.id = fip.user_id
+WHERE fip.id = $1
+`
+
+type GetFoodItemPendingOwnerIdRow struct {
+	OwnerID             uuid.UUID
+	FoodItemPendingName string
+}
+
+func (q *Queries) GetFoodItemPendingOwnerId(ctx context.Context, id uuid.UUID) (GetFoodItemPendingOwnerIdRow, error) {
+	row := q.db.QueryRowContext(ctx, getFoodItemPendingOwnerId, id)
+	var i GetFoodItemPendingOwnerIdRow
+	err := row.Scan(&i.OwnerID, &i.FoodItemPendingName)
+	return i, err
+}
+
 const getFoodItemsPending = `-- name: GetFoodItemsPending :many
 SELECT 
   fip.id, fip.name, fip.description, fip.image_url, fip.food_type, fip.calories, fip.fat, fip.protein, fip.carbs, fip.created_at, fip.updated_at, fip.user_id, 

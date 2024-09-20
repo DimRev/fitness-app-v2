@@ -1,5 +1,7 @@
 import axios from "axios";
+import { useEffect } from "react";
 import { useQuery, type UseQueryResult } from "react-query";
+import useSocket from "~/features/socket/hooks/useSocket";
 import axiosInstance from "~/lib/axios";
 import { QUERY_KEYS, USE_QUERY_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
@@ -15,6 +17,13 @@ type ErrorResponseBody = {
 function useGetUsers(
   params: GetUsersRequestBody,
 ): UseQueryResult<UserWithPages, Error> {
+  const { joinSocketGroup, leaveSocketGroup } = useSocket();
+  useEffect(() => {
+    void joinSocketGroup(QUERY_KEYS.USERS.GET_USERS);
+    return () => {
+      void leaveSocketGroup(QUERY_KEYS.USERS.GET_USERS);
+    };
+  }, [joinSocketGroup, leaveSocketGroup]);
   return useQuery<UserWithPages, Error>({
     ...USE_QUERY_DEFAULT_OPTIONS,
     queryKey: [

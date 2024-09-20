@@ -1,5 +1,7 @@
 import axios from "axios";
+import { useEffect } from "react";
 import { useInfiniteQuery } from "react-query";
+import useSocket from "~/features/socket/hooks/useSocket";
 import axiosInstance from "~/lib/axios";
 import { QUERY_KEYS } from "~/lib/reactQuery";
 
@@ -14,6 +16,13 @@ type ErrorResponseBody = {
 };
 
 export function useGetFoodItems(params: GetFoodItemsRequestBody) {
+  const { joinSocketGroup, leaveSocketGroup } = useSocket();
+  useEffect(() => {
+    void joinSocketGroup(QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS);
+    return () => {
+      void leaveSocketGroup(QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS);
+    };
+  }, [joinSocketGroup, leaveSocketGroup]);
   return useInfiniteQuery<FoodItemWithPages, Error>(
     [
       QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS,

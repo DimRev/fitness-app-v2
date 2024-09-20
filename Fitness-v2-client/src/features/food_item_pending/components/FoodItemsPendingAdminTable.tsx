@@ -112,7 +112,7 @@ function FoodItemsPendingAdminTable() {
   if (foodItemsPendingLoading) {
     return (
       <DashboardContentCards title="Pending Food Items">
-        <div className="rounded-md border">
+        <div className="border rounded-md">
           <Table>
             <TableHeader>
               <TableRow>
@@ -158,7 +158,7 @@ function FoodItemsPendingAdminTable() {
 
   return (
     <DashboardContentCards title="Pending Food Items">
-      <div className="rounded-md border">
+      <div className="border rounded-md">
         <Table>
           <TableHeader>
             <TableRow>
@@ -183,9 +183,11 @@ function FoodItemsPendingAdminTable() {
                 handleRejectFoodItemPending={handleRejectFoodItemPending}
               />
             ))}
-            {new Array(
-              pageSize - foodItemsPending.food_items_pending.length,
-            ).fill(<FoodItemPendingAdminTableRowEmpty />)}
+            {new Array(pageSize - foodItemsPending.food_items_pending.length)
+              .fill(null)
+              .map((_, i) => (
+                <FoodItemPendingAdminTableRowEmpty key={`empty-${i}`} />
+              ))}
           </TableBody>
         </Table>
       </div>

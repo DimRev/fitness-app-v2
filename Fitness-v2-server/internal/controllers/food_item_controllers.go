@@ -19,7 +19,7 @@ import (
 func GetFoodItems(c echo.Context) error {
 	_, ok := c.Get("user").(database.User)
 	if !ok {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"food_item_controllers.go",
 			"GetFoodItems",
 			fmt.Errorf("reached get food items without user"),
@@ -35,7 +35,7 @@ func GetFoodItems(c echo.Context) error {
 	if offsetStr := c.QueryParam("offset"); offsetStr != "" {
 		convOffset, err := utils.SafeParseStrToInt32(offsetStr, 0, math.MaxInt32)
 		if err != nil {
-			utils.FmtLogMsg(
+			utils.FmtLogError(
 				"food_item_controllers.go",
 				"GetFoodItems",
 				fmt.Errorf("failed to parse offset: %s", err),
@@ -49,7 +49,7 @@ func GetFoodItems(c echo.Context) error {
 	if limitStr := c.QueryParam("limit"); limitStr != "" {
 		convLimit, err := utils.SafeParseStrToInt32(limitStr, 1, 100)
 		if err != nil {
-			utils.FmtLogMsg(
+			utils.FmtLogError(
 				"food_item_controllers.go",
 				"GetFoodItems",
 				fmt.Errorf("failed to parse limit: %s", err),
@@ -68,7 +68,7 @@ func GetFoodItems(c echo.Context) error {
 	}
 
 	if err := config.DB.Ping(); err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"food_item_controllers.go",
 			"GetFoodItems",
 			fmt.Errorf("connection to database failed : %s", err),
@@ -88,7 +88,7 @@ func GetFoodItems(c echo.Context) error {
 
 		foods, err := config.Queries.GetFoodsWithFilter(c.Request().Context(), getFoodParams)
 		if err != nil {
-			utils.FmtLogMsg(
+			utils.FmtLogError(
 				"food_item_controllers.go",
 				"GetFoodItems",
 				fmt.Errorf("failed to get food items: %s", err),
@@ -126,7 +126,7 @@ func GetFoodItems(c echo.Context) error {
 
 		totalPages, err := config.Queries.GetFoodItemsTotalPages(c.Request().Context())
 		if err != nil {
-			utils.FmtLogMsg("food_item_controllers.go", "GetFoodItems", fmt.Errorf("failed to get food items: %s", err))
+			utils.FmtLogError("food_item_controllers.go", "GetFoodItems", fmt.Errorf("failed to get food items: %s", err))
 			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 				"message": "Failed to get food items, trouble with server",
 			})
@@ -146,7 +146,7 @@ func GetFoodItems(c echo.Context) error {
 
 		foods, err := config.Queries.GetFoods(c.Request().Context(), getFoodParams)
 		if err != nil {
-			utils.FmtLogMsg("food_item_controllers.go", "GetFoodItems", fmt.Errorf("failed to get food items: %s", err))
+			utils.FmtLogError("food_item_controllers.go", "GetFoodItems", fmt.Errorf("failed to get food items: %s", err))
 			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 				"message": "Failed to get food items, trouble with server",
 			})
@@ -180,7 +180,7 @@ func GetFoodItems(c echo.Context) error {
 
 		totalPages, err := config.Queries.GetFoodItemsTotalPages(c.Request().Context())
 		if err != nil {
-			utils.FmtLogMsg("food_item_controllers.go", "GetFoodItems", fmt.Errorf("failed to get food items: %s", err))
+			utils.FmtLogError("food_item_controllers.go", "GetFoodItems", fmt.Errorf("failed to get food items: %s", err))
 			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 				"message": "Failed to get food items, trouble with server",
 			})
@@ -209,7 +209,7 @@ type CreateFoodItemRequest struct {
 func CreateFoodItem(c echo.Context) error {
 	user, ok := c.Get("user").(database.User)
 	if !ok {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"food_item_controllers.go",
 			"CreateFoodItem",
 			fmt.Errorf("reached create food item without user"),
@@ -219,7 +219,7 @@ func CreateFoodItem(c echo.Context) error {
 		})
 	}
 	if user.Role != database.UserRoleAdmin {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"food_item_controllers.go",
 			"CreateFoodItem",
 			fmt.Errorf("reached create food item without admin role"),
@@ -290,7 +290,7 @@ func CreateFoodItem(c echo.Context) error {
 	}
 
 	if err := config.DB.Ping(); err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"food_item_controllers.go",
 			"CreateFoodItem",
 			fmt.Errorf("connection to database failed : %s", err),
@@ -302,7 +302,7 @@ func CreateFoodItem(c echo.Context) error {
 
 	foodItem, err := config.Queries.CreateFood(c.Request().Context(), createFoodItemParams)
 	if err != nil {
-		utils.FmtLogMsg(
+		utils.FmtLogError(
 			"food_item_controllers.go",
 			"CreateFoodItem",
 			fmt.Errorf("failed to create food item: %s", err),
@@ -321,7 +321,7 @@ func CreateFoodItem(c echo.Context) error {
 				})
 			}
 		} else {
-			utils.FmtLogMsg(
+			utils.FmtLogError(
 				"food_item_controllers.go",
 				"CreateFoodItem",
 				fmt.Errorf("non-PostgreSQL error detected: %s", err),

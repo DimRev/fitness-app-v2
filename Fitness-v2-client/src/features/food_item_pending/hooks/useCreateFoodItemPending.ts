@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "react-query";
 import axiosInstance from "~/lib/axios";
 import { QUERY_KEYS, USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 import { type FoodItemPendingFormSchema } from "../foodItemsPending.schema";
+import useSocket from "~/features/socket/hooks/useSocket";
 
 type ErrorResponseBody = {
   message: string;
@@ -10,11 +11,20 @@ type ErrorResponseBody = {
 
 function useCreateFoodItemPending() {
   const queryClient = useQueryClient();
+  const { sendSocketGroupMessage } = useSocket();
   return useMutation<FoodItemsPending, Error, FoodItemPendingFormSchema>(
     createFoodItemPending,
     {
       ...USE_MUTATION_DEFAULT_OPTIONS,
       onSuccess: () => {
+        const stringifiedData = JSON.stringify({
+          group: QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
+          data: {},
+        });
+        void sendSocketGroupMessage(
+          QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
+          `"${stringifiedData}"`,
+        );
         void queryClient.invalidateQueries([
           QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
         ]);

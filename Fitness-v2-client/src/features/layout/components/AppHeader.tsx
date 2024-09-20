@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import UserBadge from "~/features/auth/components/UserBadge";
 import useAuthStore from "~/features/auth/hooks/useAuthStore";
+import NotificationButton from "~/features/notification/components/NotificationButton";
 import { buttonVariants } from "~/features/shared/components/ui/button";
 
 function AppHeader() {
@@ -12,7 +13,7 @@ function AppHeader() {
   }, [location]);
 
   return (
-    <div className="flex h-header items-center justify-between border-b border-foreground bg-header px-4">
+    <div className="flex justify-between items-center border-foreground bg-header px-4 border-b h-header">
       <Link to="/">
         <div>Fitness</div>
       </Link>
@@ -68,6 +69,7 @@ function AppHeader() {
                 Admin
               </Link>
             )}
+            <NotificationButton />
             <UserBadge user={user} />
           </>
         ) : (
