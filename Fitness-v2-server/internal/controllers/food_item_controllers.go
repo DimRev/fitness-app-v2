@@ -124,13 +124,15 @@ func GetFoodItems(c echo.Context) error {
 			}
 		}
 
-		totalPages, err := config.Queries.GetFoodItemsTotalPages(c.Request().Context())
+		totalRows, err := config.Queries.GetFoodItemsTotalPages(c.Request().Context())
 		if err != nil {
 			utils.FmtLogError("food_item_controllers.go", "GetFoodItems", fmt.Errorf("failed to get food items: %s", err))
 			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 				"message": "Failed to get food items, trouble with server",
 			})
 		}
+
+		totalPages := int64(math.Ceil(float64(totalRows) / float64(limit)))
 
 		respFoodItem := models.FoodItemsWithPages{
 			FoodItemsPending: foodItems,
@@ -178,13 +180,15 @@ func GetFoodItems(c echo.Context) error {
 			}
 		}
 
-		totalPages, err := config.Queries.GetFoodItemsTotalPages(c.Request().Context())
+		totalRows, err := config.Queries.GetFoodItemsTotalPages(c.Request().Context())
 		if err != nil {
 			utils.FmtLogError("food_item_controllers.go", "GetFoodItems", fmt.Errorf("failed to get food items: %s", err))
 			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 				"message": "Failed to get food items, trouble with server",
 			})
 		}
+
+		totalPages := int64(math.Ceil(float64(totalRows) / float64(limit)))
 
 		respFoodItem := models.FoodItemsWithPages{
 			FoodItemsPending: foodItems,
