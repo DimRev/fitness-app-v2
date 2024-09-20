@@ -38,6 +38,9 @@ export const QUERY_KEYS = {
   FOOD_ITEMS_PENDING: {
     GET_FOOD_ITEMS_PENDING: "getFoodItemsPending",
   },
+  NOTIFICATION: {
+    GET_NEW_USER_NOTIFICATIONS: "getNewUserNotifications",
+  },
 } as const;
 
 type QueryKeyValues<T> =

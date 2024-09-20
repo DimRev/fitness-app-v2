@@ -13,7 +13,7 @@ function useGetNewUserNotifications(): UseQueryResult<
 > {
   return useQuery<NotificationNewFoodItemLikes[], Error>({
     ...USE_QUERY_DEFAULT_OPTIONS,
-    queryKey: [QUERY_KEYS.MEALS.GET_MEAL_BY_ID],
+    queryKey: [QUERY_KEYS.NOTIFICATION.GET_NEW_USER_NOTIFICATIONS],
 
     queryFn: () => getMealByID(),
   });
