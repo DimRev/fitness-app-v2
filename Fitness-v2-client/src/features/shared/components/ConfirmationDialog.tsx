@@ -32,7 +32,7 @@ function ConfirmationDialog() {
       <DialogContent className={cn(isDarkMode && "dark", "text-foreground")}>
         <DialogTitle>Are you sure?</DialogTitle>
         <DialogDescription> {confirmationQuestion}</DialogDescription>
-        <div>
+        <div className="flex justify-end gap-2">
           <Button variant="constructive" onClick={onConfirm}>
             Yes
           </Button>

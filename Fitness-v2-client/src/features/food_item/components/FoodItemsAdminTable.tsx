@@ -13,6 +13,8 @@ import FoodItemAdminTableRow, {
   FoodItemAdminTableRowEmpty,
   FoodItemAdminTableRowSkeleton,
 } from "./FoodItemAdminTableRow";
+import useDeleteFoodItem from "../hooks/useDeleteFoodItem";
+import { toast } from "sonner";
 
 function FoodItemsAdminTable() {
   const [page, setPage] = useState(1);
@@ -29,6 +31,7 @@ function FoodItemsAdminTable() {
     limit: pageSize,
     offset,
   });
+  const { mutateAsync: deleteFoodItem } = useDeleteFoodItem();
 
   function onChangePage(type: "next" | "prev") {
     if (
@@ -41,6 +44,32 @@ function FoodItemsAdminTable() {
     if (type === "prev" && foodItems?.total_pages && page > 1) {
       setPage((prev) => prev - 1);
     }
+  }
+
+  function handleDeleteFoodItem(foodItemId: string) {
+    setPendingIds((prev) => [...prev, foodItemId]);
+    void deleteFoodItem(
+      {
+        food_item_id: foodItemId,
+      },
+      {
+        onSuccess: (data) => {
+          toast.success("Successfully deleted food item", {
+            dismissible: true,
+            description: `Deleted: ${data.message}`,
+          });
+        },
+        onError: (err) => {
+          toast.error("Failed to delete food item", {
+            dismissible: true,
+            description: `Error: ${err.message}`,
+          });
+        },
+        onSettled: () => {
+          setPendingIds((prev) => prev.filter((id) => id !== foodItemId));
+        },
+      },
+    );
   }
 
   if (foodItemsLoading) {
@@ -104,8 +133,9 @@ function FoodItemsAdminTable() {
           <TableBody>
             {foodItems.food_items.map((foodItem) => (
               <FoodItemAdminTableRow
-                isPending={pendingIds.includes(foodItem.id)}
                 key={foodItem.id}
+                handleDeleteFoodItem={handleDeleteFoodItem}
+                isPending={pendingIds.includes(foodItem.id)}
                 foodItem={foodItem}
               />
             ))}

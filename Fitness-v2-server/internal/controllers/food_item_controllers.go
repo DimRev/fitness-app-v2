@@ -12,6 +12,7 @@ import (
 	"github.com/DimRev/Fitness-v2-server/internal/database"
 	"github.com/DimRev/Fitness-v2-server/internal/models"
 	"github.com/DimRev/Fitness-v2-server/internal/utils"
+	"github.com/google/uuid"
 	"github.com/jackc/pgconn"
 	"github.com/labstack/echo"
 )
@@ -137,6 +138,7 @@ func GetFoodItems(c echo.Context) error {
 		respFoodItem := models.FoodItemsWithPages{
 			FoodItemsPending: foodItems,
 			TotalPages:       totalPages,
+			TotalItems:       totalRows,
 		}
 
 		return c.JSON(http.StatusOK, respFoodItem)
@@ -193,6 +195,7 @@ func GetFoodItems(c echo.Context) error {
 		respFoodItem := models.FoodItemsWithPages{
 			FoodItemsPending: foodItems,
 			TotalPages:       totalPages,
+			TotalItems:       totalRows,
 		}
 
 		return c.JSON(http.StatusOK, respFoodItem)
@@ -360,4 +363,67 @@ func CreateFoodItem(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, respFoodItem)
+}
+
+func DeleteFoodItem(c echo.Context) error {
+	if user, ok := c.Get("user").(database.User); !ok && user.Role != database.UserRoleAdmin {
+		utils.FmtLogError(
+			"food_item_controllers.go",
+			"DeleteFoodItem",
+			fmt.Errorf("reached delete food item without admin role"),
+		)
+		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
+			"message": "Failed to delete food item, unauthorized",
+		})
+	}
+
+	foodItemId, err := uuid.Parse(c.Param("food_item_id"))
+	if err != nil {
+		utils.FmtLogError(
+			"food_item_controllers.go",
+			"DeleteFoodItem",
+			fmt.Errorf("failed to parse food item id: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to delete food item, malformed request",
+		})
+	}
+
+	if err := config.DB.Ping(); err != nil {
+		utils.FmtLogError(
+			"food_item_controllers.go",
+			"DeleteFoodItem",
+			fmt.Errorf("connection to database failed : %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to delete food item, trouble with server",
+		})
+	}
+
+	foodItem, err := config.Queries.DeleteFoodItem(c.Request().Context(), foodItemId)
+	if err != nil {
+		utils.FmtLogError(
+			"food_item_controllers.go",
+			"DeleteFoodItem",
+			fmt.Errorf("failed to delete food item: %s", err),
+		)
+		if err == sql.ErrNoRows {
+			return echo.NewHTTPError(http.StatusNotFound, map[string]string{
+				"message": "Failed to delete food item, food item not found",
+			})
+		} else {
+			utils.FmtLogError(
+				"food_item_controllers.go",
+				"DeleteFoodItem",
+				fmt.Errorf("non-PostgreSQL error detected: %s", err),
+			)
+			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+				"message": "Failed to delete food item, trouble with server",
+			})
+		}
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{
+		"message": fmt.Sprintf("Successfully deleted food item with id: %s", foodItem.Name),
+	})
 }

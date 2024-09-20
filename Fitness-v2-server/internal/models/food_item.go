@@ -24,6 +24,7 @@ type FoodItem struct {
 type FoodItemsWithPages struct {
 	FoodItemsPending []FoodItem `json:"food_items"`
 	TotalPages       int64      `json:"total_pages"`
+	TotalItems       int64      `json:"total_items"`
 }
 
 type FoodItemWithAmount struct {

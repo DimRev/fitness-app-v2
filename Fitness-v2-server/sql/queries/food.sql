@@ -50,3 +50,7 @@ LEFT JOIN food_items fi ON fi.id = rmf.food_item_id
 WHERE rmf.meal_id = $1
 AND rmf.user_id = $2;
 
+-- name: DeleteFoodItem :one
+DELETE FROM food_items
+WHERE id = $1
+RETURNING *;

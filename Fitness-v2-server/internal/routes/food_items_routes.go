@@ -15,5 +15,9 @@ func FoodItemRoutesV1(e *echo.Group) {
 			controllers.CreateFoodItem,
 			[]database.UserRole{database.UserRoleAdmin},
 		))
+		foodItem.DELETE("/:food_item_id", middleware.ProtectedRouteWithRoles(
+			controllers.DeleteFoodItem,
+			[]database.UserRole{database.UserRoleAdmin},
+		))
 	}
 }

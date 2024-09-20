@@ -12,17 +12,22 @@ import { cn } from "~/lib/utils";
 
 type Props = {
   foodItem: FoodItem;
+  handleDeleteFoodItem: (foodItemId: string) => void;
   isPending: boolean;
 };
 
-function FoodItemAdminTableRow({ foodItem, isPending }: Props) {
+function FoodItemAdminTableRow({
+  foodItem,
+  isPending,
+  handleDeleteFoodItem,
+}: Props) {
   const { setIsConfirmationDialogOpen } = useLayoutStore();
   function onDeleteFoodItem() {
     setIsConfirmationDialogOpen(
       true,
       "Are you sure you want to delete this food item?",
       () => {
-        console.log("Delete food item");
+        handleDeleteFoodItem(foodItem.id);
       },
     );
   }

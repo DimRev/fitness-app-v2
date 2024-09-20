@@ -40,7 +40,7 @@ export function useGetFoodItemsInfiniteQuery(params: GetFoodItemsRequestBody) {
         const totalLoadedItems = pages.flatMap(
           (page) => page.food_items,
         ).length;
-        if (totalLoadedItems >= lastPage.total_pages) {
+        if (totalLoadedItems >= lastPage.total_items) {
           return undefined; // No more pages
         }
         return totalLoadedItems; // Return the next offset
