@@ -1,5 +1,4 @@
 import { Apple } from "lucide-react";
-import FoodItemsPendingAdminTable from "~/features/food_item_pending/components/FoodItemsPendingAdminTable";
 import DashboardPageWrapper from "./DashboardPageWrapper";
 
 function AdminFoodItemPage() {
@@ -10,7 +9,7 @@ function AdminFoodItemPage() {
       iconClasses="fill-green-500 dark:fill-green-600"
       to="/admin/food_item"
     >
-      <FoodItemsPendingAdminTable />
+      Food Items Page
     </DashboardPageWrapper>
   );
 }

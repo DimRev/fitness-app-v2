@@ -9,7 +9,7 @@ import useLayoutStore from "./features/layout/hooks/useLayoutStore";
 import useSocket from "./features/socket/hooks/useSocket";
 import AboutPage from "./features/views/components/AboutPage";
 import AdminFoodItemAddPage from "./features/views/components/AdminFoodItemAddPage";
-import AdminFoodItemPage from "./features/views/components/AdminFoodItemPage";
+import AdminFoodItemPendingPage from "./features/views/components/AdminFoodItemPendingPage";
 import AdminLayout from "./features/views/components/AdminLayout";
 import AdminOverviewPage from "./features/views/components/AdminOverviewPage";
 import AdminUserPage from "./features/views/components/AdminUserPage";
@@ -29,6 +29,7 @@ import PageNotFound from "./features/views/components/PageNotFound";
 import RegisterPage from "./features/views/components/RegisterPage";
 import TestPage from "./features/views/components/TestPage";
 import { cn } from "./lib/utils";
+import AdminFoodItemPage from "./features/views/components/AdminFoodItemsPage";
 
 const queryClient = new QueryClient();
 
@@ -112,6 +113,10 @@ function App() {
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminOverviewPage />} />
                 <Route path="user" element={<AdminUserPage />} />
+                <Route
+                  path="food_item_pending"
+                  element={<AdminFoodItemPendingPage />}
+                />
                 <Route path="food_item" element={<AdminFoodItemPage />} />
                 <Route
                   path="food_item/add"
