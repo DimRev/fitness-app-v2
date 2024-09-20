@@ -1,3 +1,11 @@
+# [0.7.0](https://github.com/DimRev/fitness-app-v2/compare/v0.6.0...v0.7.0) (2024-09-20)
+
+
+### Features
+
+* Add Notifications cmp in ui ([aa60979](https://github.com/DimRev/fitness-app-v2/commit/aa6097966cc1c588e1e5ea62c2b383b11a5f9152))
+* Imlament bscuffolding of websocket ([012b980](https://github.com/DimRev/fitness-app-v2/commit/012b980d80c99acf46a1dba7ec88559e3e405af0))
+
 # [0.6.0](https://github.com/DimRev/fitness-app-v2/compare/v0.5.0...v0.6.0) (2024-09-16)
 
 
