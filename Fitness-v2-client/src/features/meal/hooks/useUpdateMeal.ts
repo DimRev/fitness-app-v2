@@ -29,7 +29,7 @@ function useUpdateMeal() {
         ]);
         void queryClient.invalidateQueries([
           QUERY_KEYS.MEALS.GET_MEAL_BY_ID,
-          { mealId: meal_id },
+          { meal_id: meal_id },
         ]);
       },
     },

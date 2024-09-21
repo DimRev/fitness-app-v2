@@ -4,6 +4,8 @@
 
 This is a monorepo for the Fitness App V2 project..
 
+[Change Log](./CHANGELOG.md)
+
 ## Stack
 
 ### Server
@@ -49,13 +51,17 @@ ENV="development"
 `.env.development.local`:
 
 ```bash
-VITE_API_URL="http://localhost:1323"
+VITE_API_URL="http://localhost:1323/api/v1"
+
+VITE_WS_URL="ws://localhost:1323/ws"
 ```
 
 `.env.production.local`:
 
 ```bash
 VITE_API_URL="https://fitness-v2-server.fly.dev/api/v1"
+
+VITE_WS_URL="wss://fitness-v2-server.fly.dev/ws"
 ```
 
 4. Install dependencies:

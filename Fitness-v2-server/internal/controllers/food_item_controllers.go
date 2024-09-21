@@ -3,6 +3,7 @@ package controllers
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"math"
 	"net/http"
 	"strconv"
@@ -11,7 +12,9 @@ import (
 	"github.com/DimRev/Fitness-v2-server/internal/config"
 	"github.com/DimRev/Fitness-v2-server/internal/database"
 	"github.com/DimRev/Fitness-v2-server/internal/models"
+	"github.com/DimRev/Fitness-v2-server/internal/services"
 	"github.com/DimRev/Fitness-v2-server/internal/utils"
+	"github.com/google/uuid"
 	"github.com/jackc/pgconn"
 	"github.com/labstack/echo"
 )
@@ -124,7 +127,7 @@ func GetFoodItems(c echo.Context) error {
 			}
 		}
 
-		totalPages, err := config.Queries.GetFoodItemsTotalPages(c.Request().Context())
+		totalRows, err := config.Queries.GetFoodItemsTotalPages(c.Request().Context())
 		if err != nil {
 			utils.FmtLogError("food_item_controllers.go", "GetFoodItems", fmt.Errorf("failed to get food items: %s", err))
 			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
@@ -132,9 +135,12 @@ func GetFoodItems(c echo.Context) error {
 			})
 		}
 
+		totalPages := int64(math.Ceil(float64(totalRows) / float64(limit)))
+
 		respFoodItem := models.FoodItemsWithPages{
 			FoodItemsPending: foodItems,
 			TotalPages:       totalPages,
+			TotalItems:       totalRows,
 		}
 
 		return c.JSON(http.StatusOK, respFoodItem)
@@ -178,7 +184,7 @@ func GetFoodItems(c echo.Context) error {
 			}
 		}
 
-		totalPages, err := config.Queries.GetFoodItemsTotalPages(c.Request().Context())
+		totalRows, err := config.Queries.GetFoodItemsTotalPages(c.Request().Context())
 		if err != nil {
 			utils.FmtLogError("food_item_controllers.go", "GetFoodItems", fmt.Errorf("failed to get food items: %s", err))
 			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
@@ -186,9 +192,12 @@ func GetFoodItems(c echo.Context) error {
 			})
 		}
 
+		totalPages := int64(math.Ceil(float64(totalRows) / float64(limit)))
+
 		respFoodItem := models.FoodItemsWithPages{
 			FoodItemsPending: foodItems,
 			TotalPages:       totalPages,
+			TotalItems:       totalRows,
 		}
 
 		return c.JSON(http.StatusOK, respFoodItem)
@@ -353,6 +362,320 @@ func CreateFoodItem(c echo.Context) error {
 		Carbs:       foodItem.Carbs,
 		CreatedAt:   foodItem.CreatedAt.Time,
 		UpdatedAt:   foodItem.UpdatedAt.Time,
+	}
+
+	return c.JSON(http.StatusOK, respFoodItem)
+}
+
+func DeleteFoodItem(c echo.Context) error {
+	if _, ok := c.Get("user").(database.User); !ok {
+		utils.FmtLogError(
+			"food_item_controllers.go",
+			"DeleteFoodItem",
+			fmt.Errorf("reached delete food item without admin role"),
+		)
+		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
+			"message": "Failed to delete food item, unauthorized",
+		})
+	}
+
+	foodItemId, err := uuid.Parse(c.Param("food_item_id"))
+	if err != nil {
+		utils.FmtLogError(
+			"food_item_controllers.go",
+			"DeleteFoodItem",
+			fmt.Errorf("failed to parse food item id: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to delete food item, malformed request",
+		})
+	}
+
+	if err := config.DB.Ping(); err != nil {
+		utils.FmtLogError(
+			"food_item_controllers.go",
+			"DeleteFoodItem",
+			fmt.Errorf("connection to database failed : %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to delete food item, trouble with server",
+		})
+	}
+
+	foodItem, err := config.Queries.DeleteFoodItem(c.Request().Context(), foodItemId)
+	if err != nil {
+		utils.FmtLogError(
+			"food_item_controllers.go",
+			"DeleteFoodItem",
+			fmt.Errorf("failed to delete food item: %s", err),
+		)
+		if err == sql.ErrNoRows {
+			return echo.NewHTTPError(http.StatusNotFound, map[string]string{
+				"message": "Failed to delete food item, food item not found",
+			})
+		} else {
+			utils.FmtLogError(
+				"food_item_controllers.go",
+				"DeleteFoodItem",
+				fmt.Errorf("non-PostgreSQL error detected: %s", err),
+			)
+			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+				"message": "Failed to delete food item, trouble with server",
+			})
+		}
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{
+		"message": fmt.Sprintf("Successfully deleted food item with id: %s", foodItem.Name),
+	})
+}
+
+func GetFoodItemByID(c echo.Context) error {
+	if user, ok := c.Get("user").(database.User); !ok && user.Role != database.UserRoleAdmin {
+		utils.FmtLogError(
+			"food_item_controllers.go",
+			"GetFoodItemByID",
+			fmt.Errorf("reached get food item by id without user"),
+		)
+		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
+			"message": "Failed to get food item by id, unauthorized",
+		})
+	}
+
+	foodItemID, err := uuid.Parse(c.Param("food_item_id"))
+	if err != nil {
+		utils.FmtLogError(
+			"food_item_controllers.go",
+			"GetFoodItemByID",
+			fmt.Errorf("failed to parse food item id: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to get food item by id, malformed request",
+		})
+	}
+
+	if err := config.DB.Ping(); err != nil {
+		utils.FmtLogError(
+			"food_item_controllers.go",
+			"GetFoodItemByID",
+			fmt.Errorf("connection to database failed : %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to get food item by id, trouble with server",
+		})
+	}
+
+	foodItem, err := config.Queries.GetFoodItemByID(c.Request().Context(), foodItemID)
+	if err != nil {
+		utils.FmtLogError(
+			"food_item_controllers.go",
+			"GetFoodItemByID",
+			fmt.Errorf("failed to get food item by id: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusNotFound, map[string]string{
+			"message": "Failed to get food item by id, trouble with server",
+		})
+	}
+
+	var description *string
+	if foodItem.Description.Valid {
+		description = &foodItem.Description.String
+	}
+	var imageUrl *string
+	if foodItem.ImageUrl.Valid {
+		imageUrl = &foodItem.ImageUrl.String
+	}
+
+	foodItemResp := models.FoodItem{
+		ID:          foodItem.ID,
+		Name:        foodItem.Name,
+		Description: description,
+		ImageUrl:    imageUrl,
+		FoodType:    foodItem.FoodType,
+		Calories:    foodItem.Calories,
+		Fat:         foodItem.Fat,
+		Protein:     foodItem.Protein,
+		Carbs:       foodItem.Carbs,
+		CreatedAt:   foodItem.CreatedAt.Time,
+		UpdatedAt:   foodItem.UpdatedAt.Time,
+	}
+
+	return c.JSON(http.StatusOK, foodItemResp)
+}
+
+type UpdateFoodItemRequest struct {
+	Name        string  `json:"name"`
+	Description *string `json:"description,omitempty"`
+	ImageUrl    *string `json:"image_url,omitempty"`
+	FoodType    string  `json:"food_type"`
+	Calories    string  `json:"calories"`
+	Fat         string  `json:"fat"`
+	Protein     string  `json:"protein"`
+	Carbs       string  `json:"carbs"`
+}
+
+func UpdateFoodItem(c echo.Context) error {
+	if user, ok := c.Get("user").(database.User); !ok && user.Role != database.UserRoleAdmin {
+		utils.FmtLogError(
+			"food_item_controllers.go",
+			"UpdateFoodItem",
+			fmt.Errorf("reached update food item without admin role"),
+		)
+		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
+			"message": "Failed to update food item, unauthorized",
+		})
+	}
+
+	foodItemId, err := uuid.Parse(c.Param("food_item_id"))
+	if err != nil {
+		utils.FmtLogError(
+			"food_item_controllers.go",
+			"UpdateFoodItem",
+			fmt.Errorf("failed to parse food item id: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to update food item, malformed request",
+		})
+	}
+
+	updateFoodItemReq := UpdateFoodItemRequest{}
+
+	if err := c.Bind(&updateFoodItemReq); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to update food item, malformed request",
+		})
+	}
+
+	foodItem, err := config.Queries.GetFoodItemByID(c.Request().Context(), foodItemId)
+	if err != nil {
+		utils.FmtLogError(
+			"food_item_controllers.go",
+			"UpdateFoodItem",
+			fmt.Errorf("failed to get food item by id: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to update food item, trouble with server",
+		})
+	}
+
+	// Remove existing S3 asset if
+	// Image url already exists AND
+	// Image upload comes with no image url
+	// Image upload comes with an image url that is different from the existing one
+	if foodItem.ImageUrl.Valid &&
+		updateFoodItemReq.ImageUrl == nil ||
+		(updateFoodItemReq.ImageUrl != nil &&
+			*updateFoodItemReq.ImageUrl != foodItem.ImageUrl.String) {
+		err := services.RemoveExistingS3Asset(foodItem.ImageUrl.String)
+		if err != nil {
+			log.Printf("Failed to remove existing S3 asset: %s", err)
+		}
+	}
+
+	var description sql.NullString
+	if updateFoodItemReq.Description != nil {
+		description = sql.NullString{String: *updateFoodItemReq.Description, Valid: updateFoodItemReq.Description != nil}
+	}
+
+	var imageUrl sql.NullString
+	if updateFoodItemReq.ImageUrl != nil {
+		imageUrl = sql.NullString{String: *updateFoodItemReq.ImageUrl, Valid: updateFoodItemReq.ImageUrl != nil}
+	}
+
+	foodType := database.FoodItemType(updateFoodItemReq.FoodType)
+	if err := foodType.Scan(string(updateFoodItemReq.FoodType)); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to update food item, invalid food type",
+		})
+	}
+
+	fmt.Printf("Calories: %s\n Fat: %s\n Protein: %s\n Carbs: %s\n",
+		updateFoodItemReq.Calories,
+		updateFoodItemReq.Fat,
+		updateFoodItemReq.Protein,
+		updateFoodItemReq.Carbs,
+	)
+
+	if _, err := strconv.ParseFloat(updateFoodItemReq.Calories, 64); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to update food item, calories must be a valid number",
+		})
+	}
+
+	if _, err := strconv.ParseFloat(updateFoodItemReq.Fat, 64); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to update food item, fat must be a valid number",
+		})
+	}
+
+	if _, err := strconv.ParseFloat(updateFoodItemReq.Protein, 64); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to update food item, protein must be a valid number",
+		})
+	}
+
+	if _, err := strconv.ParseFloat(updateFoodItemReq.Carbs, 64); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to update food item, carbs must be a valid number",
+		})
+	}
+
+	if err := config.DB.Ping(); err != nil {
+		utils.FmtLogError(
+			"food_item_controllers.go",
+			"UpdateFoodItem",
+			fmt.Errorf("connection to database failed : %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to update food item, trouble with server",
+		})
+	}
+
+	updateFoodItemParams := database.UpdateFoodItemParams{
+		ID:          foodItemId,
+		Name:        updateFoodItemReq.Name,
+		Description: description,
+		ImageUrl:    imageUrl,
+		FoodType:    foodType,
+		Calories:    updateFoodItemReq.Calories,
+		Fat:         updateFoodItemReq.Fat,
+		Protein:     updateFoodItemReq.Protein,
+		Carbs:       updateFoodItemReq.Carbs,
+	}
+
+	updatedFoodItem, err := config.Queries.UpdateFoodItem(c.Request().Context(), updateFoodItemParams)
+	if err != nil {
+		utils.FmtLogError(
+			"food_item_controllers.go",
+			"UpdateFoodItem",
+			fmt.Errorf("failed to update food item: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to update food item, trouble with server",
+		})
+	}
+
+	var respDescription *string
+	if updatedFoodItem.Description.Valid {
+		respDescription = &updatedFoodItem.Description.String
+	}
+	var respImageUrl *string
+	if updatedFoodItem.ImageUrl.Valid {
+		respImageUrl = &updatedFoodItem.ImageUrl.String
+	}
+
+	respFoodItem := models.FoodItem{
+		ID:          updatedFoodItem.ID,
+		Name:        updatedFoodItem.Name,
+		Description: respDescription,
+		ImageUrl:    respImageUrl,
+		FoodType:    updatedFoodItem.FoodType,
+		Calories:    updatedFoodItem.Calories,
+		Fat:         updatedFoodItem.Fat,
+		Protein:     updatedFoodItem.Protein,
+		Carbs:       updatedFoodItem.Carbs,
+		CreatedAt:   updatedFoodItem.CreatedAt.Time,
+		UpdatedAt:   updatedFoodItem.UpdatedAt.Time,
 	}
 
 	return c.JSON(http.StatusOK, respFoodItem)

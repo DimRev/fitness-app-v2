@@ -1,7 +1,7 @@
 import { PopoverContent } from "@radix-ui/react-popover";
 import { Square, SquareCheck, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { useGetFoodItems } from "~/features/food_item/hooks/useGetFoodItems";
+import { useGetFoodItemsInfiniteQuery } from "~/features/food_item/hooks/useGetFoodItemsInfiniteQuery";
 import { Badge } from "~/features/shared/components/ui/badge";
 import { Button } from "~/features/shared/components/ui/button";
 import {
@@ -37,7 +37,7 @@ function MealFoodItemsList({ toggleFoodItems, initFoodItems }: Props) {
     data: foodItemsWithPages,
     error: foodItemsWithPagesError,
     isError: isFoodItemsWithPagesError,
-  } = useGetFoodItems({
+  } = useGetFoodItemsInfiniteQuery({
     limit: pageSize,
     offset: 0, // Initial offset
     text_filter: textFilter,

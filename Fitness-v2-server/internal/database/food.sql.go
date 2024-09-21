@@ -75,6 +75,55 @@ func (q *Queries) CreateFood(ctx context.Context, arg CreateFoodParams) (FoodIte
 	return i, err
 }
 
+const deleteFoodItem = `-- name: DeleteFoodItem :one
+DELETE FROM food_items
+WHERE id = $1
+RETURNING id, name, description, image_url, food_type, calories, fat, protein, carbs, created_at, updated_at
+`
+
+func (q *Queries) DeleteFoodItem(ctx context.Context, id uuid.UUID) (FoodItem, error) {
+	row := q.db.QueryRowContext(ctx, deleteFoodItem, id)
+	var i FoodItem
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.ImageUrl,
+		&i.FoodType,
+		&i.Calories,
+		&i.Fat,
+		&i.Protein,
+		&i.Carbs,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getFoodItemByID = `-- name: GetFoodItemByID :one
+SELECT id, name, description, image_url, food_type, calories, fat, protein, carbs, created_at, updated_at FROM food_items
+WHERE id = $1
+`
+
+func (q *Queries) GetFoodItemByID(ctx context.Context, id uuid.UUID) (FoodItem, error) {
+	row := q.db.QueryRowContext(ctx, getFoodItemByID, id)
+	var i FoodItem
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.ImageUrl,
+		&i.FoodType,
+		&i.Calories,
+		&i.Fat,
+		&i.Protein,
+		&i.Carbs,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getFoodItemsByMealID = `-- name: GetFoodItemsByMealID :many
 SELECT rmf.meal_id, rmf.food_item_id, rmf.user_id, rmf.amount, fi.id, fi.name, fi.description, fi.image_url, fi.food_type, fi.calories, fi.fat, fi.protein, fi.carbs, fi.created_at, fi.updated_at
 FROM rel_meal_food rmf
@@ -264,4 +313,59 @@ func (q *Queries) GetFoodsWithFilter(ctx context.Context, arg GetFoodsWithFilter
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateFoodItem = `-- name: UpdateFoodItem :one
+UPDATE food_items
+SET name = $1,
+    description = $2,
+    image_url = $3,
+    food_type = $4,
+    calories = $5,
+    fat = $6,
+    protein = $7,
+    carbs = $8
+WHERE id = $9
+RETURNING id, name, description, image_url, food_type, calories, fat, protein, carbs, created_at, updated_at
+`
+
+type UpdateFoodItemParams struct {
+	Name        string
+	Description sql.NullString
+	ImageUrl    sql.NullString
+	FoodType    FoodItemType
+	Calories    string
+	Fat         string
+	Protein     string
+	Carbs       string
+	ID          uuid.UUID
+}
+
+func (q *Queries) UpdateFoodItem(ctx context.Context, arg UpdateFoodItemParams) (FoodItem, error) {
+	row := q.db.QueryRowContext(ctx, updateFoodItem,
+		arg.Name,
+		arg.Description,
+		arg.ImageUrl,
+		arg.FoodType,
+		arg.Calories,
+		arg.Fat,
+		arg.Protein,
+		arg.Carbs,
+		arg.ID,
+	)
+	var i FoodItem
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.ImageUrl,
+		&i.FoodType,
+		&i.Calories,
+		&i.Fat,
+		&i.Protein,
+		&i.Carbs,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }

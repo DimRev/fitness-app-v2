@@ -8,8 +8,9 @@ import GlobalDialogs from "./features/layout/components/GlobalDialogs";
 import useLayoutStore from "./features/layout/hooks/useLayoutStore";
 import useSocket from "./features/socket/hooks/useSocket";
 import AboutPage from "./features/views/components/AboutPage";
-import AdminFoodItemAddPage from "./features/views/components/AdminFoodItemAddPage";
-import AdminFoodItemPage from "./features/views/components/AdminFoodItemPage";
+import AdminFoodItemEditPage from "./features/views/components/AdminFoodItemEditPage";
+import AdminFoodItemPendingPage from "./features/views/components/AdminFoodItemPendingPage";
+import AdminFoodItemPage from "./features/views/components/AdminFoodItemsPage";
 import AdminLayout from "./features/views/components/AdminLayout";
 import AdminOverviewPage from "./features/views/components/AdminOverviewPage";
 import AdminUserPage from "./features/views/components/AdminUserPage";
@@ -112,10 +113,14 @@ function App() {
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminOverviewPage />} />
                 <Route path="user" element={<AdminUserPage />} />
+                <Route
+                  path="food_item_pending"
+                  element={<AdminFoodItemPendingPage />}
+                />
                 <Route path="food_item" element={<AdminFoodItemPage />} />
                 <Route
-                  path="food_item/add"
-                  element={<AdminFoodItemAddPage />}
+                  path="food_item/edit/:foodItemId"
+                  element={<AdminFoodItemEditPage />}
                 />
               </Route>
               <Route path="/auth" element={<AuthLayout />}>

@@ -1,6 +1,7 @@
-import { Check, X } from "lucide-react";
+import { Pencil, X } from "lucide-react";
+import { Link } from "react-router-dom";
 import useLayoutStore from "~/features/layout/hooks/useLayoutStore";
-import { Button } from "~/features/shared/components/ui/button";
+import { Button, buttonVariants } from "~/features/shared/components/ui/button";
 import {
   HoverCard,
   HoverCardContent,
@@ -11,98 +12,78 @@ import { TableCell, TableRow } from "~/features/shared/components/ui/table";
 import { cn } from "~/lib/utils";
 
 type Props = {
-  foodItemPending: FoodItemsPending;
-  handleApproveFoodItemPending: (foodItemPendingId: string) => void;
-  handleRejectFoodItemPending: (foodItemPendingId: string) => void;
+  foodItem: FoodItem;
+  handleDeleteFoodItem: (foodItemId: string) => void;
   isPending: boolean;
 };
 
-function FoodItemPendingAdminTableRow({
-  foodItemPending,
-  handleApproveFoodItemPending,
-  handleRejectFoodItemPending,
+function FoodItemAdminTableRow({
+  foodItem,
   isPending,
+  handleDeleteFoodItem,
 }: Props) {
   const { setIsConfirmationDialogOpen } = useLayoutStore();
-
-  function onApproveFoodItemPending() {
+  function onDeleteFoodItem() {
     setIsConfirmationDialogOpen(
       true,
-      "Are you sure you want to approve this food item?",
+      "Are you sure you want to delete this food item?",
       () => {
-        handleApproveFoodItemPending(foodItemPending.id);
+        handleDeleteFoodItem(foodItem.id);
       },
     );
   }
-
-  function onRejectFoodItemPending() {
-    setIsConfirmationDialogOpen(
-      true,
-      "Are you sure you want to reject this food item?",
-      () => {
-        handleRejectFoodItemPending(foodItemPending.id);
-      },
-    );
-  }
-
   return (
     <TableRow
       className={cn(isPending && "opacity-50 hover:bg-transparent", "h-[65px]")}
     >
       <TableCell>
-        <div className="line-clamp-1 break-words">{foodItemPending.name}</div>
+        <div className="line-clamp-1 break-words">{foodItem.name}</div>
       </TableCell>
       <TableCell>
         <HoverCard>
           <HoverCardTrigger asChild>
             <div className="line-clamp-1 break-words">
-              {foodItemPending.description}
+              {foodItem.description}
             </div>
           </HoverCardTrigger>
-          <HoverCardContent>{foodItemPending.description}</HoverCardContent>
+          <HoverCardContent>{foodItem.description}</HoverCardContent>
         </HoverCard>
       </TableCell>
       <TableCell>
-        <div className="line-clamp-1 break-words">
-          {foodItemPending.food_type}
-        </div>
+        <div className="line-clamp-1 break-words">{foodItem.food_type}</div>
       </TableCell>
       <TableCell>
-        <div className="line-clamp-1 break-words">
-          {foodItemPending.calories}
-        </div>
+        <div className="line-clamp-1 break-words">{foodItem.calories}</div>
       </TableCell>
       <TableCell>
-        <div className="line-clamp-1 break-words">{foodItemPending.fat}</div>
+        <div className="line-clamp-1 break-words">{foodItem.fat}</div>
       </TableCell>
       <TableCell>
-        <div className="line-clamp-1 break-words">
-          {foodItemPending.protein}
-        </div>
+        <div className="line-clamp-1 break-words">{foodItem.protein}</div>
       </TableCell>
       <TableCell>
-        <div className="line-clamp-1 break-words">{foodItemPending.carbs}</div>
+        <div className="line-clamp-1 break-words">{foodItem.carbs}</div>
       </TableCell>
-      <TableCell>
-        <div className="line-clamp-1 break-words">{foodItemPending.likes}</div>
-      </TableCell>
+
       <TableCell>
         <div className="flex items-center gap-2 line-clamp-1 break-words">
-          <Button
-            size="icon"
-            className="rounded-full size-8"
-            variant="constructive"
-            onClick={onApproveFoodItemPending}
-            disabled={isPending}
+          <Link
+            className={cn(
+              buttonVariants({
+                size: "icon",
+              }),
+              "size-8 rounded-full",
+            )}
+            to={`/admin/food_item/edit/${foodItem.id}`}
           >
-            <Check />
-          </Button>
+            <Pencil />
+          </Link>
           <Button
             size="icon"
             className="rounded-full size-8"
             variant="destructive"
-            onClick={onRejectFoodItemPending}
             disabled={isPending}
+            onClick={onDeleteFoodItem}
           >
             <X />
           </Button>
@@ -112,12 +93,9 @@ function FoodItemPendingAdminTableRow({
   );
 }
 
-export function FoodItemPendingAdminTableRowSkeleton() {
+export function FoodItemAdminTableRowSkeleton() {
   return (
     <TableRow className="h-[65px]">
-      <TableCell>
-        <Skeleton className="w-full h-[20px]" />
-      </TableCell>
       <TableCell>
         <Skeleton className="w-full h-[20px]" />
       </TableCell>
@@ -146,10 +124,10 @@ export function FoodItemPendingAdminTableRowSkeleton() {
   );
 }
 
-export function FoodItemPendingAdminTableRowEmpty() {
+export function FoodItemAdminTableRowEmpty() {
   return (
-    <TableRow className="h-[65px]">
-      <TableCell>
+    <TableRow>
+      <TableCell className="h-[65px]">
         <div></div>
       </TableCell>
       <TableCell>
@@ -171,13 +149,10 @@ export function FoodItemPendingAdminTableRowEmpty() {
         <div></div>
       </TableCell>
       <TableCell>
-        <div></div>
-      </TableCell>
-      <TableCell>
-        <div></div>
+        <div className="py-[10.25px]"></div>
       </TableCell>
     </TableRow>
   );
 }
 
-export default FoodItemPendingAdminTableRow;
+export default FoodItemAdminTableRow;

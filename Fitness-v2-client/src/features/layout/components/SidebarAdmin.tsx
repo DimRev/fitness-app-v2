@@ -23,7 +23,7 @@ function SidebarAdmin() {
     >
       {isSidebarOpen ? (
         <>
-          <div className="flex w-full items-center justify-between gap-2">
+          <div className="flex justify-between items-center gap-2 w-full">
             <H3 className="truncate">Admin</H3>
             <Button
               className="border-foreground bg-sidebar"
@@ -47,7 +47,7 @@ function SidebarAdmin() {
           </Button>
         </>
       )}
-      <div className="w-full border-b border-foreground"></div>
+      <div className="border-foreground border-b w-full"></div>
       <SidebarNavLink
         LucideIcon={LineChart}
         to="/admin"
@@ -58,6 +58,12 @@ function SidebarAdmin() {
         LucideIcon={User}
         to="/admin/user"
         title="Users"
+        onlyIcon={!isSidebarOpen}
+      />
+      <SidebarNavLink
+        LucideIcon={Apple}
+        to="/admin/food_item_pending"
+        title="Food Items Pending"
         onlyIcon={!isSidebarOpen}
       />
       <SidebarNavLink

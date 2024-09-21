@@ -12,7 +12,7 @@ type AuthUser struct {
 	Email        string    `json:"email"`
 	PasswordHash []byte    `json:"-"`
 	Username     string    `json:"username"`
-	ImageUrl     *string   `json:"image_url"`
+	ImageUrl     *string   `json:"image_url,omitempty"`
 	CreatedAt    time.Time `json:"-"`
 	UpdatedAt    time.Time `json:"-"`
 
@@ -25,7 +25,7 @@ type User struct {
 	Email        string    `json:"email"`
 	PasswordHash []byte    `json:"-"`
 	Username     string    `json:"username"`
-	ImageUrl     *string   `json:"image_url"`
+	ImageUrl     *string   `json:"image_url,omitempty"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 

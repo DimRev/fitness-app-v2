@@ -1,6 +1,6 @@
 import { Apple } from "lucide-react";
-import FoodItemsPendingAdminTable from "~/features/food_item_pending/components/FoodItemsPendingAdminTable";
 import DashboardPageWrapper from "./DashboardPageWrapper";
+import FoodItemsAdminTable from "~/features/food_item/components/FoodItemsAdminTable";
 
 function AdminFoodItemPage() {
   return (
@@ -10,7 +10,7 @@ function AdminFoodItemPage() {
       iconClasses="fill-green-500 dark:fill-green-600"
       to="/admin/food_item"
     >
-      <FoodItemsPendingAdminTable />
+      <FoodItemsAdminTable />
     </DashboardPageWrapper>
   );
 }

@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "react-query";
 import useSocket from "~/features/socket/hooks/useSocket";
 import axiosInstance from "~/lib/axios";
 import { QUERY_KEYS, USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
+import { type BroadcastData } from "~/lib/socket";
 
 type ApproveFoodItemPendingRequestParams = {
   food_item_pending_id: string;
@@ -29,24 +30,26 @@ function useApproveFoodItemPending() {
   >(approveFoodItemPending, {
     ...USE_MUTATION_DEFAULT_OPTIONS,
     onSuccess: (_data) => {
-      const stringifiedData = JSON.stringify({
-        group: QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
-        data: {},
-      });
+      const invalidateData: BroadcastData = {
+        group: [
+          QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
+          QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS_INF_QUERY,
+        ],
+        data: {
+          action: "invalidate",
+        },
+      };
       void sendSocketGroupMessage(
         QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
-        `"${stringifiedData}"`,
+        invalidateData,
       );
-      void sendSocketGroupMessage(
-        QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS,
-        `"${stringifiedData}"`,
-      );
+
       void queryClient.invalidateQueries([
         QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
         {},
       ]);
       void queryClient.invalidateQueries([
-        QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS,
+        QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS_INF_QUERY,
         {},
       ]);
     },

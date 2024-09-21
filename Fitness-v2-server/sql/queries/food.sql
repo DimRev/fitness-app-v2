@@ -50,3 +50,24 @@ LEFT JOIN food_items fi ON fi.id = rmf.food_item_id
 WHERE rmf.meal_id = $1
 AND rmf.user_id = $2;
 
+-- name: DeleteFoodItem :one
+DELETE FROM food_items
+WHERE id = $1
+RETURNING *;
+
+-- name: GetFoodItemByID :one
+SELECT * FROM food_items
+WHERE id = $1;
+
+-- name: UpdateFoodItem :one
+UPDATE food_items
+SET name = $1,
+    description = $2,
+    image_url = $3,
+    food_type = $4,
+    calories = $5,
+    fat = $6,
+    protein = $7,
+    carbs = $8
+WHERE id = $9
+RETURNING *;

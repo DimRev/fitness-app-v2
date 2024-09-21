@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const foodTypes = ["vegetable", "fruit", "grain", "protein"] as const;
 
-export const foodItemPendingFormSchema = z.object({
+export const foodItemFormSchema = z.object({
   name: z.string().min(1, "Name must be at least 1 character"),
   description: z
     .string()
@@ -61,6 +61,4 @@ export const foodItemPendingFormSchema = z.object({
     .transform((num) => String(num)),
 });
 
-export type FoodItemPendingFormSchema = z.infer<
-  typeof foodItemPendingFormSchema
->;
+export type FoodItemFormSchema = z.infer<typeof foodItemFormSchema>;
