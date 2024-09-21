@@ -1,3 +1,23 @@
+# [0.8.0](https://github.com/DimRev/fitness-app-v2/compare/v0.7.0...v0.8.0) (2024-09-21)
+
+
+### Bug Fixes
+
+* Consuming meal invalidates get_meal_by_id store ([d9a46c0](https://github.com/DimRev/fitness-app-v2/commit/d9a46c00070703402e0d90cd382bf7faadbf5770))
+* Fix image upload logic ([f5a74a0](https://github.com/DimRev/fitness-app-v2/commit/f5a74a09f339bd3eead95e0cd05da9a308bfc446))
+* fix page calculations of GetFoodItems ([eebb37f](https://github.com/DimRev/fitness-app-v2/commit/eebb37f20e3220fb3005c1d003c77b19780ae109))
+* fix query key params for consume meal invalidations ([8980d86](https://github.com/DimRev/fitness-app-v2/commit/8980d86ffe7916e0217f3da4addb5d1ddb50d36f))
+
+
+### Features
+
+* Add admin food item page ([76ee370](https://github.com/DimRev/fitness-app-v2/commit/76ee3704746f1458cc43fb62d275cd3a418a3630))
+* Add delete food item path, implament admin food item deletion ([2ff7b4b](https://github.com/DimRev/fitness-app-v2/commit/2ff7b4bb47f8d52aee3d9526dc9db1c3671639fd))
+* Add FoodItemsAdminTable and it's hook ([716e82a](https://github.com/DimRev/fitness-app-v2/commit/716e82a04ef3c3116d04d439bfd67e67f3881087))
+* Admin update food item working ([6c19ae1](https://github.com/DimRev/fitness-app-v2/commit/6c19ae1ab7c2fdaf1595cacb9a6499856b960f3f))
+* Create global confirmation dialog ([b8694a8](https://github.com/DimRev/fitness-app-v2/commit/b8694a8d2ce9ab12fb4021a60705c1082c48c931))
+* Setup public route for getting food item by id ([e8acea9](https://github.com/DimRev/fitness-app-v2/commit/e8acea94dade28754b675f09ae315830914afd5c))
+
 # [0.7.0](https://github.com/DimRev/fitness-app-v2/compare/v0.6.0...v0.7.0) (2024-09-20)
 
 
