@@ -1,11 +1,14 @@
 import { Check, X } from "lucide-react";
+import FoodItemBadge from "~/features/food_item/components/FoodItemBadge";
 import useLayoutStore from "~/features/layout/hooks/useLayoutStore";
+import { H3 } from "~/features/shared/components/Typography";
 import { Button } from "~/features/shared/components/ui/button";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "~/features/shared/components/ui/hover-card";
+import { Separator } from "~/features/shared/components/ui/separator";
 import { Skeleton } from "~/features/shared/components/ui/skeleton";
 import { TableCell, TableRow } from "~/features/shared/components/ui/table";
 import { cn } from "~/lib/utils";
@@ -55,17 +58,19 @@ function FoodItemPendingAdminTableRow({
       <TableCell>
         <HoverCard>
           <HoverCardTrigger asChild>
-            <div className="line-clamp-1 break-words">
+            <div className="line-clamp-1 break-words cursor-cell">
               {foodItemPending.description}
             </div>
           </HoverCardTrigger>
-          <HoverCardContent>{foodItemPending.description}</HoverCardContent>
+          <HoverCardContent>
+            <H3>{foodItemPending.name}</H3>
+            <Separator />
+            {foodItemPending.description}
+          </HoverCardContent>
         </HoverCard>
       </TableCell>
       <TableCell>
-        <div className="line-clamp-1 break-words">
-          {foodItemPending.food_type}
-        </div>
+        <FoodItemBadge foodItemTypes={foodItemPending.food_type} />
       </TableCell>
       <TableCell>
         <div className="line-clamp-1 break-words">

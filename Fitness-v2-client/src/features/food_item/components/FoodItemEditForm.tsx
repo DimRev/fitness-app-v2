@@ -17,7 +17,6 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "~/features/shared/components/ui/select";
 import { Textarea } from "~/features/shared/components/ui/textarea";
 import FoodItemImageInput from "~/features/upload/components/FoodItemImageInput";
@@ -30,6 +29,9 @@ import useGetFoodItemsByID from "../hooks/useGetFoodItemByID";
 import { Button } from "~/features/shared/components/ui/button";
 import useUpdateFoodItem from "../hooks/useUpdateFoodItem";
 import { toast } from "sonner";
+import FoodItemBadge from "./FoodItemBadge";
+import useLayoutStore from "~/features/layout/hooks/useLayoutStore";
+import { cn } from "~/lib/utils";
 
 type Props = {
   foodItemId: string;
@@ -57,6 +59,8 @@ function FoodItemEditForm({ foodItemId }: Props) {
   const inputFileRef = useRef<{
     triggerSubmit: () => Promise<string | null> | undefined;
   }>(null);
+
+  const { isDarkMode } = useLayoutStore();
 
   const form = useForm<FoodItemFormSchema>({
     resolver: zodResolver(foodItemFormSchema),
@@ -178,13 +182,13 @@ function FoodItemEditForm({ foodItemId }: Props) {
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a food type" />
+                      <FoodItemBadge foodItemTypes={field.value} />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent>
+                  <SelectContent className={cn(isDarkMode && "dark")}>
                     {foodTypes.map((foodType) => (
                       <SelectItem key={foodType} value={foodType}>
-                        {foodType.charAt(0).toUpperCase() + foodType.slice(1)}
+                        <FoodItemBadge foodItemTypes={foodType} />
                       </SelectItem>
                     ))}
                   </SelectContent>

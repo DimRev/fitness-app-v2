@@ -73,10 +73,9 @@ function FoodItemsPendingList() {
           </Link>
         </div>
         <div className="gap-3 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 mt-2">
-          <FoodItemPendingPreviewSkeleton />
-          <FoodItemPendingPreviewSkeleton />
-          <FoodItemPendingPreviewSkeleton />
-          <FoodItemPendingPreviewSkeleton />
+          {new Array(4).fill(null).map((_, idx) => (
+            <FoodItemPendingPreviewSkeleton key={idx} />
+          ))}
         </div>
         <ListPaginationButtons
           page={page}
