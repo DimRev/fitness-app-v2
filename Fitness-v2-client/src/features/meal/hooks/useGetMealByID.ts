@@ -16,7 +16,7 @@ function useGetMealByID(
 ): UseQueryResult<MealWithNutritionAndFoodItems, Error> {
   return useQuery<MealWithNutritionAndFoodItems, Error>({
     ...USE_QUERY_DEFAULT_OPTIONS,
-    queryKey: [QUERY_KEYS.MEALS.GET_MEAL_BY_ID, { mealId: params.mealId }],
+    queryKey: [QUERY_KEYS.MEALS.GET_MEAL_BY_ID, { meal_id: params.mealId }],
 
     queryFn: () => getMealByID(params),
     enabled: !!params,
