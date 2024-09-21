@@ -46,11 +46,13 @@ function FoodItemPendingAdminTableRow({
   }
 
   return (
-    <TableRow className={cn(isPending && "opacity-50 hover:bg-transparent")}>
-      <TableCell className="py-2">
+    <TableRow
+      className={cn(isPending && "opacity-50 hover:bg-transparent", "h-[65px]")}
+    >
+      <TableCell>
         <div className="line-clamp-1 break-words">{foodItemPending.name}</div>
       </TableCell>
-      <TableCell className="py-2">
+      <TableCell>
         <HoverCard>
           <HoverCardTrigger asChild>
             <div className="line-clamp-1 break-words">
@@ -60,31 +62,31 @@ function FoodItemPendingAdminTableRow({
           <HoverCardContent>{foodItemPending.description}</HoverCardContent>
         </HoverCard>
       </TableCell>
-      <TableCell className="py-2">
+      <TableCell>
         <div className="line-clamp-1 break-words">
           {foodItemPending.food_type}
         </div>
       </TableCell>
-      <TableCell className="py-2">
+      <TableCell>
         <div className="line-clamp-1 break-words">
           {foodItemPending.calories}
         </div>
       </TableCell>
-      <TableCell className="py-2">
+      <TableCell>
         <div className="line-clamp-1 break-words">{foodItemPending.fat}</div>
       </TableCell>
-      <TableCell className="py-2">
+      <TableCell>
         <div className="line-clamp-1 break-words">
           {foodItemPending.protein}
         </div>
       </TableCell>
-      <TableCell className="py-2">
+      <TableCell>
         <div className="line-clamp-1 break-words">{foodItemPending.carbs}</div>
       </TableCell>
-      <TableCell className="py-2">
+      <TableCell>
         <div className="line-clamp-1 break-words">{foodItemPending.likes}</div>
       </TableCell>
-      <TableCell className="py-2">
+      <TableCell>
         <div className="flex items-center gap-2 line-clamp-1 break-words">
           <Button
             size="icon"
@@ -112,7 +114,7 @@ function FoodItemPendingAdminTableRow({
 
 export function FoodItemPendingAdminTableRowSkeleton() {
   return (
-    <TableRow>
+    <TableRow className="h-[65px]">
       <TableCell>
         <Skeleton className="w-full h-[20px]" />
       </TableCell>
@@ -146,33 +148,33 @@ export function FoodItemPendingAdminTableRowSkeleton() {
 
 export function FoodItemPendingAdminTableRowEmpty() {
   return (
-    <TableRow>
+    <TableRow className="h-[65px]">
       <TableCell>
-        <div className="py-[8px]"></div>
+        <div></div>
       </TableCell>
       <TableCell>
-        <div className="py-[8px]"></div>
+        <div></div>
       </TableCell>
       <TableCell>
-        <div className="py-[8px]"></div>
+        <div></div>
       </TableCell>
       <TableCell>
-        <div className="py-[8px]"></div>
+        <div></div>
       </TableCell>
       <TableCell>
-        <div className="py-[8px]"></div>
+        <div></div>
       </TableCell>
       <TableCell>
-        <div className="py-[8px]"></div>
+        <div></div>
       </TableCell>
       <TableCell>
-        <div className="py-[8px]"></div>
+        <div></div>
       </TableCell>
       <TableCell>
-        <div className="py-[8px]"></div>
+        <div></div>
       </TableCell>
       <TableCell>
-        <div className="py-[8px]"></div>
+        <div></div>
       </TableCell>
     </TableRow>
   );

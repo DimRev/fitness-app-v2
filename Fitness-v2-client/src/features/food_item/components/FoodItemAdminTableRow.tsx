@@ -1,6 +1,7 @@
-import { X } from "lucide-react";
+import { Pencil, X } from "lucide-react";
+import { Link } from "react-router-dom";
 import useLayoutStore from "~/features/layout/hooks/useLayoutStore";
-import { Button } from "~/features/shared/components/ui/button";
+import { Button, buttonVariants } from "~/features/shared/components/ui/button";
 import {
   HoverCard,
   HoverCardContent,
@@ -32,11 +33,13 @@ function FoodItemAdminTableRow({
     );
   }
   return (
-    <TableRow className={cn(isPending && "opacity-50 hover:bg-transparent")}>
-      <TableCell className="py-4">
+    <TableRow
+      className={cn(isPending && "opacity-50 hover:bg-transparent", "h-[65px]")}
+    >
+      <TableCell>
         <div className="line-clamp-1 break-words">{foodItem.name}</div>
       </TableCell>
-      <TableCell className="py-2">
+      <TableCell>
         <HoverCard>
           <HoverCardTrigger asChild>
             <div className="line-clamp-1 break-words">
@@ -46,24 +49,35 @@ function FoodItemAdminTableRow({
           <HoverCardContent>{foodItem.description}</HoverCardContent>
         </HoverCard>
       </TableCell>
-      <TableCell className="py-2">
+      <TableCell>
         <div className="line-clamp-1 break-words">{foodItem.food_type}</div>
       </TableCell>
-      <TableCell className="py-2">
+      <TableCell>
         <div className="line-clamp-1 break-words">{foodItem.calories}</div>
       </TableCell>
-      <TableCell className="py-2">
+      <TableCell>
         <div className="line-clamp-1 break-words">{foodItem.fat}</div>
       </TableCell>
-      <TableCell className="py-2">
+      <TableCell>
         <div className="line-clamp-1 break-words">{foodItem.protein}</div>
       </TableCell>
-      <TableCell className="py-2">
+      <TableCell>
         <div className="line-clamp-1 break-words">{foodItem.carbs}</div>
       </TableCell>
 
-      <TableCell className="py-2">
+      <TableCell>
         <div className="flex items-center gap-2 line-clamp-1 break-words">
+          <Link
+            className={cn(
+              buttonVariants({
+                size: "icon",
+              }),
+              "size-8 rounded-full",
+            )}
+            to={`/admin/food_item/edit/${foodItem.id}`}
+          >
+            <Pencil />
+          </Link>
           <Button
             size="icon"
             className="rounded-full size-8"
@@ -81,7 +95,7 @@ function FoodItemAdminTableRow({
 
 export function FoodItemAdminTableRowSkeleton() {
   return (
-    <TableRow>
+    <TableRow className="h-[65px]">
       <TableCell>
         <Skeleton className="w-full h-[20px]" />
       </TableCell>
@@ -113,26 +127,26 @@ export function FoodItemAdminTableRowSkeleton() {
 export function FoodItemAdminTableRowEmpty() {
   return (
     <TableRow>
-      <TableCell>
-        <div className="py-[10.25px]"></div>
+      <TableCell className="h-[65px]">
+        <div></div>
       </TableCell>
       <TableCell>
-        <div className="py-[10.25px]"></div>
+        <div></div>
       </TableCell>
       <TableCell>
-        <div className="py-[10.25px]"></div>
+        <div></div>
       </TableCell>
       <TableCell>
-        <div className="py-[10.25px]"></div>
+        <div></div>
       </TableCell>
       <TableCell>
-        <div className="py-[10.25px]"></div>
+        <div></div>
       </TableCell>
       <TableCell>
-        <div className="py-[10.25px]"></div>
+        <div></div>
       </TableCell>
       <TableCell>
-        <div className="py-[10.25px]"></div>
+        <div></div>
       </TableCell>
       <TableCell>
         <div className="py-[10.25px]"></div>

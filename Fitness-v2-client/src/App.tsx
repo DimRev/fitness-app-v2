@@ -8,8 +8,9 @@ import GlobalDialogs from "./features/layout/components/GlobalDialogs";
 import useLayoutStore from "./features/layout/hooks/useLayoutStore";
 import useSocket from "./features/socket/hooks/useSocket";
 import AboutPage from "./features/views/components/AboutPage";
-import AdminFoodItemAddPage from "./features/views/components/AdminFoodItemAddPage";
+import AdminFoodItemEditPage from "./features/views/components/AdminFoodItemEditPage";
 import AdminFoodItemPendingPage from "./features/views/components/AdminFoodItemPendingPage";
+import AdminFoodItemPage from "./features/views/components/AdminFoodItemsPage";
 import AdminLayout from "./features/views/components/AdminLayout";
 import AdminOverviewPage from "./features/views/components/AdminOverviewPage";
 import AdminUserPage from "./features/views/components/AdminUserPage";
@@ -29,7 +30,6 @@ import PageNotFound from "./features/views/components/PageNotFound";
 import RegisterPage from "./features/views/components/RegisterPage";
 import TestPage from "./features/views/components/TestPage";
 import { cn } from "./lib/utils";
-import AdminFoodItemPage from "./features/views/components/AdminFoodItemsPage";
 
 const queryClient = new QueryClient();
 
@@ -119,8 +119,8 @@ function App() {
                 />
                 <Route path="food_item" element={<AdminFoodItemPage />} />
                 <Route
-                  path="food_item/add"
-                  element={<AdminFoodItemAddPage />}
+                  path="food_item/edit/:foodItemId"
+                  element={<AdminFoodItemEditPage />}
                 />
               </Route>
               <Route path="/auth" element={<AuthLayout />}>
