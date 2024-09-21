@@ -24,6 +24,10 @@ function useConsumeMeal() {
         QUERY_KEYS.MEALS_CONSUMED.GET_MEALS_CONSUMED_BY_DATE,
         { date: variables.date },
       ]);
+      void queryClient.invalidateQueries([
+        QUERY_KEYS.MEALS.GET_MEAL_BY_ID,
+        { meal_id: variables.meal_id },
+      ]);
     },
   });
 }

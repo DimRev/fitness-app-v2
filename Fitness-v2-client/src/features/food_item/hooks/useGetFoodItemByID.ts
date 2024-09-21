@@ -5,34 +5,28 @@ import useSocket from "~/features/socket/hooks/useSocket";
 import axiosInstance from "~/lib/axios";
 import { QUERY_KEYS, USE_QUERY_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
-type GetFoodItemsPendingRequestBody = {
-  limit: number;
-  offset: number;
-  text_filter?: string | null;
+type GetFoodItemsByIDRequestBody = {
+  food_item_id: string;
 };
 
 type ErrorResponseBody = {
   message: string;
 };
 
-function useGetFoodItemsPending(params: GetFoodItemsPendingRequestBody) {
+function useGetFoodItemsByID(params: GetFoodItemsByIDRequestBody) {
   const { joinSocketGroup, leaveSocketGroup } = useSocket();
   useEffect(() => {
-    void joinSocketGroup(QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING);
+    void joinSocketGroup(QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS_BY_USER_ID);
     return () => {
-      void leaveSocketGroup(
-        QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
-      );
+      void leaveSocketGroup(QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS_BY_USER_ID);
     };
   }, [joinSocketGroup, leaveSocketGroup]);
-  return useQuery<FoodItemsPendingWithPages, Error>({
+  return useQuery<FoodItem, Error>({
     ...USE_QUERY_DEFAULT_OPTIONS,
     queryKey: [
-      QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
+      QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS_BY_USER_ID,
       {
-        limit: params.limit,
-        offset: params.offset,
-        text_filter: params.text_filter,
+        food_item_id: params.food_item_id,
       },
     ],
 
@@ -42,16 +36,11 @@ function useGetFoodItemsPending(params: GetFoodItemsPendingRequestBody) {
 }
 
 async function getFoodItemsPending({
-  limit,
-  offset,
-  text_filter,
-}: GetFoodItemsPendingRequestBody): Promise<FoodItemsPendingWithPages> {
+  food_item_id,
+}: GetFoodItemsByIDRequestBody): Promise<FoodItem> {
   try {
-    const response = await axiosInstance.get<FoodItemsPendingWithPages>(
-      `/food_items_pending`,
-      {
-        params: { limit, offset, text_filter },
-      },
+    const response = await axiosInstance.get<FoodItem>(
+      `/food_items/${food_item_id}`,
     );
     return response.data;
   } catch (error) {
@@ -65,4 +54,4 @@ async function getFoodItemsPending({
   }
 }
 
-export default useGetFoodItemsPending;
+export default useGetFoodItemsByID;

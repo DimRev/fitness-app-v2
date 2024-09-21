@@ -1,64 +1,64 @@
 import axios from "axios";
 import { useMutation, useQueryClient } from "react-query";
+import useSocket from "~/features/socket/hooks/useSocket";
 import axiosInstance from "~/lib/axios";
 import { QUERY_KEYS, USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
-import useSocket from "~/features/socket/hooks/useSocket";
 import { type BroadcastData } from "~/lib/socket";
-import { type FoodItemFormSchema } from "~/features/food_item/foodItem.schema";
+
+type DeleteFoodItemRequestParams = {
+  food_item_id: string;
+};
 
 type ErrorResponseBody = {
   message: string;
 };
 
-function useCreateFoodItemPending() {
+type SuccessResponseBody = {
+  message: string;
+};
+
+function useDeleteFoodItem() {
   const queryClient = useQueryClient();
   const { sendSocketGroupMessage } = useSocket();
-  return useMutation<FoodItemsPending, Error, FoodItemFormSchema>(
-    createFoodItemPending,
+
+  return useMutation<SuccessResponseBody, Error, DeleteFoodItemRequestParams>(
+    deleteFoodItem,
     {
       ...USE_MUTATION_DEFAULT_OPTIONS,
-      onSuccess: () => {
+      onSuccess: (_data) => {
         const invalidateData: BroadcastData = {
-          group: [QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING],
+          group: [
+            QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS,
+            QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS_INF_QUERY,
+          ],
           data: {
             action: "invalidate",
           },
         };
+
         void sendSocketGroupMessage(
-          QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
+          QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS,
           invalidateData,
         );
+
         void queryClient.invalidateQueries([
-          QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
+          QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS,
+        ]);
+
+        void queryClient.invalidateQueries([
+          QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS_INF_QUERY,
         ]);
       },
     },
   );
 }
 
-async function createFoodItemPending({
-  calories,
-  fat,
-  carbs,
-  protein,
-  food_type,
-  description,
-  image_url,
-  name,
-}: FoodItemFormSchema): Promise<FoodItemsPending> {
+async function deleteFoodItem({
+  food_item_id,
+}: DeleteFoodItemRequestParams): Promise<SuccessResponseBody> {
   try {
-    const response = await axiosInstance.post<FoodItemsPending>(
-      `/food_items_pending`,
-      {
-        calories,
-        fat,
-        carbs,
-        protein,
-        food_type,
-        description,
-        image_url,
-        name,
-      },
+    const response = await axiosInstance.delete<SuccessResponseBody>(
+      `/food_items/${food_item_id}`,
     );
     return response.data;
   } catch (error) {
@@ -72,4 +72,4 @@ async function createFoodItemPending({
   }
 }
 
-export default useCreateFoodItemPending;
+export default useDeleteFoodItem;

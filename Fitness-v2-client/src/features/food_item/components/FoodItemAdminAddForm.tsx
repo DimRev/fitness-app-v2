@@ -1,7 +1,7 @@
 import { DashboardContentCards } from "~/features/shared/components/CustomCards";
 
-function FoodItemAddForm() {
+function FoodItemAdminAddForm() {
   return <DashboardContentCards title="Add Meal Form"></DashboardContentCards>;
 }
 
-export default FoodItemAddForm;
+export default FoodItemAdminAddForm;

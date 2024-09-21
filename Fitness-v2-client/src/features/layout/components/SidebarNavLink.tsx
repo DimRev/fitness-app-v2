@@ -19,7 +19,11 @@ function SidebarNavLink({ to, title, LucideIcon, onlyIcon }: Props) {
     if (LocationLen === 2 || toLen === 2) {
       return location.pathname === to;
     } else {
-      return location.pathname.startsWith(to);
+      const pathnameArr = location.pathname.split("/");
+      const toArr = to.split("/");
+      return toArr.every((toItem, index) => {
+        return pathnameArr[index] === toItem;
+      });
     }
   }, [location.pathname, to]);
 
@@ -57,7 +61,7 @@ function SidebarNavLink({ to, title, LucideIcon, onlyIcon }: Props) {
       })}
     >
       <LucideIcon className="me-4 size-4" />
-      {!onlyIcon && <span>{title}</span>}
+      {!onlyIcon && <span className="truncate">{title}</span>}
     </Link>
   );
 }

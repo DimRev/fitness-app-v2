@@ -17,12 +17,16 @@ type MessageActions =
   | "leave-group"
   | "user-notification";
 
+type BroadcastDataAction = "invalidate";
+
 export type BroadcastData = {
-  group: ConstQueryKeys;
+  group: ConstQueryKeys[];
   data: {
-    limit: number;
-    offset: number;
+    action: BroadcastDataAction;
+    limit?: number;
+    offset?: number;
     text_filter?: string | null;
+    food_item_id?: string;
   };
 };
 

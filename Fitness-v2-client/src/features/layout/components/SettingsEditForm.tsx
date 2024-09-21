@@ -1,9 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRef } from "react";
 import { useForm } from "react-hook-form";
-import {
-  settingsEditFormSchema,
-  type SettingsEditFormSchema,
-} from "../layout.schema";
+import { toast } from "sonner";
+import useAuthStore from "~/features/auth/hooks/useAuthStore";
+import { Button } from "~/features/shared/components/ui/button";
 import {
   Form,
   FormControl,
@@ -13,13 +13,13 @@ import {
   FormMessage,
 } from "~/features/shared/components/ui/form";
 import { Input } from "~/features/shared/components/ui/input";
-import { Button } from "~/features/shared/components/ui/button";
-import useUpdateSettings from "../hooks/useUpdateSettings";
-import useAuthStore from "~/features/auth/hooks/useAuthStore";
-import useLayoutStore from "../hooks/useLayoutStore";
-import { useRef } from "react";
 import AvatarImageInput from "~/features/upload/components/AvatarImageInput";
-import { toast } from "sonner";
+import useLayoutStore from "../hooks/useLayoutStore";
+import useUpdateSettings from "../hooks/useUpdateSettings";
+import {
+  settingsEditFormSchema,
+  type SettingsEditFormSchema,
+} from "../layout.schema";
 
 type Props = {
   user: AuthUser;
@@ -34,7 +34,7 @@ function SettingsEditForm({ user }: Props) {
     defaultValues: {
       username: user.username,
       email: user.email,
-      image_url: user.image_url,
+      image_url: user.image_url ?? null,
     },
   });
 
@@ -50,11 +50,12 @@ function SettingsEditForm({ user }: Props) {
   async function onSubmit(data: SettingsEditFormSchema) {
     if (inputFileRef.current) {
       const imageUrl = await inputFileRef.current.triggerSubmit();
+
       void updateSettings(
         {
           email: data.email,
           username: data.username,
-          image_url: imageUrl ? `${imageUrl}` : null,
+          image_url: imageUrl ?? null,
         },
         {
           onSuccess: (res) => {
@@ -123,7 +124,7 @@ function SettingsEditForm({ user }: Props) {
         {isError && (
           <div className="font-bold text-destructive">{error.message}</div>
         )}
-        <div className="mt-4 flex justify-end">
+        <div className="flex justify-end mt-4">
           <Button type="submit" disabled={isUpdateSettingsLoading}>
             {isUpdateSettingsLoading ? "Updating..." : "Update Settings"}
           </Button>

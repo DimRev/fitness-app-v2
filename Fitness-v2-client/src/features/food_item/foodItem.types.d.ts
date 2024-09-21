@@ -15,4 +15,5 @@ type FoodItemType = "vegetable" | "fruit" | "grain" | "protein";
 type FoodItemWithPages = {
   food_items: FoodItem[];
   total_pages: number;
+  total_items: number;
 };

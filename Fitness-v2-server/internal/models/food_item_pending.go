@@ -10,8 +10,8 @@ import (
 type FoodItemsPending struct {
 	ID          uuid.UUID             `json:"id"`
 	Name        string                `json:"name"`
-	Description *string               `json:"description"`
-	ImageUrl    *string               `json:"image_url"`
+	Description *string               `json:"description,omitempty"`
+	ImageUrl    *string               `json:"image_url,omitempty"`
 	FoodType    database.FoodItemType `json:"food_type"`
 	Calories    string                `json:"calories"`
 	Fat         string                `json:"fat"`

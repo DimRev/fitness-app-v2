@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "react-query";
 import useSocket from "~/features/socket/hooks/useSocket";
 import axiosInstance from "~/lib/axios";
 import { QUERY_KEYS, USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
+import { type BroadcastData } from "~/lib/socket";
 
 type RejectFoodItemPendingRequestParams = {
   food_item_pending_id: string;
@@ -29,13 +30,15 @@ function useRejectFoodItemPending() {
   >(rejectFoodItemPending, {
     ...USE_MUTATION_DEFAULT_OPTIONS,
     onSuccess: (_data) => {
-      const stringifiedData = JSON.stringify({
-        group: QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
-        data: {},
-      });
+      const invalidateData: BroadcastData = {
+        group: [QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING],
+        data: {
+          action: "invalidate",
+        },
+      };
       void sendSocketGroupMessage(
         QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
-        `"${stringifiedData}"`,
+        invalidateData,
       );
 
       void queryClient.invalidateQueries([

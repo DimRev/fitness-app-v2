@@ -20,9 +20,9 @@ type SocketActions = {
   sendSocketMessage: (msg: string) => Promise<void>;
   joinSocketGroup: (group: string) => Promise<void>;
   leaveSocketGroup: (group: string) => Promise<void>;
-  sendSocketGroupMessage: (group: string, msg: string) => Promise<void>;
-  sendSocketAllGroupsMessage: (msg: string) => Promise<void>;
-  sendSocketGlobalMessage: (msg: string) => Promise<void>;
+  sendSocketGroupMessage: (group: string, msg: BroadcastData) => Promise<void>;
+  sendSocketAllGroupsMessage: (msg: BroadcastData) => Promise<void>;
+  sendSocketGlobalMessage: (msg: BroadcastData) => Promise<void>;
   signInSocket: (email: string) => Promise<void>;
   signOutSocket: () => Promise<void>;
 };
@@ -84,25 +84,30 @@ const useSocket = create<SocketStore>((set, get, store) => ({
     const message: Message = { action: "leave-group", data: group };
     await sendMessage(store, message);
   },
-  sendSocketGroupMessage: async (group: string, data: string) => {
+  sendSocketGroupMessage: async (group: string, data: BroadcastData) => {
+    const stringifiedData = JSON.stringify(data);
+
     const message: Message = {
       action: "broadcast-group",
-      data: data,
+      data: stringifiedData,
       group: group,
     };
     await sendMessage(store, message);
   },
-  sendSocketAllGroupsMessage: async (msg: string) => {
+  sendSocketAllGroupsMessage: async (msg: BroadcastData) => {
+    const stringifiedMsg = JSON.stringify(msg);
     const message: Message = {
       action: "broadcast-all",
-      data: msg,
+      data: stringifiedMsg,
     };
     await sendMessage(store, message);
   },
-  sendSocketGlobalMessage: async (msg: string) => {
+  sendSocketGlobalMessage: async (msg: BroadcastData) => {
+    const stringifiedMsg = JSON.stringify(msg);
+
     const message: Message = {
       action: "broadcast-global",
-      data: msg,
+      data: stringifiedMsg,
     };
     await sendMessage(store, message);
   },
@@ -181,24 +186,34 @@ function handleBroadcasts(
   if (import.meta.env.MODE === "development") {
     console.log("<-(ws) Broadcast:", broadcastData);
   }
-  switch (broadcastData.group) {
-    case QUERY_KEYS.USERS.GET_USERS:
-      void queryClient.invalidateQueries([
-        QUERY_KEYS.USERS.GET_USERS,
-        broadcastData.data,
-      ]);
-      break;
-    case QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS:
-      void queryClient.invalidateQueries([
-        QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS,
-        broadcastData.data,
-      ]);
-      break;
-    case QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING:
-      void queryClient.invalidateQueries([
-        QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
-        broadcastData.data,
-      ]);
+  if (broadcastData.data.action === "invalidate") {
+    for (const group of broadcastData.group) {
+      const params = {
+        limit: broadcastData.data.limit,
+        offset: broadcastData.data.offset,
+        text_filter: broadcastData.data.text_filter,
+      };
+      void queryClient.invalidateQueries([group, params]);
+      // switch (group) {
+      //   case QUERY_KEYS.USERS.GET_USERS:
+      //     void queryClient.invalidateQueries([
+      //       QUERY_KEYS.USERS.GET_USERS,
+      //       broadcastData.data,
+      //     ]);
+      //     break;
+      //   case QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS_INF_QUERY:
+      //     void queryClient.invalidateQueries([
+      //       QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS_INF_QUERY,
+      //       broadcastData.data,
+      //     ]);
+      //     break;
+      //   case QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING:
+      //     void queryClient.invalidateQueries([
+      //       QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
+      //       broadcastData.data,
+      //     ]);
+      // }
+    }
   }
 }
 
