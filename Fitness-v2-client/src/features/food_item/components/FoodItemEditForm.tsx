@@ -1,8 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { DashboardContentCards } from "~/features/shared/components/CustomCards";
-import { Button } from "~/features/shared/components/ui/button";
 import {
   Form,
   FormControl,
@@ -20,24 +20,38 @@ import {
   SelectValue,
 } from "~/features/shared/components/ui/select";
 import { Textarea } from "~/features/shared/components/ui/textarea";
-
-import useCreateFoodItemPending from "../hooks/useCreateFoodItemPending";
 import FoodItemImageInput from "~/features/upload/components/FoodItemImageInput";
-import { useRef } from "react";
-import { toast } from "sonner";
 import {
   foodItemFormSchema,
-  type FoodItemFormSchema,
   foodTypes,
-} from "~/features/food_item/foodItem.schema";
+  type FoodItemFormSchema,
+} from "../foodItem.schema";
+import useGetFoodItemsByID from "../hooks/useGetFoodItemByID";
+import { Button } from "~/features/shared/components/ui/button";
+import useUpdateFoodItem from "../hooks/useUpdateFoodItem";
+import { toast } from "sonner";
 
-function FoodItemPendingAddForm() {
+type Props = {
+  foodItemId: string;
+};
+
+function FoodItemEditForm({ foodItemId }: Props) {
   const {
-    mutateAsync: createFoodItemPending,
+    data: foodItem,
+    isLoading: isLoadingFoodItem,
+    isError: isGetFoodItemError,
+    error: getFoodItemError,
+  } = useGetFoodItemsByID({
+    food_item_id: foodItemId,
+  });
+
+  const {
+    mutateAsync: updateFoodItem,
     isLoading: isPending,
     isError,
     error,
-  } = useCreateFoodItemPending();
+  } = useUpdateFoodItem();
+
   const navigate = useNavigate();
 
   const inputFileRef = useRef<{
@@ -58,25 +72,52 @@ function FoodItemPendingAddForm() {
     },
   });
 
+  useEffect(() => {
+    if (foodItem) {
+      form.reset({
+        name: foodItem.name,
+        description: foodItem.description,
+        image_url: foodItem.image_url,
+        food_type: foodItem.food_type,
+        calories: foodItem.calories,
+        fat: foodItem.fat,
+        protein: foodItem.protein,
+        carbs: foodItem.carbs,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [foodItem]);
+
   async function onSubmit(data: FoodItemFormSchema) {
     if (inputFileRef.current) {
       const imageUrl = await inputFileRef.current.triggerSubmit();
-      void createFoodItemPending(
+      void updateFoodItem(
         {
-          ...data,
-          image_url: imageUrl ? `${imageUrl}` : null,
+          food_item_id: foodItemId,
+          name: data.name,
+          calories: data.calories,
+          fat: data.fat,
+          carbs: data.carbs,
+          protein: data.protein,
+          food_type: data.food_type,
+          description: data.description,
+          image_url: imageUrl
+            ? `${imageUrl}`
+            : foodItem?.image_url
+              ? `${foodItem.image_url}`
+              : null,
         },
         {
           onSuccess: (res) => {
             void form.reset();
-            toast.success("Successfully created food item", {
+            toast.success("Successfully updated food item", {
               dismissible: true,
-              description: `Created: ${res.food_type} | ${res.name}`,
+              description: `Updated: ${res.name}`,
             });
-            navigate("/dashboard/food_item");
+            navigate(`/admin/food_item`);
           },
           onError: (err) => {
-            toast.error("Failed to create food item", {
+            toast.error("Failed to update food item", {
               dismissible: true,
               description: `Error: ${err.message}`,
             });
@@ -84,6 +125,14 @@ function FoodItemPendingAddForm() {
         },
       );
     }
+  }
+
+  if (isLoadingFoodItem) {
+    return <div>Loading...</div>;
+  }
+
+  if (isGetFoodItemError || !foodItem) {
+    return <div>Error loading meal, {getFoodItemError?.message}</div>;
   }
 
   return (
@@ -151,6 +200,7 @@ function FoodItemPendingAddForm() {
 
           <FoodItemImageInput
             label="Image"
+            initImageUrl={foodItem?.image_url ?? undefined}
             ref={inputFileRef}
             size={1024 * 1024 * 2}
           />
@@ -223,4 +273,4 @@ function FoodItemPendingAddForm() {
   );
 }
 
-export default FoodItemPendingAddForm;
+export default FoodItemEditForm;

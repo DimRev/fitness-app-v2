@@ -2,6 +2,7 @@ import { Edit } from "lucide-react";
 import { useParams } from "react-router-dom";
 import DashboardPageWrapper from "./DashboardPageWrapper";
 import useGetFoodItemsByID from "~/features/food_item/hooks/useGetFoodItemByID";
+import FoodItemEditForm from "~/features/food_item/components/FoodItemEditForm";
 
 function AdminFoodItemEditPage() {
   const { foodItemId } = useParams();
@@ -18,7 +19,7 @@ function AdminFoodItemEditPage() {
       LucideIcon={Edit}
       to="/admin/food_item/edit"
     >
-      {foodItemId ? <div>{foodItemId}</div> : <div>No meal id</div>}
+      {foodItemId ? <FoodItemEditForm foodItemId={foodItemId} /> : null}
     </DashboardPageWrapper>
   );
 }

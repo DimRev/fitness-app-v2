@@ -2,9 +2,9 @@ import axios from "axios";
 import { useMutation, useQueryClient } from "react-query";
 import axiosInstance from "~/lib/axios";
 import { QUERY_KEYS, USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
-import { type FoodItemPendingFormSchema } from "../foodItemsPending.schema";
 import useSocket from "~/features/socket/hooks/useSocket";
 import { type BroadcastData } from "~/lib/socket";
+import { type FoodItemFormSchema } from "~/features/food_item/foodItem.schema";
 
 type ErrorResponseBody = {
   message: string;
@@ -13,7 +13,7 @@ type ErrorResponseBody = {
 function useCreateFoodItemPending() {
   const queryClient = useQueryClient();
   const { sendSocketGroupMessage } = useSocket();
-  return useMutation<FoodItemsPending, Error, FoodItemPendingFormSchema>(
+  return useMutation<FoodItemsPending, Error, FoodItemFormSchema>(
     createFoodItemPending,
     {
       ...USE_MUTATION_DEFAULT_OPTIONS,
@@ -45,7 +45,7 @@ async function createFoodItemPending({
   description,
   image_url,
   name,
-}: FoodItemPendingFormSchema): Promise<FoodItemsPending> {
+}: FoodItemFormSchema): Promise<FoodItemsPending> {
   try {
     const response = await axiosInstance.post<FoodItemsPending>(
       `/food_items_pending`,

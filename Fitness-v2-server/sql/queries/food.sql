@@ -58,3 +58,16 @@ RETURNING *;
 -- name: GetFoodItemByID :one
 SELECT * FROM food_items
 WHERE id = $1;
+
+-- name: UpdateFoodItem :one
+UPDATE food_items
+SET name = $1,
+    description = $2,
+    image_url = $3,
+    food_type = $4,
+    calories = $5,
+    fat = $6,
+    protein = $7,
+    carbs = $8
+WHERE id = $9
+RETURNING *;

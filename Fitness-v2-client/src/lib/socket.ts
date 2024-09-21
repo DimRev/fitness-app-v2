@@ -26,6 +26,7 @@ export type BroadcastData = {
     limit?: number;
     offset?: number;
     text_filter?: string | null;
+    food_item_id?: string;
   };
 };
 
