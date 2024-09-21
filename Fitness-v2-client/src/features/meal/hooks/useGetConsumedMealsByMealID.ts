@@ -18,7 +18,7 @@ function useGetConsumedMealsByMealID(
     ...USE_QUERY_DEFAULT_OPTIONS,
     queryKey: [
       QUERY_KEYS.MEALS_CONSUMED.GET_MEALS_CONSUMED_BY_MEAL_ID,
-      { mealId: params.mealId },
+      { meal_id: params.mealId },
     ],
 
     queryFn: () => getConsumedMealsByMealID(params),
