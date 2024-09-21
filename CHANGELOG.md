@@ -1,3 +1,11 @@
+## [0.8.1](https://github.com/DimRev/fitness-app-v2/compare/v0.8.0...v0.8.1) (2024-09-21)
+
+
+### Bug Fixes
+
+* Add FoodItemBadge, and food item/food item pending cards ([8381ef9](https://github.com/DimRev/fitness-app-v2/commit/8381ef9ebedc0754b3290740165fa7b55d80a3f9))
+* FoodItemPreview card style fixed ([79a84b3](https://github.com/DimRev/fitness-app-v2/commit/79a84b39a69824d9e6b1d6c7bb9c12d555b4f6f0))
+
 # [0.8.0](https://github.com/DimRev/fitness-app-v2/compare/v0.7.0...v0.8.0) (2024-09-21)
 
 
