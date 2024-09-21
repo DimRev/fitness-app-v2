@@ -7,6 +7,7 @@ import {
   CardHeader,
 } from "~/features/shared/components/ui/card";
 import { Skeleton } from "~/features/shared/components/ui/skeleton";
+import FoodItemBadge from "~/features/food_item/components/FoodItemBadge";
 
 type Props = {
   foodItemPending: FoodItemsPending;
@@ -24,14 +25,15 @@ function FoodItemPendingPreview({
   return (
     <Card>
       <CardHeader>
-        <H3>
-          {foodItemPending.name} | {foodItemPending.food_type}
-        </H3>
+        <div className="flex justify-between items-center">
+          <H3>{foodItemPending.name}</H3>
+          <FoodItemBadge foodItemTypes={foodItemPending.food_type} />
+        </div>
       </CardHeader>
       <CardContent>
         <div className="gap-2 grid grid-cols-[4fr_2fr]">
           <div className="relative p-2 border rounded-md">
-            <div className="z-20 absolute inset-0 bg-black/70 backdrop-blur-[1px] p-1 rounded-md h-[100%]">
+            <div className="z-20 absolute inset-0 bg-white/70 dark:bg-black/70 backdrop-blur-[1px] p-1 rounded-md h-[100%]">
               <div className="line-clamp-6">{foodItemPending.description}</div>
             </div>
             <div className="z-10 absolute inset-0 flex justify-center items-center border rounded-md w-full h-[100%]">
@@ -98,7 +100,7 @@ export function FoodItemPendingPreviewSkeleton() {
       <CardContent>
         <div className="gap-2 grid grid-cols-[4fr_2fr]">
           <div className="relative p-2 border rounded-md">
-            <div className="z-20 absolute inset-0 bg-black/70 backdrop-blur-[1px] p-1 rounded-md h-[100%]">
+            <div className="z-20 absolute inset-0 bg-white/70 dark:bg-black/70 backdrop-blur-[1px] p-1 rounded-md h-[100%]">
               <Skeleton className="mt-2 w-[99%] h-4" />
               <Skeleton className="mt-2 w-[93%] h-4" />
               <Skeleton className="mt-2 w-[89%] h-4" />
@@ -174,7 +176,7 @@ export function FoodItemPendingPreviewEmpty() {
       <CardContent>
         <div className="gap-2 grid grid-cols-[4fr_2fr]">
           <div className="relative p-2 border rounded-md">
-            <div className="z-20 absolute inset-0 bg-black/70 backdrop-blur-[1px] p-1 rounded-md h-[100%]">
+            <div className="z-20 absolute inset-0 bg-white/70 dark:bg-black/70 backdrop-blur-[1px] p-1 rounded-md h-[100%]">
               N/A
             </div>
 

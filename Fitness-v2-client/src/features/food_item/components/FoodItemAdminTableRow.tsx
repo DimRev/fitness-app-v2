@@ -10,6 +10,7 @@ import {
 import { Skeleton } from "~/features/shared/components/ui/skeleton";
 import { TableCell, TableRow } from "~/features/shared/components/ui/table";
 import { cn } from "~/lib/utils";
+import FoodItemBadge from "./FoodItemBadge";
 
 type Props = {
   foodItem: FoodItem;
@@ -50,7 +51,7 @@ function FoodItemAdminTableRow({
         </HoverCard>
       </TableCell>
       <TableCell>
-        <div className="line-clamp-1 break-words">{foodItem.food_type}</div>
+        <FoodItemBadge foodItemTypes={foodItem.food_type} />
       </TableCell>
       <TableCell>
         <div className="line-clamp-1 break-words">{foodItem.calories}</div>

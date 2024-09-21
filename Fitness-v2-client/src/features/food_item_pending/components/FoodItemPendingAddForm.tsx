@@ -17,7 +17,6 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "~/features/shared/components/ui/select";
 import { Textarea } from "~/features/shared/components/ui/textarea";
 
@@ -30,6 +29,9 @@ import {
   type FoodItemFormSchema,
   foodTypes,
 } from "~/features/food_item/foodItem.schema";
+import FoodItemBadge from "~/features/food_item/components/FoodItemBadge";
+import { cn } from "~/lib/utils";
+import useLayoutStore from "~/features/layout/hooks/useLayoutStore";
 
 function FoodItemPendingAddForm() {
   const {
@@ -39,6 +41,8 @@ function FoodItemPendingAddForm() {
     error,
   } = useCreateFoodItemPending();
   const navigate = useNavigate();
+
+  const { isDarkMode } = useLayoutStore();
 
   const inputFileRef = useRef<{
     triggerSubmit: () => Promise<string | null> | undefined;
@@ -133,13 +137,13 @@ function FoodItemPendingAddForm() {
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a food type" />
+                      <FoodItemBadge foodItemTypes={field.value} />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent>
+                  <SelectContent className={cn(isDarkMode && "dark")}>
                     {foodTypes.map((foodType) => (
                       <SelectItem key={foodType} value={foodType}>
-                        {foodType.charAt(0).toUpperCase() + foodType.slice(1)}
+                        <FoodItemBadge foodItemTypes={foodType} />
                       </SelectItem>
                     ))}
                   </SelectContent>
