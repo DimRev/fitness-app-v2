@@ -21,7 +21,7 @@ type Props = {
 const FoodItemImageInput = forwardRef(
   ({ accepts, size, initImageUrl, label }: Props, ref) => {
     const [file, setFile] = useState<File | undefined>(undefined);
-    const [fileUrl, setFileUrl] = useState<string | undefined>(initImageUrl);
+    const [fileUrl, setFileUrl] = useState<string | null>(initImageUrl ?? null);
     const [fileError, setFileError] = useState<string | undefined>(undefined);
     const inputRef = useRef<HTMLInputElement>(null);
     const {
@@ -64,13 +64,13 @@ const FoodItemImageInput = forwardRef(
         await handleSubmit();
         setFileUrl(url);
       } else {
-        setFileUrl(undefined);
+        setFileUrl(null);
       }
     }
 
     function handleRemove() {
       setFile(undefined);
-      setFileUrl(undefined);
+      setFileUrl(null);
       if (inputRef.current) {
         inputRef.current.value = "";
       }
@@ -78,7 +78,7 @@ const FoodItemImageInput = forwardRef(
 
     async function handleSubmit() {
       if (!file) {
-        return Promise.resolve(null);
+        return Promise.resolve(fileUrl);
       }
       const checkSum = await computeCheckSum(file);
 

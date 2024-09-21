@@ -110,7 +110,14 @@ func UpdateUser(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized")
 	}
 
-	if user.ImageUrl.Valid {
+	// Remove existing S3 asset if
+	// Image url already exists AND
+	// Image upload comes with no image url
+	// Image upload comes with an image url that is different from the existing one
+	if user.ImageUrl.Valid &&
+		updateUserReq.ImageUrl == nil ||
+		updateUserReq.ImageUrl != nil &&
+			*updateUserReq.ImageUrl != user.ImageUrl.String {
 		err := services.RemoveExistingS3Asset(user.ImageUrl.String)
 		if err != nil {
 			log.Printf("Failed to remove existing S3 asset: %s", err)

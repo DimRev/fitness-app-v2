@@ -3,6 +3,7 @@ package controllers
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"math"
 	"net/http"
 	"strconv"
@@ -11,6 +12,7 @@ import (
 	"github.com/DimRev/Fitness-v2-server/internal/config"
 	"github.com/DimRev/Fitness-v2-server/internal/database"
 	"github.com/DimRev/Fitness-v2-server/internal/models"
+	"github.com/DimRev/Fitness-v2-server/internal/services"
 	"github.com/DimRev/Fitness-v2-server/internal/utils"
 	"github.com/google/uuid"
 	"github.com/jackc/pgconn"
@@ -542,6 +544,32 @@ func UpdateFoodItem(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
 			"message": "Failed to update food item, malformed request",
 		})
+	}
+
+	foodItem, err := config.Queries.GetFoodItemByID(c.Request().Context(), foodItemId)
+	if err != nil {
+		utils.FmtLogError(
+			"food_item_controllers.go",
+			"UpdateFoodItem",
+			fmt.Errorf("failed to get food item by id: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to update food item, trouble with server",
+		})
+	}
+
+	// Remove existing S3 asset if
+	// Image url already exists AND
+	// Image upload comes with no image url
+	// Image upload comes with an image url that is different from the existing one
+	if foodItem.ImageUrl.Valid &&
+		updateFoodItemReq.ImageUrl == nil ||
+		(updateFoodItemReq.ImageUrl != nil &&
+			*updateFoodItemReq.ImageUrl != foodItem.ImageUrl.String) {
+		err := services.RemoveExistingS3Asset(foodItem.ImageUrl.String)
+		if err != nil {
+			log.Printf("Failed to remove existing S3 asset: %s", err)
+		}
 	}
 
 	var description sql.NullString

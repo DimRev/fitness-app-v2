@@ -101,11 +101,7 @@ function FoodItemEditForm({ foodItemId }: Props) {
           protein: data.protein,
           food_type: data.food_type,
           description: data.description,
-          image_url: imageUrl
-            ? `${imageUrl}`
-            : foodItem?.image_url
-              ? `${foodItem.image_url}`
-              : null,
+          image_url: imageUrl ?? null,
         },
         {
           onSuccess: (res) => {
