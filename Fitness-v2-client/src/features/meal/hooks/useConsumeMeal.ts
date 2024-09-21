@@ -12,6 +12,11 @@ type ErrorResponseBody = {
   message: string;
 };
 
+/*FIXME: 
+  - Triggering meal consumption doesn't invalidate the right queries
+  - Clicking consume meal doesn't effect the correct date
+  - Test this function, and fix it.
+*/
 function useConsumeMeal() {
   const queryClient = useQueryClient();
   return useMutation<ConsumedMeal, Error, ConsumeMealRequestBody>(consumeMeal, {

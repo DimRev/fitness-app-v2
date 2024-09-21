@@ -188,31 +188,13 @@ function handleBroadcasts(
   }
   if (broadcastData.data.action === "invalidate") {
     for (const group of broadcastData.group) {
-      const params = {
-        limit: broadcastData.data.limit,
-        offset: broadcastData.data.offset,
-        text_filter: broadcastData.data.text_filter,
-      };
+      const params: Record<string, string | number | null> = {};
+      for (const [key, value] of Object.entries(broadcastData.data)) {
+        if (value && key !== "action") {
+          params[key] = value;
+        }
+      }
       void queryClient.invalidateQueries([group, params]);
-      // switch (group) {
-      //   case QUERY_KEYS.USERS.GET_USERS:
-      //     void queryClient.invalidateQueries([
-      //       QUERY_KEYS.USERS.GET_USERS,
-      //       broadcastData.data,
-      //     ]);
-      //     break;
-      //   case QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS_INF_QUERY:
-      //     void queryClient.invalidateQueries([
-      //       QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS_INF_QUERY,
-      //       broadcastData.data,
-      //     ]);
-      //     break;
-      //   case QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING:
-      //     void queryClient.invalidateQueries([
-      //       QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
-      //       broadcastData.data,
-      //     ]);
-      // }
     }
   }
 }
