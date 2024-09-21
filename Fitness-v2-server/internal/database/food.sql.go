@@ -100,6 +100,30 @@ func (q *Queries) DeleteFoodItem(ctx context.Context, id uuid.UUID) (FoodItem, e
 	return i, err
 }
 
+const getFoodItemByID = `-- name: GetFoodItemByID :one
+SELECT id, name, description, image_url, food_type, calories, fat, protein, carbs, created_at, updated_at FROM food_items
+WHERE id = $1
+`
+
+func (q *Queries) GetFoodItemByID(ctx context.Context, id uuid.UUID) (FoodItem, error) {
+	row := q.db.QueryRowContext(ctx, getFoodItemByID, id)
+	var i FoodItem
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.ImageUrl,
+		&i.FoodType,
+		&i.Calories,
+		&i.Fat,
+		&i.Protein,
+		&i.Carbs,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getFoodItemsByMealID = `-- name: GetFoodItemsByMealID :many
 SELECT rmf.meal_id, rmf.food_item_id, rmf.user_id, rmf.amount, fi.id, fi.name, fi.description, fi.image_url, fi.food_type, fi.calories, fi.fat, fi.protein, fi.carbs, fi.created_at, fi.updated_at
 FROM rel_meal_food rmf

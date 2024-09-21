@@ -366,7 +366,7 @@ func CreateFoodItem(c echo.Context) error {
 }
 
 func DeleteFoodItem(c echo.Context) error {
-	if user, ok := c.Get("user").(database.User); !ok && user.Role != database.UserRoleAdmin {
+	if _, ok := c.Get("user").(database.User); !ok {
 		utils.FmtLogError(
 			"food_item_controllers.go",
 			"DeleteFoodItem",
@@ -426,4 +426,77 @@ func DeleteFoodItem(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]string{
 		"message": fmt.Sprintf("Successfully deleted food item with id: %s", foodItem.Name),
 	})
+}
+
+func GetFoodItemByID(c echo.Context) error {
+	if user, ok := c.Get("user").(database.User); !ok && user.Role != database.UserRoleAdmin {
+		utils.FmtLogError(
+			"food_item_controllers.go",
+			"GetFoodItemByID",
+			fmt.Errorf("reached get food item by id without user"),
+		)
+		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
+			"message": "Failed to get food item by id, unauthorized",
+		})
+	}
+
+	foodItemID, err := uuid.Parse(c.Param("food_item_id"))
+	if err != nil {
+		utils.FmtLogError(
+			"food_item_controllers.go",
+			"GetFoodItemByID",
+			fmt.Errorf("failed to parse food item id: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to get food item by id, malformed request",
+		})
+	}
+
+	if err := config.DB.Ping(); err != nil {
+		utils.FmtLogError(
+			"food_item_controllers.go",
+			"GetFoodItemByID",
+			fmt.Errorf("connection to database failed : %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to get food item by id, trouble with server",
+		})
+	}
+
+	foodItem, err := config.Queries.GetFoodItemByID(c.Request().Context(), foodItemID)
+	if err != nil {
+		utils.FmtLogError(
+			"food_item_controllers.go",
+			"GetFoodItemByID",
+			fmt.Errorf("failed to get food item by id: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusNotFound, map[string]string{
+			"message": "Failed to get food item by id, trouble with server",
+		})
+	}
+
+	var description *string
+	if foodItem.Description.Valid {
+		description = &foodItem.Description.String
+	}
+	var imageUrl *string
+	if foodItem.ImageUrl.Valid {
+		imageUrl = &foodItem.ImageUrl.String
+	}
+
+	foodItemResp := models.FoodItem{
+		ID:          foodItem.ID,
+		Name:        foodItem.Name,
+		Description: description,
+		ImageUrl:    imageUrl,
+		FoodType:    foodItem.FoodType,
+		Calories:    foodItem.Calories,
+		Fat:         foodItem.Fat,
+		Protein:     foodItem.Protein,
+		Carbs:       foodItem.Carbs,
+		CreatedAt:   foodItem.CreatedAt.Time,
+		UpdatedAt:   foodItem.UpdatedAt.Time,
+	}
+
+	return c.JSON(http.StatusOK, foodItemResp)
 }

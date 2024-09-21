@@ -1,4 +1,4 @@
-import { type UseQueryOptions, type UseMutationOptions } from "react-query";
+import { type UseMutationOptions, type UseQueryOptions } from "react-query";
 
 export const USE_MUTATION_DEFAULT_OPTIONS: UseMutationOptions<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,6 +35,7 @@ export const QUERY_KEYS = {
   FOOD_ITEMS: {
     GET_FOOD_ITEMS_INF_QUERY: "getFoodItemsInfiniteQuery",
     GET_FOOD_ITEMS: "getFoodItems",
+    GET_FOOD_ITEMS_BY_USER_ID: "getFoodItemsByUserID",
   },
   FOOD_ITEMS_PENDING: {
     GET_FOOD_ITEMS_PENDING: "getFoodItemsPending",

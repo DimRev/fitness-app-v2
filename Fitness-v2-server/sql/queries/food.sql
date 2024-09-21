@@ -54,3 +54,7 @@ AND rmf.user_id = $2;
 DELETE FROM food_items
 WHERE id = $1
 RETURNING *;
+
+-- name: GetFoodItemByID :one
+SELECT * FROM food_items
+WHERE id = $1;
