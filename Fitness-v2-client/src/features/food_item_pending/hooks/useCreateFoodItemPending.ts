@@ -4,6 +4,7 @@ import axiosInstance from "~/lib/axios";
 import { QUERY_KEYS, USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 import { type FoodItemPendingFormSchema } from "../foodItemsPending.schema";
 import useSocket from "~/features/socket/hooks/useSocket";
+import { type BroadcastData } from "~/lib/socket";
 
 type ErrorResponseBody = {
   message: string;
@@ -17,13 +18,15 @@ function useCreateFoodItemPending() {
     {
       ...USE_MUTATION_DEFAULT_OPTIONS,
       onSuccess: () => {
-        const stringifiedData = JSON.stringify({
-          group: QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
-          data: {},
-        });
+        const invalidateData: BroadcastData = {
+          group: [QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING],
+          data: {
+            action: "invalidate",
+          },
+        };
         void sendSocketGroupMessage(
           QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
-          `"${stringifiedData}"`,
+          invalidateData,
         );
         void queryClient.invalidateQueries([
           QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
