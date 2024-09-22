@@ -30,6 +30,22 @@ func (q *Queries) DeleteFoodItemsByMealID(ctx context.Context, arg DeleteFoodIte
 	return err
 }
 
+const deleteMeal = `-- name: DeleteMeal :exec
+DELETE FROM meals
+WHERE id = $1 
+AND user_id = $2
+`
+
+type DeleteMealParams struct {
+	ID     uuid.UUID
+	UserID uuid.UUID
+}
+
+func (q *Queries) DeleteMeal(ctx context.Context, arg DeleteMealParams) error {
+	_, err := q.db.ExecContext(ctx, deleteMeal, arg.ID, arg.UserID)
+	return err
+}
+
 const getConsumedMealsByDate = `-- name: GetConsumedMealsByDate :many
 SELECT user_id, meal_id, date, created_at, updated_at FROM meal_consumed
 WHERE date = $1

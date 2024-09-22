@@ -86,6 +86,11 @@ SET name = $2,
 WHERE id = $1
 RETURNING *;
 
+-- name: DeleteMeal :exec
+DELETE FROM meals
+WHERE id = $1 
+AND user_id = $2;
+
 -- name: DeleteFoodItemsByMealID :exec
 DELETE FROM rel_meal_food
 WHERE meal_id = $1
@@ -114,4 +119,3 @@ WHERE NOT EXISTS (
   SELECT 1 FROM deleted
 )
 RETURNING *; -- Return 'inserted' if a row was inserted
-

@@ -19,6 +19,7 @@ import { cn } from "~/lib/utils";
 import useGetConsumedMealsByMealID from "../hooks/useGetConsumedMealsByMealID";
 import useToggleToggleConsumeMeal from "../hooks/useToggleConsumeMeal";
 import { toast } from "sonner";
+import useDeleteMeal from "../hooks/useDeleteMeal";
 
 type Props = {
   mealWithNutrition: MealWithNutrition;
@@ -37,9 +38,8 @@ function MealPreview({ mealWithNutrition }: Props) {
     mealId: mealWithNutrition.meal.id,
   });
 
-  console.log(consumedMeals);
-
   const { mutateAsync: toggleConsumeMeal } = useToggleToggleConsumeMeal();
+  const { mutateAsync: deleteMeal } = useDeleteMeal();
 
   const navigate = useNavigate();
 
@@ -83,61 +83,28 @@ function MealPreview({ mealWithNutrition }: Props) {
         },
       },
     );
+  }
 
-    // if (date.length > selectedDates.length) {
-    //   const diff = date.filter((d) => !selectedDates.includes(d))[0];
-    //   void consumeMeal(
-    //     {
-    //       meal_id: mealWithNutrition.meal.id,
-    //       date: diff.toISOString().split("T")[0],
-    //     },
-    //     {
-    //       onSuccess: () => {
-    //         setSelectedDates([...selectedDates, diff]);
-    //         toast.success("Successfully recorded!", {
-    //           dismissible: true,
-    //           description: `Consumed ${mealWithNutrition.meal.name} on ${diff.toDateString()}`,
-    //         });
-    //         setIsOpen(false);
-    //       },
-    //       onError: (err) => {
-    //         toast.error("Failed to consume", {
-    //           dismissible: true,
-    //           description: `Error: ${err.message}`,
-    //         });
-    //       },
-    //     },
-    //   );
-    // } else {
-    //   const diff = selectedDates.filter((d) => !date.includes(d))[0];
-    //   const id = consumedMeals?.find(
-    //     (m) => m.date.split("T")[0] === diff.toISOString().split("T")[0],
-    //   )?.id;
-
-    //   void removeConsumedMeal(
-    //     {
-    //       id: id!,
-    //       meal_id: mealWithNutrition.meal.id,
-    //       date: diff.toISOString().split("T")[0],
-    //     },
-    //     {
-    //       onSuccess: () => {
-    //         setSelectedDates(selectedDates.filter((d) => d !== diff));
-    //         toast.success("Successfully removed!", {
-    //           dismissible: true,
-    //           description: `Removed ${mealWithNutrition.meal.name} on ${diff.toDateString()}`,
-    //         });
-    //         setIsOpen(false);
-    //       },
-    //       onError: (err) => {
-    //         toast.error("Failed to remove", {
-    //           dismissible: true,
-    //           description: `Error: ${err.message}`,
-    //         });
-    //       },
-    //     },
-    //   );
-    // }
+  function handleDelete(mealId: string) {
+    void deleteMeal(
+      {
+        meal_id: mealId,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Successfully deleted!", {
+            dismissible: true,
+            description: `Deleted ${mealWithNutrition.meal.name}`,
+          });
+        },
+        onError: (err) => {
+          toast.error("Failed to delete", {
+            dismissible: true,
+            description: `Error: ${err.message}`,
+          });
+        },
+      },
+    );
   }
 
   return (
@@ -170,53 +137,59 @@ function MealPreview({ mealWithNutrition }: Props) {
           </div>
         </div>
       </CardContent>
-      <CardFooter className="flex flex-wrap gap-2">
-        <Button
-          onClick={() =>
-            navigate(`/dashboard/meal/details/${mealWithNutrition.meal.id}`)
-          }
-        >
-          Details
-        </Button>
-        <Button
-          onClick={() =>
-            navigate(`/dashboard/meal/edit/${mealWithNutrition.meal.id}`)
-          }
-        >
-          Edit
-        </Button>
-        <Popover open={isOpen} onOpenChange={setIsOpen}>
-          <PopoverTrigger asChild>
-            <Button>Consume</Button>
-          </PopoverTrigger>
-          <PopoverContent className="z-10">
-            <Card>
-              <CardHeader>
-                <H2>Record Meal</H2>
-              </CardHeader>
-              <CardContent>
-                {isError && <div>{error.message}</div>}
-                <Calendar
-                  disabled={!isError && isLoadingConsumedMeals}
-                  className={cn(
-                    isLoadingConsumedMeals && "animate-pulse",
-                    isError && "cursor-not-allowed",
-                  )}
-                  mode="multiple"
-                  onDayClick={handleSelect}
-                  selected={selectedDates}
-                />
-              </CardContent>
-              <CardFooter>
-                {isError && (
-                  <div className="font-extrabold text-destructive">
-                    {error.message}
-                  </div>
-                )}
-              </CardFooter>
-            </Card>
-          </PopoverContent>
-        </Popover>
+      <CardFooter className="flex flex-col gap-2 w-full">
+        {isError && (
+          <div className="font-extrabold text-destructive">{error.message}</div>
+        )}
+        <div className="flex justify-between w-full">
+          <Button
+            onClick={() =>
+              navigate(`/dashboard/meal/details/${mealWithNutrition.meal.id}`)
+            }
+          >
+            Details
+          </Button>
+          <Button
+            onClick={() =>
+              navigate(`/dashboard/meal/edit/${mealWithNutrition.meal.id}`)
+            }
+          >
+            Edit
+          </Button>
+        </div>
+        <div className="flex justify-between w-full">
+          <Popover open={isOpen} onOpenChange={setIsOpen}>
+            <PopoverTrigger asChild>
+              <Button>Consume</Button>
+            </PopoverTrigger>
+            <PopoverContent className="z-10">
+              <Card>
+                <CardHeader>
+                  <H2>Record Meal</H2>
+                </CardHeader>
+                <CardContent>
+                  {isError && <div>{error.message}</div>}
+                  <Calendar
+                    disabled={!isError && isLoadingConsumedMeals}
+                    className={cn(
+                      isLoadingConsumedMeals && "animate-pulse",
+                      isError && "cursor-not-allowed",
+                    )}
+                    mode="multiple"
+                    onDayClick={handleSelect}
+                    selected={selectedDates}
+                  />
+                </CardContent>
+              </Card>
+            </PopoverContent>
+          </Popover>
+          <Button
+            variant="destructive"
+            onClick={() => handleDelete(mealWithNutrition.meal.id)}
+          >
+            Delete
+          </Button>
+        </div>
       </CardFooter>
     </Card>
   );
@@ -264,6 +237,18 @@ export function MealPreviewSkeleton() {
           </div>
         </div>
       </CardContent>
+      <CardFooter className="flex flex-col gap-2 w-full">
+        <div className="flex justify-between w-full">
+          <Button disabled>Details</Button>
+          <Button disabled>Edit</Button>
+        </div>
+        <div className="flex justify-between w-full">
+          <Button disabled>Consume</Button>
+          <Button disabled variant="destructive">
+            Delete
+          </Button>
+        </div>
+      </CardFooter>
     </Card>
   );
 }
@@ -297,6 +282,18 @@ export function MealPreviewEmpty() {
           </div>
         </div>
       </CardContent>
+      <CardFooter className="flex flex-col gap-2 w-full">
+        <div className="flex justify-between w-full">
+          <Button disabled>Details</Button>
+          <Button disabled>Edit</Button>
+        </div>
+        <div className="flex justify-between w-full">
+          <Button disabled>Consume</Button>
+          <Button disabled variant="destructive">
+            Delete
+          </Button>
+        </div>
+      </CardFooter>
     </Card>
   );
 }

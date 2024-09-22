@@ -878,6 +878,64 @@ func UpdateMeal(c echo.Context) error {
 	return c.JSON(http.StatusOK, respMeal)
 }
 
+func DeleteMealByID(c echo.Context) error {
+	user, ok := c.Get("user").(database.User)
+	if !ok {
+		utils.FmtLogError(
+			"meal_controller.go",
+			"DeleteMealByID",
+			fmt.Errorf("reached delete meal by id without user"),
+		)
+		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
+			"message": "Failed to delete meal, unauthorized",
+		})
+	}
+
+	mealId, err := uuid.Parse(c.Param("meal_id"))
+	if err != nil {
+		utils.FmtLogError(
+			"meal_controller.go",
+			"DeleteMealByID",
+			fmt.Errorf("failed to parse meal id: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to delete meal, invalid meal id",
+		})
+	}
+
+	if err := config.DB.Ping(); err != nil {
+		utils.FmtLogError(
+			"meal_controller.go",
+			"DeleteMealByID",
+			fmt.Errorf("connection to database failed : %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to delete meal, trouble with server",
+		})
+	}
+
+	deleteMealByIdParams := database.DeleteMealParams{
+		ID:     mealId,
+		UserID: user.ID,
+	}
+
+	err = config.Queries.DeleteMeal(c.Request().Context(), deleteMealByIdParams)
+	if err != nil {
+		utils.FmtLogError(
+			"meal_controller.go",
+			"DeleteMealByID",
+			fmt.Errorf("failed to delete meal by id: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to delete meal, trouble with server",
+		})
+	}
+
+	return c.JSON(http.StatusOK, map[string]any{
+		"message": "Meal deleted",
+	})
+}
+
 func GetConsumedMealsByMealID(c echo.Context) error {
 	_, ok := c.Get("user").(database.User)
 	if !ok {

@@ -14,6 +14,7 @@ func MealRoutesV1(e *echo.Group) {
 		meal.GET("", controllers.GetMealsByUserID)
 		meal.GET("/:meal_id", controllers.GetMealByID)
 		meal.PUT("/:meal_id", controllers.UpdateMeal)
+		meal.DELETE("/:meal_id", controllers.DeleteMealByID)
 
 		meal.GET("/consume/date", controllers.GetConsumedMealsByDate)
 		meal.POST("/consume/toggle", controllers.ToggleConsumeMeal)

@@ -13,21 +13,58 @@ import { Textarea } from "~/features/shared/components/ui/textarea";
 import { Apple } from "lucide-react";
 import useGetConsumedMealsByMealID from "../hooks/useGetConsumedMealsByMealID";
 import FoodItemBadge from "~/features/food_item/components/FoodItemBadge";
+import useDeleteMeal from "../hooks/useDeleteMeal";
+import { toast } from "sonner";
+import { useEffect } from "react";
 
 type Props = {
   mealId: string;
 };
 
 function MealDetails({ mealId }: Props) {
-  const { data: mealWithNutritionAndFoodItems, isLoading } = useGetMealByID({
+  const {
+    data: mealWithNutritionAndFoodItems,
+    isLoading,
+    isError,
+  } = useGetMealByID({
     mealId,
   });
   const { data: consumedMeals, isLoading: isLoadingConsumedMeals } =
     useGetConsumedMealsByMealID({
       mealId,
     });
+  const { mutateAsync: deleteMeal } = useDeleteMeal();
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isError) {
+      navigate("/dashboard/meal");
+    }
+  }, [isError, navigate]);
+
+  function handleDelete(mealId: string) {
+    void deleteMeal(
+      {
+        meal_id: mealId,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Successfully deleted!", {
+            dismissible: true,
+            description: `Deleted ${mealWithNutritionAndFoodItems?.meal.meal.name}`,
+          });
+          navigate("/dashboard/meal");
+        },
+        onError: (err) => {
+          toast.error("Failed to delete", {
+            dismissible: true,
+            description: `Error: ${err.message}`,
+          });
+        },
+      },
+    );
+  }
 
   if (isLoading || isLoadingConsumedMeals) {
     return <div>Loading...</div>;
@@ -154,9 +191,12 @@ function MealDetails({ mealId }: Props) {
           ))}
         </div>
       </CardContent>
-      <CardFooter>
+      <CardFooter className="flex flex-wrap gap-2">
         <Button onClick={() => navigate(`/dashboard/meal/edit/${mealId}`)}>
           Edit
+        </Button>
+        <Button variant="destructive" onClick={() => handleDelete(mealId)}>
+          Delete
         </Button>
       </CardFooter>
     </Card>
