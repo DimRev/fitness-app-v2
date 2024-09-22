@@ -3,7 +3,6 @@ import { useMutation, useQueryClient } from "react-query";
 import useSocket from "~/features/socket/hooks/useSocket";
 import axiosInstance from "~/lib/axios";
 import { QUERY_KEYS, USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
-import { type BroadcastData } from "~/lib/socket";
 
 type DeleteFoodItemRequestParams = {
   food_item_id: string;
@@ -31,9 +30,8 @@ function useDeleteFoodItem() {
             QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS,
             QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS_INF_QUERY,
           ],
-          data: {
-            action: "invalidate",
-          },
+          action: "invalidate",
+          data: {},
         };
 
         void sendSocketGroupMessage(

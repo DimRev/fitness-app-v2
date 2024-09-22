@@ -4,7 +4,6 @@ import axiosInstance from "~/lib/axios";
 import { QUERY_KEYS, USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 import { type UserEditFormSchema } from "../user.schema";
 import useSocket from "~/features/socket/hooks/useSocket";
-import { type BroadcastData } from "~/lib/socket";
 
 type ErrorResponseBody = {
   message: string;
@@ -21,9 +20,8 @@ function useUpdateUserByAdmin() {
       onSuccess: async () => {
         const invalidateData: BroadcastData = {
           group: [QUERY_KEYS.USERS.GET_USERS],
-          data: {
-            action: "invalidate",
-          },
+          action: "invalidate",
+          data: {},
         };
         await sendSocketGroupMessage(
           QUERY_KEYS.USERS.GET_USERS,

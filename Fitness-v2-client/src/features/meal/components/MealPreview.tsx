@@ -15,11 +15,10 @@ import {
   PopoverTrigger,
 } from "~/features/shared/components/ui/popover";
 import { Skeleton } from "~/features/shared/components/ui/skeleton";
-import useGetConsumedMealsByMealID from "../hooks/useGetConsumedMealsByMealID";
-import useConsumeMeal from "../hooks/useConsumeMeal";
-import { toast } from "sonner";
 import { cn } from "~/lib/utils";
-import useRemoveConsumedMeal from "../hooks/useRemoveConsumedMeal";
+import useGetConsumedMealsByMealID from "../hooks/useGetConsumedMealsByMealID";
+import useToggleToggleConsumeMeal from "../hooks/useToggleConsumeMeal";
+import { toast } from "sonner";
 
 type Props = {
   mealWithNutrition: MealWithNutrition;
@@ -38,8 +37,7 @@ function MealPreview({ mealWithNutrition }: Props) {
     mealId: mealWithNutrition.meal.id,
   });
 
-  const { mutateAsync: consumeMeal } = useConsumeMeal();
-  const { mutateAsync: removeConsumedMeal } = useRemoveConsumedMeal();
+  const { mutateAsync: toggleConsumeMeal } = useToggleToggleConsumeMeal();
 
   const navigate = useNavigate();
 
@@ -51,61 +49,104 @@ function MealPreview({ mealWithNutrition }: Props) {
 
   function handleSelect(date: Date[] | undefined) {
     if (!date) return;
+    const diffAdd = date.filter((d) => !selectedDates.includes(d)) ?? [];
+    const diffRemove = selectedDates.filter((d) => !date.includes(d)) ?? [];
+    const diff = [...diffAdd, ...diffRemove][0];
+    diff.setDate(diff.getDate() + 1);
 
-    if (date.length > selectedDates.length) {
-      const diff = date.filter((d) => !selectedDates.includes(d))[0];
-      void consumeMeal(
-        {
-          meal_id: mealWithNutrition.meal.id,
-          date: diff.toISOString().split("T")[0],
-        },
-        {
-          onSuccess: () => {
-            setSelectedDates([...selectedDates, diff]);
-            toast.success("Successfully recorded!", {
-              dismissible: true,
-              description: `Consumed ${mealWithNutrition.meal.name} on ${diff.toDateString()}`,
-            });
-            setIsOpen(false);
-          },
-          onError: (err) => {
-            toast.error("Failed to consume", {
-              dismissible: true,
-              description: `Error: ${err.message}`,
-            });
-          },
-        },
-      );
-    } else {
-      const diff = selectedDates.filter((d) => !date.includes(d))[0];
-      const id = consumedMeals?.find(
-        (m) => m.date.split("T")[0] === diff.toISOString().split("T")[0],
-      )?.id;
-
-      void removeConsumedMeal(
-        {
-          id: id!,
-          meal_id: mealWithNutrition.meal.id,
-          date: diff.toISOString().split("T")[0],
-        },
-        {
-          onSuccess: () => {
-            setSelectedDates(selectedDates.filter((d) => d !== diff));
+    console.log(diff);
+    void toggleConsumeMeal(
+      {
+        meal_id: mealWithNutrition.meal.id,
+        date: diff.toISOString(),
+      },
+      {
+        onSuccess: (data) => {
+          if (data.was_deleted) {
             toast.success("Successfully removed!", {
               dismissible: true,
-              description: `Removed ${mealWithNutrition.meal.name} on ${diff.toDateString()}`,
+              description: `Removed ${mealWithNutrition.meal.name} on ${date[0].toDateString()}`,
             });
-            setIsOpen(false);
-          },
-          onError: (err) => {
-            toast.error("Failed to remove", {
+          } else {
+            toast.success("Successfully recorded!", {
               dismissible: true,
-              description: `Error: ${err.message}`,
+              description: `Consumed ${mealWithNutrition.meal.name} on ${date[0].toDateString()}`,
             });
-          },
+          }
+
+          setSelectedDates((p) => {
+            if (p.includes(diff)) {
+              return p.filter((d) => d !== diff);
+            } else {
+              return [...p, diff];
+            }
+          });
+
+          setIsOpen(false);
         },
-      );
-    }
+        onError: (err) => {
+          toast.error("Failed to consume", {
+            dismissible: true,
+            description: `Error: ${err.message}`,
+          });
+        },
+      },
+    );
+
+    // if (date.length > selectedDates.length) {
+    //   const diff = date.filter((d) => !selectedDates.includes(d))[0];
+    //   void consumeMeal(
+    //     {
+    //       meal_id: mealWithNutrition.meal.id,
+    //       date: diff.toISOString().split("T")[0],
+    //     },
+    //     {
+    //       onSuccess: () => {
+    //         setSelectedDates([...selectedDates, diff]);
+    //         toast.success("Successfully recorded!", {
+    //           dismissible: true,
+    //           description: `Consumed ${mealWithNutrition.meal.name} on ${diff.toDateString()}`,
+    //         });
+    //         setIsOpen(false);
+    //       },
+    //       onError: (err) => {
+    //         toast.error("Failed to consume", {
+    //           dismissible: true,
+    //           description: `Error: ${err.message}`,
+    //         });
+    //       },
+    //     },
+    //   );
+    // } else {
+    //   const diff = selectedDates.filter((d) => !date.includes(d))[0];
+    //   const id = consumedMeals?.find(
+    //     (m) => m.date.split("T")[0] === diff.toISOString().split("T")[0],
+    //   )?.id;
+
+    //   void removeConsumedMeal(
+    //     {
+    //       id: id!,
+    //       meal_id: mealWithNutrition.meal.id,
+    //       date: diff.toISOString().split("T")[0],
+    //     },
+    //     {
+    //       onSuccess: () => {
+    //         setSelectedDates(selectedDates.filter((d) => d !== diff));
+    //         toast.success("Successfully removed!", {
+    //           dismissible: true,
+    //           description: `Removed ${mealWithNutrition.meal.name} on ${diff.toDateString()}`,
+    //         });
+    //         setIsOpen(false);
+    //       },
+    //       onError: (err) => {
+    //         toast.error("Failed to remove", {
+    //           dismissible: true,
+    //           description: `Error: ${err.message}`,
+    //         });
+    //       },
+    //     },
+    //   );
+    // }
   }
 
   return (

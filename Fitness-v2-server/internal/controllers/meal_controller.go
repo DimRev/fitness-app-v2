@@ -879,101 +879,6 @@ func UpdateMeal(c echo.Context) error {
 	return c.JSON(http.StatusOK, respMeal)
 }
 
-type ConsumeMealRequest struct {
-	MealID string `json:"meal_id"`
-	Date   string `json:"date"`
-}
-
-func ConsumeMeal(c echo.Context) error {
-	user, ok := c.Get("user").(database.User)
-	if !ok {
-		utils.FmtLogError(
-			"meal_controller.go",
-			"ConsumeMeal",
-			fmt.Errorf("reached consume meal without user"),
-		)
-		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
-			"message": "Failed to consume meal, unauthorized",
-		})
-	}
-
-	consumeMealReq := ConsumeMealRequest{}
-	if err := c.Bind(&consumeMealReq); err != nil {
-		utils.FmtLogError(
-			"meal_controller.go",
-			"ConsumeMeal",
-			fmt.Errorf("failed to bind consume meal request: %s", err),
-		)
-		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
-			"message": "Failed to consume meal, malformed request",
-		})
-	}
-
-	mealId, err := uuid.Parse(consumeMealReq.MealID)
-	if err != nil {
-		utils.FmtLogError(
-			"meal_controller.go",
-			"ConsumeMeal",
-			fmt.Errorf("failed to parse meal id: %s", err),
-		)
-		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
-			"message": "Failed to consume meal, invalid meal id",
-		})
-	}
-
-	date, err := time.Parse("2006-01-02", strings.Split(consumeMealReq.Date, "T")[0])
-	if err != nil {
-		utils.FmtLogError(
-			"meal_controller.go",
-			"ConsumeMeal",
-			fmt.Errorf("failed to parse date: %s", err),
-		)
-		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
-			"message": "Failed to consume meal, invalid date",
-		})
-	}
-
-	if err := config.DB.Ping(); err != nil {
-		utils.FmtLogError(
-			"meal_controller.go",
-			"ConsumeMeal",
-			fmt.Errorf("connection to database failed : %s", err),
-		)
-		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-			"message": "Failed to consume meal, trouble with server",
-		})
-	}
-
-	consumeMealParams := database.ConsumeMealParams{
-		UserID: user.ID,
-		MealID: mealId,
-		Date:   date,
-	}
-
-	consumedMeal, err := config.Queries.ConsumeMeal(c.Request().Context(), consumeMealParams)
-	if err != nil {
-		utils.FmtLogError(
-			"meal_controller.go",
-			"ConsumeMeal",
-			fmt.Errorf("failed to consume meal: %s", err),
-		)
-		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-			"message": "Failed to consume meal, trouble with server",
-		})
-	}
-
-	consumedMealResp := models.ConsumedMeal{
-		ID:        consumedMeal.ID.String(),
-		UserID:    consumedMeal.UserID.String(),
-		MealID:    consumedMeal.MealID.String(),
-		Date:      consumedMeal.Date,
-		CreatedAt: consumedMeal.CreatedAt,
-		UpdatedAt: consumedMeal.UpdatedAt,
-	}
-
-	return c.JSON(http.StatusOK, consumedMealResp)
-}
-
 func GetConsumedMealsByMealID(c echo.Context) error {
 	_, ok := c.Get("user").(database.User)
 	if !ok {
@@ -1014,7 +919,6 @@ func GetConsumedMealsByMealID(c echo.Context) error {
 	mealConsumed := make([]models.ConsumedMeal, len(consumedMeals))
 	for i, consumedMeal := range consumedMeals {
 		mealConsumed[i] = models.ConsumedMeal{
-			ID:        consumedMeal.ID.String(),
 			UserID:    consumedMeal.UserID.String(),
 			MealID:    consumedMeal.MealID.String(),
 			Date:      consumedMeal.Date,
@@ -1082,7 +986,6 @@ func GetConsumedMealsByDate(c echo.Context) error {
 	mealConsumed := make([]models.ConsumedMeal, len(consumedMeals))
 	for i, consumedMeal := range consumedMeals {
 		mealConsumed[i] = models.ConsumedMeal{
-			ID:        consumedMeal.ID.String(),
 			UserID:    consumedMeal.UserID.String(),
 			MealID:    consumedMeal.MealID.String(),
 			Date:      consumedMeal.Date,
@@ -1094,44 +997,97 @@ func GetConsumedMealsByDate(c echo.Context) error {
 	return c.JSON(http.StatusOK, mealConsumed)
 }
 
-func RemoveConsumedMeal(c echo.Context) error {
-	_, ok := c.Get("user").(database.User)
+type ToggleConsumeMealRequest struct {
+	MealID string `json:"meal_id"`
+	Date   string `json:"date"`
+}
+
+func ToggleConsumeMeal(c echo.Context) error {
+	user, ok := c.Get("user").(database.User)
 	if !ok {
 		utils.FmtLogError(
 			"meal_controller.go",
-			"ConsumeMeal",
-			fmt.Errorf("reached consume meal without user"),
+			"ToggleConsumeMeal",
+			fmt.Errorf("reached toggle consume meal without user"),
 		)
 		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
-			"message": "Failed to consume meal, unauthorized",
+			"message": "Failed to toggle consume meal, unauthorized",
 		})
 	}
 
-	mealID, err := uuid.Parse(c.Param("meal_id"))
+	toggleConsumeMealReq := ToggleConsumeMealRequest{}
+	if err := c.Bind(&toggleConsumeMealReq); err != nil {
+		utils.FmtLogError(
+			"meal_controller.go",
+			"ToggleConsumeMeal",
+			fmt.Errorf("failed to bind toggle consume meal request: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to toggle consume meal, malformed request",
+		})
+	}
+
+	mealId, err := uuid.Parse(toggleConsumeMealReq.MealID)
 	if err != nil {
 		utils.FmtLogError(
 			"meal_controller.go",
-			"RemoveConsumedMeal",
+			"ToggleConsumeMeal",
 			fmt.Errorf("failed to parse meal id: %s", err),
 		)
 		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
-			"message": "Failed to remove consumed meal, invalid meal id",
+			"message": "Failed to toggle consume meal, invalid meal id",
 		})
 	}
-
-	err = config.Queries.RemoveConsumedMeal(c.Request().Context(), mealID)
+	date, err := time.Parse("2006-01-02", strings.Split(toggleConsumeMealReq.Date, "T")[0])
 	if err != nil {
 		utils.FmtLogError(
 			"meal_controller.go",
-			"RemoveConsumedMeal",
-			fmt.Errorf("failed to remove consumed meal: %s", err),
+			"ToggleConsumeMeal",
+			fmt.Errorf("failed to parse date: %s", err),
 		)
-		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-			"message": "Failed to remove consumed meal, trouble with server",
+		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
+			"message": "Failed to toggle consume meal, invalid date",
 		})
 	}
 
-	return c.JSON(http.StatusOK, map[string]string{
-		"message": "Consumed meal removed",
+	if err := config.DB.Ping(); err != nil {
+		utils.FmtLogError(
+			"meal_controller.go",
+			"ToggleConsumeMeal",
+			fmt.Errorf("connection to database failed : %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to toggle consume meal, trouble with server",
+		})
+	}
+
+	toggleConsumeMealParams := database.ToggleConsumeMealParams{
+		UserID: user.ID,
+		MealID: mealId,
+		Date:   date,
+	}
+
+	_, err = config.Queries.ToggleConsumeMeal(c.Request().Context(), toggleConsumeMealParams)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return c.JSON(http.StatusOK, map[string]any{
+				"message":     "Consumed meal removed",
+				"was_deleted": true,
+			})
+		} else {
+			utils.FmtLogError(
+				"meal_controller.go",
+				"ToggleConsumeMeal",
+				fmt.Errorf("failed to toggle consume meal: %s", err),
+			)
+			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+				"message": "Failed to toggle consume meal, trouble with server",
+			})
+		}
+	}
+
+	return c.JSON(http.StatusOK, map[string]any{
+		"message":     "Consumed meal recorded",
+		"was_deleted": false,
 	})
 }

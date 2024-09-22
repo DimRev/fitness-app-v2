@@ -91,15 +91,6 @@ DELETE FROM rel_meal_food
 WHERE meal_id = $1
 AND user_id = $2;
 
--- name: ConsumeMeal :one
-INSERT INTO meal_consumed (
-  user_id, 
-  meal_id, 
-  date
-)
-VALUES ($1, $2, $3)
-RETURNING *;
-
 -- name: GetConsumedMealsByMealID :many
 SELECT * FROM meal_consumed
 WHERE meal_id = $1;
@@ -108,6 +99,19 @@ WHERE meal_id = $1;
 SELECT * FROM meal_consumed
 WHERE date = $1;
 
--- name: RemoveConsumedMeal :exec
-DELETE FROM meal_consumed
-WHERE id = $1;
+-- name: ToggleConsumeMeal :one
+WITH deleted AS (
+  DELETE FROM meal_consumed
+  WHERE user_id = $1
+    AND meal_id = $2
+    AND date = $3
+  RETURNING *
+)
+-- Only insert if no rows were deleted
+INSERT INTO meal_consumed (user_id, meal_id, date)
+SELECT $1, $2, $3
+WHERE NOT EXISTS (
+  SELECT 1 FROM deleted
+)
+RETURNING *; -- Return 'inserted' if a row was inserted
+
