@@ -3,7 +3,6 @@ import { useMutation, useQueryClient } from "react-query";
 import useSocket from "~/features/socket/hooks/useSocket";
 import axiosInstance from "~/lib/axios";
 import { QUERY_KEYS, USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
-import { type BroadcastData } from "~/lib/socket";
 
 type ToggleFoodItemPendingRequestParams = {
   food_item_pending_id: string;
@@ -84,8 +83,8 @@ function useToggleFoodItemPending() {
     onSuccess: (_data, { limit, offset, text_filter }) => {
       const invalidateData: BroadcastData = {
         group: [QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING],
+        action: "invalidate",
         data: {
-          action: "invalidate",
           limit,
           offset,
           text_filter,

@@ -2,12 +2,7 @@ import { type QueryClient } from "react-query";
 import { toast } from "sonner";
 import { create, type StoreApi } from "zustand";
 import { QUERY_KEYS } from "~/lib/reactQuery";
-import {
-  type BroadcastData,
-  parseSocketData,
-  type Message,
-  type UserNotificationData,
-} from "~/lib/socket";
+import { parseJSONData } from "~/lib/socket";
 
 type SocketState = {
   socket: WebSocket | null;
@@ -70,24 +65,24 @@ const useSocket = create<SocketStore>((set, get, store) => ({
     set({ socket: null });
   },
   sendSocketMessage: async (msg: string) => {
-    const message: Message = { action: "greet", data: msg };
+    const message: SocketMessage = { action: "greet", data: msg };
     await sendMessage(store, message);
   },
   joinSocketGroup: async (group: string) => {
-    const message: Message = {
+    const message: SocketMessage = {
       action: "join-group",
       data: group,
     };
     await sendMessage(store, message);
   },
   leaveSocketGroup: async (group: string) => {
-    const message: Message = { action: "leave-group", data: group };
+    const message: SocketMessage = { action: "leave-group", data: group };
     await sendMessage(store, message);
   },
   sendSocketGroupMessage: async (group: string, data: BroadcastData) => {
     const stringifiedData = JSON.stringify(data);
 
-    const message: Message = {
+    const message: SocketMessage = {
       action: "broadcast-group",
       data: stringifiedData,
       group: group,
@@ -96,7 +91,7 @@ const useSocket = create<SocketStore>((set, get, store) => ({
   },
   sendSocketAllGroupsMessage: async (msg: BroadcastData) => {
     const stringifiedMsg = JSON.stringify(msg);
-    const message: Message = {
+    const message: SocketMessage = {
       action: "broadcast-all",
       data: stringifiedMsg,
     };
@@ -105,18 +100,18 @@ const useSocket = create<SocketStore>((set, get, store) => ({
   sendSocketGlobalMessage: async (msg: BroadcastData) => {
     const stringifiedMsg = JSON.stringify(msg);
 
-    const message: Message = {
+    const message: SocketMessage = {
       action: "broadcast-global",
       data: stringifiedMsg,
     };
     await sendMessage(store, message);
   },
   signInSocket: async (email: string) => {
-    const message: Message = { action: "sign-in", data: email };
+    const message: SocketMessage = { action: "sign-in", data: email };
     await sendMessage(store, message);
   },
   signOutSocket: async () => {
-    const message: Message = { action: "sign-out" };
+    const message: SocketMessage = { action: "sign-out" };
     await sendMessage(store, message);
   },
 }));
@@ -132,7 +127,10 @@ async function blockUntilConnect() {
   return ws;
 }
 
-async function sendMessage(store: StoreApi<SocketStore>, message: Message) {
+async function sendMessage(
+  store: StoreApi<SocketStore>,
+  message: SocketMessage,
+) {
   let retry = 0;
   while (store.getState().socket == null && retry < MAX_RETRY) {
     await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
@@ -154,7 +152,7 @@ function handleEventMessage(
   event: MessageEvent<string>,
   queryClient: QueryClient,
 ) {
-  const message: Message = JSON.parse(event.data) as Message;
+  const message: SocketMessage = JSON.parse(event.data) as SocketMessage;
   switch (message.action) {
     case "greet":
       if (import.meta.env.MODE === "development") {
@@ -163,7 +161,7 @@ function handleEventMessage(
       break;
     case "user-notification":
       if (message.data) {
-        const broadcastData = parseSocketData<UserNotificationData>(
+        const broadcastData = parseJSONData<UserNotificationBroadcastData>(
           message.data,
         );
         handleUserNotification(broadcastData, queryClient);
@@ -173,7 +171,7 @@ function handleEventMessage(
     case "broadcast-global":
     case "broadcast-all":
       if (message.data) {
-        const broadcastData = parseSocketData<BroadcastData>(message.data);
+        const broadcastData = parseJSONData<BroadcastData>(message.data);
         handleBroadcasts(broadcastData, queryClient);
       }
   }
@@ -186,13 +184,11 @@ function handleBroadcasts(
   if (import.meta.env.MODE === "development") {
     console.log("<-(ws) Broadcast:", broadcastData);
   }
-  if (broadcastData.data.action === "invalidate") {
+  if (broadcastData.action === "invalidate") {
     for (const group of broadcastData.group) {
       const params: Record<string, string | number | null> = {};
       for (const [key, value] of Object.entries(broadcastData.data)) {
-        if (value && key !== "action") {
-          params[key] = value;
-        }
+        params[key] = value;
       }
       void queryClient.invalidateQueries([group, params]);
     }
@@ -200,7 +196,7 @@ function handleBroadcasts(
 }
 
 function handleUserNotification(
-  broadcastData: UserNotificationData,
+  broadcastData: UserNotificationBroadcastData,
   queryClient: QueryClient,
 ) {
   if (import.meta.env.MODE === "development") {
