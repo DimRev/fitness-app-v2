@@ -6,7 +6,6 @@ import (
 	"math"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/DimRev/Fitness-v2-server/internal/config"
@@ -998,8 +997,8 @@ func GetConsumedMealsByDate(c echo.Context) error {
 }
 
 type ToggleConsumeMealRequest struct {
-	MealID string `json:"meal_id"`
-	Date   string `json:"date"`
+	MealID string    `json:"meal_id"`
+	Date   time.Time `json:"date"`
 }
 
 func ToggleConsumeMeal(c echo.Context) error {
@@ -1038,17 +1037,6 @@ func ToggleConsumeMeal(c echo.Context) error {
 			"message": "Failed to toggle consume meal, invalid meal id",
 		})
 	}
-	date, err := time.Parse("2006-01-02", strings.Split(toggleConsumeMealReq.Date, "T")[0])
-	if err != nil {
-		utils.FmtLogError(
-			"meal_controller.go",
-			"ToggleConsumeMeal",
-			fmt.Errorf("failed to parse date: %s", err),
-		)
-		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
-			"message": "Failed to toggle consume meal, invalid date",
-		})
-	}
 
 	if err := config.DB.Ping(); err != nil {
 		utils.FmtLogError(
@@ -1064,7 +1052,7 @@ func ToggleConsumeMeal(c echo.Context) error {
 	toggleConsumeMealParams := database.ToggleConsumeMealParams{
 		UserID: user.ID,
 		MealID: mealId,
-		Date:   date,
+		Date:   toggleConsumeMealReq.Date,
 	}
 
 	_, err = config.Queries.ToggleConsumeMeal(c.Request().Context(), toggleConsumeMealParams)

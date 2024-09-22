@@ -37,50 +37,41 @@ function MealPreview({ mealWithNutrition }: Props) {
     mealId: mealWithNutrition.meal.id,
   });
 
+  console.log(consumedMeals);
+
   const { mutateAsync: toggleConsumeMeal } = useToggleToggleConsumeMeal();
 
   const navigate = useNavigate();
 
   useEffect(() => {
     if (consumedMeals) {
-      setSelectedDates(consumedMeals.map((meal) => new Date(meal.date)));
+      const dates = consumedMeals.map((meal) => new Date(meal.date));
+      setSelectedDates(dates);
     }
   }, [consumedMeals]);
 
-  function handleSelect(date: Date[] | undefined) {
+  function handleSelect(date: Date | undefined) {
     if (!date) return;
-    const diffAdd = date.filter((d) => !selectedDates.includes(d)) ?? [];
-    const diffRemove = selectedDates.filter((d) => !date.includes(d)) ?? [];
-    const diff = [...diffAdd, ...diffRemove][0];
-    diff.setDate(diff.getDate() + 1);
 
-    console.log(diff);
+    const thisDate = date.getTime() + 1000 * 60 * 60 * 24;
     void toggleConsumeMeal(
       {
         meal_id: mealWithNutrition.meal.id,
-        date: diff.toISOString(),
+        date: new Date(thisDate),
       },
       {
         onSuccess: (data) => {
           if (data.was_deleted) {
             toast.success("Successfully removed!", {
               dismissible: true,
-              description: `Removed ${mealWithNutrition.meal.name} on ${date[0].toDateString()}`,
+              description: `Removed ${mealWithNutrition.meal.name} on ${date.toDateString()}`,
             });
           } else {
             toast.success("Successfully recorded!", {
               dismissible: true,
-              description: `Consumed ${mealWithNutrition.meal.name} on ${date[0].toDateString()}`,
+              description: `Consumed ${mealWithNutrition.meal.name} on ${date.toDateString()}`,
             });
           }
-
-          setSelectedDates((p) => {
-            if (p.includes(diff)) {
-              return p.filter((d) => d !== diff);
-            } else {
-              return [...p, diff];
-            }
-          });
 
           setIsOpen(false);
         },
@@ -212,7 +203,7 @@ function MealPreview({ mealWithNutrition }: Props) {
                     isError && "cursor-not-allowed",
                   )}
                   mode="multiple"
-                  onSelect={handleSelect}
+                  onDayClick={handleSelect}
                   selected={selectedDates}
                 />
               </CardContent>

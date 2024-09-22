@@ -5,7 +5,7 @@ import { QUERY_KEYS } from "~/lib/reactQuery";
 
 type ToggleConsumeMealRequestBody = {
   meal_id: string;
-  date: string;
+  date: Date;
 };
 
 type ErrorResponseBody = {
