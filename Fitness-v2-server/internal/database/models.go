@@ -181,7 +181,6 @@ type Meal struct {
 }
 
 type MealConsumed struct {
-	ID        uuid.UUID
 	UserID    uuid.UUID
 	MealID    uuid.UUID
 	Date      time.Time
