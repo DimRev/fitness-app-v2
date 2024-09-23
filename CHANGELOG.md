@@ -1,3 +1,18 @@
+# [0.9.0](https://github.com/DimRev/fitness-app-v2/compare/v0.8.1...v0.9.0) (2024-09-23)
+
+
+### Bug Fixes
+
+* date toggle working, and showing the correct date ([af58a11](https://github.com/DimRev/fitness-app-v2/commit/af58a11a88299a04b8ea2203e7a2e67e68f4e158))
+* Implement better parsing of incoming socket broadcastData ([a494383](https://github.com/DimRev/fitness-app-v2/commit/a494383db63aa65bf1d22ff6aca75fe73fa0e0f9))
+* Swap consume meal hooks ([b154cbe](https://github.com/DimRev/fitness-app-v2/commit/b154cbe805283602a2c5f2bc3e909e966bd04de7))
+
+
+### Features
+
+* Add meal consumed chart ([3ed174a](https://github.com/DimRev/fitness-app-v2/commit/3ed174ad63bfac8d08c8b33a6925f2b3dff65471))
+* Imp Meal Delete, route, hook and buttons ([e7e25e2](https://github.com/DimRev/fitness-app-v2/commit/e7e25e270034643fee959f3dd52135de86ee5cdf))
+
 ## [0.8.1](https://github.com/DimRev/fitness-app-v2/compare/v0.8.0...v0.8.1) (2024-09-21)
 
 
