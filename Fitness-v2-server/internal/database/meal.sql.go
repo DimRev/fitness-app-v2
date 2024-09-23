@@ -14,36 +14,6 @@ import (
 	"github.com/lib/pq"
 )
 
-const consumeMeal = `-- name: ConsumeMeal :one
-INSERT INTO meal_consumed (
-  user_id, 
-  meal_id, 
-  date
-)
-VALUES ($1, $2, $3)
-RETURNING id, user_id, meal_id, date, created_at, updated_at
-`
-
-type ConsumeMealParams struct {
-	UserID uuid.UUID
-	MealID uuid.UUID
-	Date   time.Time
-}
-
-func (q *Queries) ConsumeMeal(ctx context.Context, arg ConsumeMealParams) (MealConsumed, error) {
-	row := q.db.QueryRowContext(ctx, consumeMeal, arg.UserID, arg.MealID, arg.Date)
-	var i MealConsumed
-	err := row.Scan(
-		&i.ID,
-		&i.UserID,
-		&i.MealID,
-		&i.Date,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
-}
-
 const deleteFoodItemsByMealID = `-- name: DeleteFoodItemsByMealID :exec
 DELETE FROM rel_meal_food
 WHERE meal_id = $1
@@ -60,8 +30,24 @@ func (q *Queries) DeleteFoodItemsByMealID(ctx context.Context, arg DeleteFoodIte
 	return err
 }
 
+const deleteMeal = `-- name: DeleteMeal :exec
+DELETE FROM meals
+WHERE id = $1 
+AND user_id = $2
+`
+
+type DeleteMealParams struct {
+	ID     uuid.UUID
+	UserID uuid.UUID
+}
+
+func (q *Queries) DeleteMeal(ctx context.Context, arg DeleteMealParams) error {
+	_, err := q.db.ExecContext(ctx, deleteMeal, arg.ID, arg.UserID)
+	return err
+}
+
 const getConsumedMealsByDate = `-- name: GetConsumedMealsByDate :many
-SELECT id, user_id, meal_id, date, created_at, updated_at FROM meal_consumed
+SELECT user_id, meal_id, date, created_at, updated_at FROM meal_consumed
 WHERE date = $1
 `
 
@@ -75,7 +61,6 @@ func (q *Queries) GetConsumedMealsByDate(ctx context.Context, date time.Time) ([
 	for rows.Next() {
 		var i MealConsumed
 		if err := rows.Scan(
-			&i.ID,
 			&i.UserID,
 			&i.MealID,
 			&i.Date,
@@ -96,7 +81,7 @@ func (q *Queries) GetConsumedMealsByDate(ctx context.Context, date time.Time) ([
 }
 
 const getConsumedMealsByMealID = `-- name: GetConsumedMealsByMealID :many
-SELECT id, user_id, meal_id, date, created_at, updated_at FROM meal_consumed
+SELECT user_id, meal_id, date, created_at, updated_at FROM meal_consumed
 WHERE meal_id = $1
 `
 
@@ -110,7 +95,6 @@ func (q *Queries) GetConsumedMealsByMealID(ctx context.Context, mealID uuid.UUID
 	for rows.Next() {
 		var i MealConsumed
 		if err := rows.Scan(
-			&i.ID,
 			&i.UserID,
 			&i.MealID,
 			&i.Date,
@@ -427,14 +411,40 @@ func (q *Queries) InsertMealFoodItems(ctx context.Context, arg InsertMealFoodIte
 	return err
 }
 
-const removeConsumedMeal = `-- name: RemoveConsumedMeal :exec
-DELETE FROM meal_consumed
-WHERE id = $1
+const toggleConsumeMeal = `-- name: ToggleConsumeMeal :one
+WITH deleted AS (
+  DELETE FROM meal_consumed
+  WHERE user_id = $1
+    AND meal_id = $2
+    AND date = $3
+  RETURNING user_id, meal_id, date, created_at, updated_at
+)
+INSERT INTO meal_consumed (user_id, meal_id, date)
+SELECT $1, $2, $3
+WHERE NOT EXISTS (
+  SELECT 1 FROM deleted
+)
+RETURNING user_id, meal_id, date, created_at, updated_at
 `
 
-func (q *Queries) RemoveConsumedMeal(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.ExecContext(ctx, removeConsumedMeal, id)
-	return err
+type ToggleConsumeMealParams struct {
+	UserID uuid.UUID
+	MealID uuid.UUID
+	Date   time.Time
+}
+
+// Only insert if no rows were deleted
+func (q *Queries) ToggleConsumeMeal(ctx context.Context, arg ToggleConsumeMealParams) (MealConsumed, error) {
+	row := q.db.QueryRowContext(ctx, toggleConsumeMeal, arg.UserID, arg.MealID, arg.Date)
+	var i MealConsumed
+	err := row.Scan(
+		&i.UserID,
+		&i.MealID,
+		&i.Date,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const updateMeal = `-- name: UpdateMeal :one
