@@ -37,6 +37,9 @@ function useToggleToggleConsumeMeal() {
         QUERY_KEYS.MEALS.GET_MEAL_BY_ID,
         { meal_id: variables.meal_id },
       ]);
+      void queryClient.invalidateQueries([
+        QUERY_KEYS.CHART_DATA.GET_CHART_DATA_MEALS_CONSUMED,
+      ]);
     },
   });
 }
