@@ -25,23 +25,26 @@ export const QUERY_KEYS = {
     GET_USERS: "getUsers",
   },
   MEALS: {
-    GET_MEALS_BY_USER_ID: "getMealsByUserID",
-    GET_MEAL_BY_ID: "getMealByID",
+    GET_MEALS_BY_USER_ID: "get-meals-by-user-id",
+    GET_MEAL_BY_ID: "get-meal-by-id",
   },
   MEALS_CONSUMED: {
-    GET_MEALS_CONSUMED_BY_MEAL_ID: "getMealsConsumedByMealID",
-    GET_MEALS_CONSUMED_BY_DATE: "getMealsConsumedByDate",
+    GET_MEALS_CONSUMED_BY_MEAL_ID: "get-meals-consumed-by-meal-id",
+    GET_MEALS_CONSUMED_BY_DATE: "get-meals-consumed-by-date",
   },
   FOOD_ITEMS: {
-    GET_FOOD_ITEMS_INF_QUERY: "getFoodItemsInfiniteQuery",
-    GET_FOOD_ITEMS: "getFoodItems",
-    GET_FOOD_ITEMS_BY_USER_ID: "getFoodItemsByUserID",
+    GET_FOOD_ITEMS: "get-food-items",
+    GET_FOOD_ITEMS_INF_QUERY: "get-food-items-infinite-query",
+    GET_FOOD_ITEMS_BY_USER_ID: "get-food-items-by-user-id",
   },
   FOOD_ITEMS_PENDING: {
-    GET_FOOD_ITEMS_PENDING: "getFoodItemsPending",
+    GET_FOOD_ITEMS_PENDING: "get-food-items-pending",
   },
   NOTIFICATION: {
-    GET_NEW_USER_NOTIFICATIONS: "getNewUserNotifications",
+    GET_NEW_USER_NOTIFICATIONS: "get-new-user-notifications",
+  },
+  CHART_DATA: {
+    GET_CHART_DATA_MEALS_CONSUMED: "get-chart-data-meals-consumed",
   },
 } as const;
 

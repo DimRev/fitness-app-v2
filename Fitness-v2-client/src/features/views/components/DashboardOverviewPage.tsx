@@ -1,5 +1,6 @@
 import { LineChart } from "lucide-react";
 import DashboardPageWrapper from "./DashboardPageWrapper";
+import ChartMealsConsumed from "~/features/chart/components/ChartMealsConsumed";
 
 function DashboardOverviewPage() {
   return (
@@ -8,7 +9,7 @@ function DashboardOverviewPage() {
       LucideIcon={LineChart}
       to="/dashboard"
     >
-      <div>Overview</div>
+      <ChartMealsConsumed />
     </DashboardPageWrapper>
   );
 }
