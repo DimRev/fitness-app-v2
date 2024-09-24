@@ -46,6 +46,9 @@ export const QUERY_KEYS = {
   CHART_DATA: {
     GET_CHART_DATA_MEALS_CONSUMED: "get-chart-data-meals-consumed",
   },
+  CALENDAR_DATA: {
+    GET_CALENDAR_DATA_BY_DATE: "get-calendar-data-by-date"
+  }
 } as const;
 
 type QueryKeyValues<T> =

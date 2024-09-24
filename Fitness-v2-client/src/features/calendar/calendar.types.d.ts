@@ -1,0 +1,3 @@
+type CalendarData = {
+  name: string;
+};

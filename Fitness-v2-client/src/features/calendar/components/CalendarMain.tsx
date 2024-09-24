@@ -3,6 +3,7 @@ import CalendarView, { type CalendarMatchers } from "./CalendarView";
 import { useEffect, useState } from "react";
 import { H3 } from "~/features/shared/components/Typography";
 import { Separator } from "~/features/shared/components/ui/separator";
+import useGetCalendarDataByDate from "../hooks/useGetCalendarDataByDate";
 
 const modifiersStyles = {
   "very-good": "bg-green-600 text-zinc-800",
@@ -22,6 +23,12 @@ function CalendarMain() {
     "very-bad": [],
     "very-good": [],
   });
+
+  const { data: calendarData } = useGetCalendarDataByDate({
+    date: selectedDate,
+  });
+
+  console.log(calendarData);
 
   useEffect(() => {
     const yesterday = new Date();
