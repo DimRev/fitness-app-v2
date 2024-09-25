@@ -56,17 +56,6 @@ const initChartData = [
   },
 ];
 
-// const chartConfig = {
-//   desktop: {
-//     label: "Desktop",
-//     color: "#2563eb",
-//   },
-//   mobile: {
-//     label: "Mobile",
-//     color: "#60a5fa",
-//   },
-// } satisfies ChartConfig;
-
 const chartConfig = {
   total_calories: {
     label: "Total Calories",
@@ -139,7 +128,7 @@ function ChartMealsConsumed() {
 
   return (
     <DashboardContentCards title="Meals Chart">
-      <ChartContainer config={chartConfig} className="w-full max-h-96">
+      <ChartContainer config={chartConfig} className="max-h-96 w-full">
         <LineChart accessibilityLayer data={chartData}>
           <CartesianGrid vertical={false} />
           <XAxis
@@ -162,28 +151,28 @@ function ChartMealsConsumed() {
             stroke="var(--color-total_calories)"
             fill="var(--color-total_calories)"
             type="monotone"
-            radius={4}
+            radius={2}
           />
           <Line
             dataKey="total_fat"
             stroke="var(--color-total_fat)"
             fill="var(--color-total_fat)"
             type="monotone"
-            radius={4}
+            radius={2}
           />
           <Line
             dataKey="total_protein"
             stroke="var(--color-total_protein)"
             fill="var(--color-total_protein)"
             type="monotone"
-            radius={4}
+            radius={2}
           />
           <Line
             dataKey="total_carbs"
             stroke="var(--color-total_carbs)"
             fill="var(--color-total_carbs)"
             type="monotone"
-            radius={4}
+            radius={2}
           />
         </LineChart>
       </ChartContainer>
