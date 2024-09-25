@@ -29,19 +29,9 @@ func GetCalendarDataByDate(c echo.Context) error {
 		})
 	}
 
-	getCalendarDataByDateReq := GetCalendarDateByDateRequest{}
-	if err := c.Bind(&getCalendarDataByDateReq); err != nil {
-		utils.FmtLogError(
-			"calendar_controller.go",
-			"GetCalendarDataByDate",
-			fmt.Errorf("failed to bind get calendar data by date request: %s", err),
-		)
-		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
-			"message": "Failed to get calendar data by date, malformed request",
-		})
-	}
+	dateStr := c.QueryParam("date")
 
-	date, err := time.Parse(time.RFC3339, getCalendarDataByDateReq.Date)
+	date, err := time.Parse(time.RFC3339, dateStr)
 	if err != nil {
 		utils.FmtLogError(
 			"calendar_controller.go",

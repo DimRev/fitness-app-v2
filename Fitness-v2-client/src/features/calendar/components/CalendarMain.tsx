@@ -24,11 +24,9 @@ function CalendarMain() {
     "very-good": [],
   });
 
-  const { data: calendarData } = useGetCalendarDataByDate({
+  const { data: calendarData, isLoading } = useGetCalendarDataByDate({
     date: selectedDate,
   });
-
-  console.log(calendarData);
 
   useEffect(() => {
     const yesterday = new Date();
@@ -72,6 +70,10 @@ function CalendarMain() {
             {selectedDate ? selectedDate.toDateString() : "Select a date"}
           </H3>
           <Separator />
+          {isLoading && <div>Loading...</div>}
+          {calendarData?.map((calendarDataRow) => (
+            <h2>{calendarDataRow.name}</h2>
+          ))}
         </div>
       </div>
     </DashboardContentCards>
