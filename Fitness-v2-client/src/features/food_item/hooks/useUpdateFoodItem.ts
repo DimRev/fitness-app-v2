@@ -61,6 +61,15 @@ function useUpdateFoodItem() {
           QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS_BY_USER_ID,
           { food_item_id: food_item_id },
         ]);
+
+        // Calendars and charts
+
+        void queryClient.invalidateQueries([
+          QUERY_KEYS.CHART_DATA.GET_CHART_DATA_MEALS_CONSUMED,
+        ]);
+        void queryClient.invalidateQueries([
+          QUERY_KEYS.CALENDAR_DATA.GET_CALENDAR_DATA_BY_DATE,
+        ]);
       },
     },
   );

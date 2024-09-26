@@ -56,17 +56,6 @@ const initChartData = [
   },
 ];
 
-// const chartConfig = {
-//   desktop: {
-//     label: "Desktop",
-//     color: "#2563eb",
-//   },
-//   mobile: {
-//     label: "Mobile",
-//     color: "#60a5fa",
-//   },
-// } satisfies ChartConfig;
-
 const chartConfig = {
   total_calories: {
     label: "Total Calories",
@@ -104,6 +93,7 @@ function ChartMealsConsumed() {
   function fillMissingDates(
     data: MealsConsumedChartData[],
   ): MealsConsumedChartData[] {
+    if (data.length === 0) return [];
     const firstDate = new Date(data[0].date);
     const lastDate = new Date(data[data.length - 1].date);
     const diffTimestamp = lastDate.getTime() - firstDate.getTime();
@@ -162,28 +152,28 @@ function ChartMealsConsumed() {
             stroke="var(--color-total_calories)"
             fill="var(--color-total_calories)"
             type="monotone"
-            radius={4}
+            radius={2}
           />
           <Line
             dataKey="total_fat"
             stroke="var(--color-total_fat)"
             fill="var(--color-total_fat)"
             type="monotone"
-            radius={4}
+            radius={2}
           />
           <Line
             dataKey="total_protein"
             stroke="var(--color-total_protein)"
             fill="var(--color-total_protein)"
             type="monotone"
-            radius={4}
+            radius={2}
           />
           <Line
             dataKey="total_carbs"
             stroke="var(--color-total_carbs)"
             fill="var(--color-total_carbs)"
             type="monotone"
-            radius={4}
+            radius={2}
           />
         </LineChart>
       </ChartContainer>

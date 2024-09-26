@@ -1,8 +1,8 @@
+import { useEffect, useMemo, useState } from "react";
 import { DashboardContentCards } from "~/features/shared/components/CustomCards";
+import useGetCalendarDataByDate from "../hooks/useGetCalendarDataByDate";
+import CalendarMainDatePreview from "./CalendarMainDatePreview";
 import CalendarView, { type CalendarMatchers } from "./CalendarView";
-import { useEffect, useState } from "react";
-import { H3 } from "~/features/shared/components/Typography";
-import { Separator } from "~/features/shared/components/ui/separator";
 
 const modifiersStyles = {
   "very-good": "bg-green-600 text-zinc-800",
@@ -14,7 +14,7 @@ const modifiersStyles = {
 };
 
 function CalendarMain() {
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [matchers, setMatchers] = useState<CalendarMatchers>({
     good: [],
     bad: [],
@@ -23,6 +23,16 @@ function CalendarMain() {
     "very-good": [],
   });
 
+  const formattedDate = useMemo(() => {
+    if (!selectedDate) return;
+    const date = new Date(selectedDate);
+    date.setDate(date.getDate() + 1);
+    return date;
+  }, [selectedDate]);
+
+  const { data: calendarData, isLoading } = useGetCalendarDataByDate({
+    date: formattedDate,
+  });
   useEffect(() => {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
@@ -61,10 +71,11 @@ function CalendarMain() {
           />
         </div>
         <div className="flex-[3]">
-          <H3>
-            {selectedDate ? selectedDate.toDateString() : "Select a date"}
-          </H3>
-          <Separator />
+          <CalendarMainDatePreview
+            calendarData={calendarData}
+            calendarDataLoading={isLoading}
+            selectedDate={selectedDate}
+          />
         </div>
       </div>
     </DashboardContentCards>
