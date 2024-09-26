@@ -85,3 +85,5 @@ cd Fitness-v2-server && fly deploy
 ## Current DB structure & permissions
 
 ![Database Structure](./assets/001.png)
+
+<!-- Testing new github user email -->
