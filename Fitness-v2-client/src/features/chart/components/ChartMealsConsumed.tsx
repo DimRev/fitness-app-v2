@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
-import { DashboardContentCards } from "~/features/shared/components/CustomCards";
 import {
   type ChartConfig,
   ChartContainer,
@@ -128,56 +127,54 @@ function ChartMealsConsumed() {
   }
 
   return (
-    <DashboardContentCards title="Meals Chart">
-      <ChartContainer config={chartConfig} className="w-full max-h-96">
-        <LineChart accessibilityLayer data={chartData}>
-          <CartesianGrid vertical={false} />
-          <XAxis
-            dataKey="date"
-            tickLine={false}
-            tickMargin={10}
-            axisLine={false}
-            tickFormatter={(value: Date) =>
-              value.toLocaleString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              })
-            }
-          />
-          <ChartTooltip content={<ChartTooltipContent className="w-40" />} />
-          <ChartLegend content={<ChartLegendContent />} />
-          <Line
-            dataKey="total_calories"
-            stroke="var(--color-total_calories)"
-            fill="var(--color-total_calories)"
-            type="monotone"
-            radius={2}
-          />
-          <Line
-            dataKey="total_fat"
-            stroke="var(--color-total_fat)"
-            fill="var(--color-total_fat)"
-            type="monotone"
-            radius={2}
-          />
-          <Line
-            dataKey="total_protein"
-            stroke="var(--color-total_protein)"
-            fill="var(--color-total_protein)"
-            type="monotone"
-            radius={2}
-          />
-          <Line
-            dataKey="total_carbs"
-            stroke="var(--color-total_carbs)"
-            fill="var(--color-total_carbs)"
-            type="monotone"
-            radius={2}
-          />
-        </LineChart>
-      </ChartContainer>
-    </DashboardContentCards>
+    <ChartContainer config={chartConfig} className="w-full max-h-96">
+      <LineChart accessibilityLayer data={chartData}>
+        <CartesianGrid vertical={false} />
+        <XAxis
+          dataKey="date"
+          tickLine={false}
+          tickMargin={10}
+          axisLine={false}
+          tickFormatter={(value: Date) =>
+            value.toLocaleString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })
+          }
+        />
+        <ChartTooltip content={<ChartTooltipContent className="w-40" />} />
+        <ChartLegend content={<ChartLegendContent />} />
+        <Line
+          dataKey="total_calories"
+          stroke="var(--color-total_calories)"
+          fill="var(--color-total_calories)"
+          type="monotone"
+          radius={2}
+        />
+        <Line
+          dataKey="total_fat"
+          stroke="var(--color-total_fat)"
+          fill="var(--color-total_fat)"
+          type="monotone"
+          radius={2}
+        />
+        <Line
+          dataKey="total_protein"
+          stroke="var(--color-total_protein)"
+          fill="var(--color-total_protein)"
+          type="monotone"
+          radius={2}
+        />
+        <Line
+          dataKey="total_carbs"
+          stroke="var(--color-total_carbs)"
+          fill="var(--color-total_carbs)"
+          type="monotone"
+          radius={2}
+        />
+      </LineChart>
+    </ChartContainer>
   );
 }
 
