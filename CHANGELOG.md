@@ -1,3 +1,16 @@
+# [0.10.0](https://github.com/DimRev/fitness-app-v2/compare/v0.9.0...v0.10.0) (2024-09-26)
+
+
+### Bug Fixes
+
+* Fix case of empty dates in chart fill function ([4eebfec](https://github.com/DimRev/fitness-app-v2/commit/4eebfece346810237936cf6cb09c1ac83773c012))
+
+
+### Features
+
+* Add cmeal queries and nut-val by date for calendar ([13cda0f](https://github.com/DimRev/fitness-app-v2/commit/13cda0f4d8490935bb45560357ffa2c5e733e929))
+* Add nav-links to calendar meals ([57af686](https://github.com/DimRev/fitness-app-v2/commit/57af686e0cbeefbbda2e943e68e382dcc6a39102))
+
 # [0.9.0](https://github.com/DimRev/fitness-app-v2/compare/v0.8.1...v0.9.0) (2024-09-23)
 
 
