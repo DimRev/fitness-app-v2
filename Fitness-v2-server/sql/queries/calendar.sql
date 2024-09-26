@@ -1,6 +1,6 @@
 -- name: GetCalendarMealsByDate :many
 
-SELECT m.name
+SELECT m.name, m.id
 FROM meal_consumed AS mc 
 LEFT JOIN meals AS m 
 ON m.id = mc.meal_id 
