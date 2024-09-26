@@ -15,7 +15,7 @@ import (
 
 const getCalendarMealsByDate = `-- name: GetCalendarMealsByDate :many
 
-SELECT m.name
+SELECT m.name, m.id
 FROM meal_consumed AS mc 
 LEFT JOIN meals AS m 
 ON m.id = mc.meal_id 
@@ -28,19 +28,24 @@ type GetCalendarMealsByDateParams struct {
 	UserID uuid.UUID
 }
 
-func (q *Queries) GetCalendarMealsByDate(ctx context.Context, arg GetCalendarMealsByDateParams) ([]sql.NullString, error) {
+type GetCalendarMealsByDateRow struct {
+	Name sql.NullString
+	ID   uuid.NullUUID
+}
+
+func (q *Queries) GetCalendarMealsByDate(ctx context.Context, arg GetCalendarMealsByDateParams) ([]GetCalendarMealsByDateRow, error) {
 	rows, err := q.db.QueryContext(ctx, getCalendarMealsByDate, arg.Date, arg.UserID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []sql.NullString
+	var items []GetCalendarMealsByDateRow
 	for rows.Next() {
-		var name sql.NullString
-		if err := rows.Scan(&name); err != nil {
+		var i GetCalendarMealsByDateRow
+		if err := rows.Scan(&i.Name, &i.ID); err != nil {
 			return nil, err
 		}
-		items = append(items, name)
+		items = append(items, i)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err

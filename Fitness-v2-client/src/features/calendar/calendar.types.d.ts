@@ -1,5 +1,8 @@
 type CalendarData = {
-  name: string[];
+  meals: {
+    name: string;
+    meal_id: string;
+  }[];
   total_calories: number;
   total_fat: number;
   total_protein: number;

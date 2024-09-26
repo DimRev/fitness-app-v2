@@ -72,7 +72,10 @@ func GetCalendarDataByDate(c echo.Context) error {
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return c.JSON(http.StatusOK, models.CalendarData{
-				Name:          []string{},
+				Meals: []struct {
+					Name   string "json:\"name\""
+					MealID string "json:\"meal_id\""
+				}{},
 				TotalCalories: 0,
 				TotalFat:      0,
 				TotalProtein:  0,
@@ -89,13 +92,23 @@ func GetCalendarDataByDate(c echo.Context) error {
 		})
 	}
 
-	mealNames := make([]string, len(mealsByDate))
+	meals := make([]struct {
+		Name   string "json:\"name\""
+		MealID string "json:\"meal_id\""
+	}, len(mealsByDate))
 	for i, calendarData := range mealsByDate {
 		name := ""
-		if calendarData.Valid {
-			name = calendarData.String
+		if calendarData.Name.Valid {
+			name = calendarData.Name.String
 		}
-		mealNames[i] = name
+		mealID := calendarData.ID.UUID.String()
+		meals[i] = struct {
+			Name   string "json:\"name\""
+			MealID string "json:\"meal_id\""
+		}{
+			Name:   name,
+			MealID: mealID,
+		}
 	}
 
 	totalCalories, err := strconv.ParseFloat(nutritionalData.TotalCalories.(string), 64)
@@ -147,7 +160,7 @@ func GetCalendarDataByDate(c echo.Context) error {
 	}
 
 	respCalendarData := models.CalendarData{
-		Name:          mealNames,
+		Meals:         meals,
 		TotalCalories: totalCalories,
 		TotalFat:      totalFat,
 		TotalProtein:  totalProtein,

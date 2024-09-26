@@ -1,9 +1,8 @@
-import { DashboardContentCards } from "~/features/shared/components/CustomCards";
-import CalendarView, { type CalendarMatchers } from "./CalendarView";
 import { useEffect, useMemo, useState } from "react";
-import { H3 } from "~/features/shared/components/Typography";
-import { Separator } from "~/features/shared/components/ui/separator";
+import { DashboardContentCards } from "~/features/shared/components/CustomCards";
 import useGetCalendarDataByDate from "../hooks/useGetCalendarDataByDate";
+import CalendarMainDatePreview from "./CalendarMainDatePreview";
+import CalendarView, { type CalendarMatchers } from "./CalendarView";
 
 const modifiersStyles = {
   "very-good": "bg-green-600 text-zinc-800",
@@ -15,9 +14,7 @@ const modifiersStyles = {
 };
 
 function CalendarMain() {
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
-    new Date(),
-  );
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [matchers, setMatchers] = useState<CalendarMatchers>({
     good: [],
     bad: [],
@@ -74,20 +71,11 @@ function CalendarMain() {
           />
         </div>
         <div className="flex-[3]">
-          <H3>
-            {selectedDate ? selectedDate.toDateString() : "Select a date"}
-          </H3>
-          <Separator />
-          {isLoading && <div>Loading...</div>}
-          {calendarData?.name?.map((mealName, idx) => (
-            <h2 key={`${mealName}_${idx}`}>{mealName}</h2>
-          ))}
-          {calendarData?.total_calories && (
-            <h2>{calendarData.total_calories}</h2>
-          )}
-          {calendarData?.total_fat && <h2>{calendarData.total_fat}</h2>}
-          {calendarData?.total_protein && <h2>{calendarData.total_protein}</h2>}
-          {calendarData?.total_carbs && <h2>{calendarData.total_carbs}</h2>}
+          <CalendarMainDatePreview
+            calendarData={calendarData}
+            calendarDataLoading={isLoading}
+            selectedDate={selectedDate}
+          />
         </div>
       </div>
     </DashboardContentCards>

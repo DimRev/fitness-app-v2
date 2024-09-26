@@ -21,6 +21,7 @@ function useGetCalendarDataByDate(params: GetCalendarDataByDateRequestBody) {
       void leaveSocketGroup(QUERY_KEYS.CALENDAR_DATA.GET_CALENDAR_DATA_BY_DATE);
     };
   }, [joinSocketGroup, leaveSocketGroup]);
+
   return useQuery<CalendarData, Error>({
     ...USE_QUERY_DEFAULT_OPTIONS,
     queryKey: [
@@ -39,6 +40,14 @@ async function GetCalendarDataByDatePending({
   date,
 }: GetCalendarDataByDateRequestBody): Promise<CalendarData> {
   try {
+    if (!date)
+      return {
+        meals: [],
+        total_calories: 0,
+        total_fat: 0,
+        total_protein: 0,
+        total_carbs: 0,
+      };
     const response = await axiosInstance.get<CalendarData>(`/calendar`, {
       params: { date },
     });
