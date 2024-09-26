@@ -44,6 +44,13 @@ JWT_SECRET="This_is_my_secret"
 CORS="http://localhost:5173,http://127.0.0.1t:5173"
 # Optional
 ENV="development"
+
+# AWS Bucket envs
+AWS_BUCKET_NAME="your-bucket-name"
+AWS_REGION="your-region"
+# AWS IAM user
+AWS_ACCESS_KEY_ID="your-access-key-id"
+AWS_SECRET_ACCESS_KEY="your-secret-access-key"
 ```
 
 3. Create the client `.env` files, which are `.env.development.local` and `.env.production.local`:

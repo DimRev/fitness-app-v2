@@ -93,6 +93,7 @@ function ChartMealsConsumed() {
   function fillMissingDates(
     data: MealsConsumedChartData[],
   ): MealsConsumedChartData[] {
+    if (data.length === 0) return [];
     const firstDate = new Date(data[0].date);
     const lastDate = new Date(data[data.length - 1].date);
     const diffTimestamp = lastDate.getTime() - firstDate.getTime();
@@ -128,7 +129,7 @@ function ChartMealsConsumed() {
 
   return (
     <DashboardContentCards title="Meals Chart">
-      <ChartContainer config={chartConfig} className="max-h-96 w-full">
+      <ChartContainer config={chartConfig} className="w-full max-h-96">
         <LineChart accessibilityLayer data={chartData}>
           <CartesianGrid vertical={false} />
           <XAxis
