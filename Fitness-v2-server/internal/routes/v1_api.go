@@ -11,6 +11,7 @@ func V1ApiRoutes(e *echo.Echo) {
 		FoodItemRoutesV1(v1)
 		FoodItemPendingRoutesV1(v1)
 		ChartRoutesV1(v1)
+		CalendarRoutesV1(v1)
 		UploadRoutesV1(v1)
 		NotificationRoutesV1(v1)
 	}
