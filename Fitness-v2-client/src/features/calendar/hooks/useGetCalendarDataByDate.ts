@@ -21,12 +21,12 @@ function useGetCalendarDataByDate(params: GetCalendarDataByDateRequestBody) {
       void leaveSocketGroup(QUERY_KEYS.CALENDAR_DATA.GET_CALENDAR_DATA_BY_DATE);
     };
   }, [joinSocketGroup, leaveSocketGroup]);
-  return useQuery<CalendarData[], Error>({
+  return useQuery<CalendarData, Error>({
     ...USE_QUERY_DEFAULT_OPTIONS,
     queryKey: [
       QUERY_KEYS.CALENDAR_DATA.GET_CALENDAR_DATA_BY_DATE,
       {
-        date: params.date,
+        ts: params.date,
       },
     ],
 
@@ -37,9 +37,9 @@ function useGetCalendarDataByDate(params: GetCalendarDataByDateRequestBody) {
 
 async function GetCalendarDataByDatePending({
   date,
-}: GetCalendarDataByDateRequestBody): Promise<CalendarData[]> {
+}: GetCalendarDataByDateRequestBody): Promise<CalendarData> {
   try {
-    const response = await axiosInstance.get<CalendarData[]>(`/calendar`, {
+    const response = await axiosInstance.get<CalendarData>(`/calendar`, {
       params: { date },
     });
     return response.data;

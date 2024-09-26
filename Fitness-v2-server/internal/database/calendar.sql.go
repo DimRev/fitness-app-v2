@@ -13,23 +13,23 @@ import (
 	"github.com/google/uuid"
 )
 
-const getCalendarDataByDate = `-- name: GetCalendarDataByDate :many
+const getCalendarMealsByDate = `-- name: GetCalendarMealsByDate :many
 
-SELECT m.name 
+SELECT m.name
 FROM meal_consumed AS mc 
 LEFT JOIN meals AS m 
 ON m.id = mc.meal_id 
-WHERE date=$1
+WHERE mc.date=$1
 AND m.user_id=$2
 `
 
-type GetCalendarDataByDateParams struct {
+type GetCalendarMealsByDateParams struct {
 	Date   time.Time
 	UserID uuid.UUID
 }
 
-func (q *Queries) GetCalendarDataByDate(ctx context.Context, arg GetCalendarDataByDateParams) ([]sql.NullString, error) {
-	rows, err := q.db.QueryContext(ctx, getCalendarDataByDate, arg.Date, arg.UserID)
+func (q *Queries) GetCalendarMealsByDate(ctx context.Context, arg GetCalendarMealsByDateParams) ([]sql.NullString, error) {
+	rows, err := q.db.QueryContext(ctx, getCalendarMealsByDate, arg.Date, arg.UserID)
 	if err != nil {
 		return nil, err
 	}
@@ -49,4 +49,42 @@ func (q *Queries) GetCalendarDataByDate(ctx context.Context, arg GetCalendarData
 		return nil, err
 	}
 	return items, nil
+}
+
+const getCalendarNutritionByDate = `-- name: GetCalendarNutritionByDate :one
+SELECT
+  COALESCE(SUM(fi.calories * rmf.amount), 0) AS total_calories,
+  COALESCE(SUM(fi.fat * rmf.amount), 0) AS total_fat,
+  COALESCE(SUM(fi.protein * rmf.amount), 0) AS total_protein,
+  COALESCE(SUM(fi.carbs * rmf.amount), 0) AS total_carbs
+  FROM meal_consumed AS mc
+  LEFT JOIN rel_meal_food AS rmf ON mc.meal_id = rmf.meal_id
+  LEFT JOIN food_items AS fi ON rmf.food_item_id = fi.id
+  WHERE mc.user_id = $2 
+  AND mc.date = $1
+  GROUP BY mc.date
+`
+
+type GetCalendarNutritionByDateParams struct {
+	Date   time.Time
+	UserID uuid.UUID
+}
+
+type GetCalendarNutritionByDateRow struct {
+	TotalCalories interface{}
+	TotalFat      interface{}
+	TotalProtein  interface{}
+	TotalCarbs    interface{}
+}
+
+func (q *Queries) GetCalendarNutritionByDate(ctx context.Context, arg GetCalendarNutritionByDateParams) (GetCalendarNutritionByDateRow, error) {
+	row := q.db.QueryRowContext(ctx, getCalendarNutritionByDate, arg.Date, arg.UserID)
+	var i GetCalendarNutritionByDateRow
+	err := row.Scan(
+		&i.TotalCalories,
+		&i.TotalFat,
+		&i.TotalProtein,
+		&i.TotalCarbs,
+	)
+	return i, err
 }
