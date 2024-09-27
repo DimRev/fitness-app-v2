@@ -25,6 +25,7 @@ type Props = {
   modifiersStyles: {
     [key in StatusTypes | "selected"]: string;
   };
+  caloriesDateMap: Record<string, number>;
 };
 
 function CalendarView({
@@ -33,6 +34,7 @@ function CalendarView({
   setSelectedDate,
   modifiers,
   modifiersStyles,
+  caloriesDateMap,
 }: Props) {
   function onDayClick(day: Date) {
     setSelectedDate(day);
@@ -126,7 +128,16 @@ function CalendarView({
             return false;
           }
 
+          function getCalories(date: Date) {
+            const prevDate = new Date(date.getTime() + 1000 * 60 * 60 * 24)
+              .toISOString()
+              .split("T")[0];
+            const calories = caloriesDateMap[prevDate];
+            return calories;
+          }
+
           if (isToday(day)) {
+            const calories = getCalories(day);
             return (
               <HoverCard>
                 <HoverCardTrigger>
@@ -140,7 +151,10 @@ function CalendarView({
                         selected && mStyles.selected,
                       )}
                     >
-                      <span>Today</span>
+                      <div className="flex flex-col">
+                        <span>Today</span>
+                        {!!calories && <span>{calories} cal</span>}
+                      </div>
                     </div>
                   </div>
                 </HoverCardTrigger>
@@ -149,6 +163,8 @@ function CalendarView({
             );
           }
           if (checkAndGetModifier(day)) {
+            const calories = getCalories(day);
+
             return (
               <>
                 <div className="flex flex-col h-[calc(9dvh)]">
@@ -162,7 +178,7 @@ function CalendarView({
                       selected && mStyles.selected,
                     )}
                   >
-                    <span>{modifier}</span>
+                    <span>{calories} cal</span>
                   </div>
                 </div>
               </>

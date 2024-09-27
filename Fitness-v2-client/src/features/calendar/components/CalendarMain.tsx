@@ -23,6 +23,7 @@ function CalendarMain() {
     "very-bad": [],
     "very-good": [],
   });
+  const [calDateMap, setCalDateMap] = useState<Record<string, number>>({});
 
   const formattedDate = useMemo(() => {
     if (!selectedDate) return;
@@ -44,7 +45,7 @@ function CalendarMain() {
       "very-bad": [],
       "very-good": [],
     };
-    const currCaloriesDateMap: Record<string, number> = {};
+    const currCalDateMap: Record<string, number> = {};
 
     if (mealsConsumedChartData) {
       const filledMealsConsumedChartData = fillMissingDates(
@@ -52,8 +53,9 @@ function CalendarMain() {
       );
 
       filledMealsConsumedChartData.forEach((mealsConsumedDataRow) => {
-        currCaloriesDateMap[mealsConsumedDataRow.date.split("T")[0]] =
-          mealsConsumedDataRow.total_calories;
+        currCalDateMap[
+          new Date(mealsConsumedDataRow.date).toISOString().split("T")[0]
+        ] = mealsConsumedDataRow.total_calories;
 
         if (mealsConsumedDataRow.total_calories > 200) {
           currMatchers["very-good"].push(new Date(mealsConsumedDataRow.date));
@@ -69,6 +71,7 @@ function CalendarMain() {
       });
     }
 
+    setCalDateMap(currCalDateMap);
     setMatchers(currMatchers);
   }, [mealsConsumedChartData]);
 
@@ -127,6 +130,7 @@ function CalendarMain() {
             setSelectedDate={setSelectedDate}
             modifiers={modifiers}
             modifiersStyles={modifiersStyles}
+            caloriesDateMap={calDateMap}
           />
         </div>
         <div className="flex-[3]">
