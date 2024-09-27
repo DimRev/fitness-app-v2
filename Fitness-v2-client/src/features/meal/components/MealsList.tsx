@@ -1,15 +1,15 @@
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { DashboardContentCards } from "~/features/shared/components/CustomCards";
+import ListPaginationButtons from "~/features/shared/components/ListPaginationButtons";
 import { buttonVariants } from "~/features/shared/components/ui/button";
+import { Input } from "~/features/shared/components/ui/input";
+import { useDebounce } from "~/features/shared/hooks/useDebounce";
 import useGetMealsByUserID from "../hooks/useGetMealsByUserID";
 import MealPreview, {
   MealPreviewEmpty,
   MealPreviewSkeleton,
 } from "./MealPreview";
-import ListPaginationButtons from "~/features/shared/components/ListPaginationButtons";
-import { useMemo, useState } from "react";
-import { Input } from "~/features/shared/components/ui/input";
-import { useDebounce } from "~/features/shared/hooks/useDebounce";
 
 function MealsList() {
   const [page, setPage] = useState(1);
@@ -27,6 +27,19 @@ function MealsList() {
     offset,
     text_filter: textFilter,
   });
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    searchParams.forEach((value, key) => {
+      if (key === "text_filter") {
+        setTextFilter(value);
+        setInputValue(value);
+      }
+      if (key === "page") {
+        setPage(Number(value));
+      }
+    });
+  }, [searchParams]);
 
   function onChangePage(type: "next" | "prev") {
     if (
@@ -35,14 +48,19 @@ function MealsList() {
       page < mealsWithNutrition.total_pages
     ) {
       setPage((prev) => prev + 1);
+      setSearchParams({ page: String(page + 1) });
     }
     if (type === "prev" && mealsWithNutrition?.total_pages && page > 1) {
       setPage((prev) => prev - 1);
+      setSearchParams({ page: String(page - 1) });
     }
   }
 
   function onTextFilterChange(ev: React.ChangeEvent<HTMLInputElement>) {
-    debounceSetTextFilter(ev.target.value ?? null);
+    debounceSetTextFilter(() => {
+      setSearchParams({ text_filter: ev.target.value });
+      return ev.target.value;
+    });
     setInputValue(ev.target.value);
   }
 
