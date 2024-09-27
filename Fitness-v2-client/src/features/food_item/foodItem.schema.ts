@@ -1,6 +1,12 @@
 import { z } from "zod";
 
-export const foodTypes = ["vegetable", "fruit", "grain", "protein"] as const;
+export const foodTypes = [
+  "vegetable",
+  "fruit",
+  "grain",
+  "protein",
+  "dairy",
+] as const;
 
 export const foodItemFormSchema = z.object({
   name: z.string().min(1, "Name must be at least 1 character"),

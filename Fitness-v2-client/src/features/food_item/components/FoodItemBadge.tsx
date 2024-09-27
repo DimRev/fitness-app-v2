@@ -1,4 +1,4 @@
-import { Apple, Carrot, Croissant, Ham, X } from "lucide-react";
+import { Apple, Carrot, Croissant, Ham, Milk, X } from "lucide-react";
 import { Badge } from "~/features/shared/components/ui/badge";
 import { cn } from "~/lib/utils";
 
@@ -58,6 +58,19 @@ function FoodItemBadge({ foodItemTypes, ...props }: Props) {
         >
           <Carrot />
           Vegetable
+        </Badge>
+      );
+    case "dairy":
+      return (
+        <Badge
+          className={cn(
+            "flex w-fit gap-2 bg-cyan-500 font-bold text-foreground dark:bg-cyan-300 dark:text-muted",
+            props.className,
+          )}
+          {...props}
+        >
+          <Milk />
+          Dairy
         </Badge>
       );
     default:

@@ -10,7 +10,7 @@ type FoodItem = {
   carbs: string;
 };
 
-type FoodItemType = "vegetable" | "fruit" | "grain" | "protein";
+type FoodItemType = "vegetable" | "fruit" | "grain" | "protein" | "dairy";
 
 type FoodItemWithPages = {
   food_items: FoodItem[];
