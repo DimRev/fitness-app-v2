@@ -26,7 +26,7 @@ function FoodItemPendingPreview({
     <Card>
       <CardHeader>
         <div className="flex justify-between items-center">
-          <H3>{foodItemPending.name}</H3>
+          <H3 className="truncate">{foodItemPending.name}</H3>
           <FoodItemBadge foodItemTypes={foodItemPending.food_type} />
         </div>
       </CardHeader>
@@ -95,7 +95,10 @@ export function FoodItemPendingPreviewSkeleton() {
   return (
     <Card className="opacity-70">
       <CardHeader className="opacity-50">
-        <Skeleton className="w-full h-6" />
+        <div className="flex justify-between items-center">
+          <Skeleton className="w-full h-6" />
+          <FoodItemBadge />
+        </div>
       </CardHeader>
       <CardContent>
         <div className="gap-2 grid grid-cols-[4fr_2fr]">
@@ -172,7 +175,12 @@ export function FoodItemPendingPreviewSkeleton() {
 export function FoodItemPendingPreviewEmpty() {
   return (
     <Card className="opacity-70">
-      <CardHeader className="opacity-50">Empty</CardHeader>
+      <CardHeader className="opacity-50">
+        <div className="flex justify-between items-center">
+          <H3 className="opacity-50">Empty</H3>
+          <FoodItemBadge />
+        </div>
+      </CardHeader>
       <CardContent>
         <div className="gap-2 grid grid-cols-[4fr_2fr]">
           <div className="relative p-2 border rounded-md">

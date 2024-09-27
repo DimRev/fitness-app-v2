@@ -5,6 +5,7 @@ import {
   ChevronRight,
   LineChart,
   Sandwich,
+  Scale,
 } from "lucide-react";
 import { H3 } from "~/features/shared/components/Typography";
 import { Button } from "~/features/shared/components/ui/button";
@@ -65,6 +66,12 @@ function SidebarDashboard() {
         LucideIcon={Apple}
         to="/dashboard/food_item"
         title="Food Items"
+        onlyIcon={!isSidebarOpen}
+      />
+      <SidebarNavLink
+        LucideIcon={Scale}
+        to="/dashboard/measurement"
+        title="Measurements"
         onlyIcon={!isSidebarOpen}
       />
       <SidebarNavLink
