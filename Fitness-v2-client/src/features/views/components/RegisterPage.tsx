@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet";
 import RegisterForm from "~/features/auth/components/RegisterForm";
 import {
   Card,
@@ -7,17 +8,21 @@ import {
 
 function RegisterPage() {
   return (
-    <div className="relative h-main w-main">
-      <Card className="absolute left-1/2 top-1/2 w-[80%] max-w-lg -translate-x-1/2 -translate-y-1/2">
-        <CardHeader className="flex items-center justify-center text-xl font-bold">
-          Register
-        </CardHeader>
-
-        <CardContent>
-          <RegisterForm />
-        </CardContent>
-      </Card>
-    </div>
+    <>
+      <Helmet>
+        <title>Register</title>
+      </Helmet>
+      <div className="relative w-main h-main">
+        <Card className="top-1/2 left-1/2 absolute w-[80%] max-w-lg -translate-x-1/2 -translate-y-1/2">
+          <CardHeader className="flex justify-center items-center font-bold text-xl">
+            Register
+          </CardHeader>
+          <CardContent>
+            <RegisterForm />
+          </CardContent>
+        </Card>
+      </div>
+    </>
   );
 }
 
