@@ -81,7 +81,25 @@ function CalendarView({
             );
           }
 
-          function isStatus(date: Date) {
+          let selected = false;
+          if (
+            day.getDate() === selectedDate?.getDate() &&
+            day.getMonth() === selectedDate?.getMonth() &&
+            day.getFullYear() === selectedDate?.getFullYear()
+          ) {
+            selected = true;
+          }
+          const modifier = checkAndGetModifier(day) as string;
+          const mStyles = {
+            "very-good": "bg-green-400 text-zinc-500",
+            good: "bg-green-400 text-zinc-600",
+            normal: "bg-yellow-400 text-zinc-700",
+            bad: "bg-red-400 text-zinc-800",
+            "very-bad": "bg-red-400 text-zinc-900",
+            selected: "bg-blue-400 text-zinc-600",
+          };
+
+          function checkAndGetModifier(date: Date) {
             const allDates = [
               ...matchers.good,
               ...matchers.bad,
@@ -95,7 +113,14 @@ function CalendarView({
               const yearMatch = currDate.getFullYear() === date.getFullYear();
 
               if (dateMatch && monthMatch && yearMatch) {
-                return true;
+                const kvs = Object.entries(matchers);
+                let currModifier;
+                for (const [key, value] of kvs) {
+                  if (value.includes(currDate)) {
+                    currModifier = key;
+                  }
+                }
+                return currModifier;
               }
             }
             return false;
@@ -105,11 +130,16 @@ function CalendarView({
             return (
               <HoverCard>
                 <HoverCardTrigger>
-                  <div className="flex h-[calc(9dvh)] flex-col">
+                  <div className="flex flex-col h-[calc(9dvh)]">
                     <div className="w-[calc(5dvw)] truncate">
                       <span>{day.getDate()}</span>
                     </div>
-                    <div className="w-[calc(5dvw)] truncate rounded-md border-2 border-black bg-green-400 px-2">
+                    <div
+                      className={cn(
+                        "w-[calc(5dvw)] truncate rounded-md border-2 border-black bg-orange-400 px-2 text-sm text-zinc-100",
+                        selected && mStyles.selected,
+                      )}
+                    >
                       <span>Today</span>
                     </div>
                   </div>
@@ -118,22 +148,30 @@ function CalendarView({
               </HoverCard>
             );
           }
-          if (isStatus(day)) {
-            <>
-              <div className="flex h-[calc(9dvh)] flex-col">
-                <div className="w-[calc(5dvw)] truncate">
-                  <span>{day.getDate()}</span>
+          if (checkAndGetModifier(day)) {
+            return (
+              <>
+                <div className="flex flex-col h-[calc(9dvh)]">
+                  <div className="w-[calc(5dvw)] truncate">
+                    <span>{day.getDate()}</span>
+                  </div>
+                  <div
+                    className={cn(
+                      "w-[calc(5dvw)] truncate rounded-md border-2 border-black px-2 text-sm",
+                      mStyles[modifier as keyof typeof mStyles],
+                      selected && mStyles.selected,
+                    )}
+                  >
+                    <span>{modifier}</span>
+                  </div>
                 </div>
-                <div className="w-[calc(5dvw)] truncate rounded-md border-2 border-black bg-green-400 px-2">
-                  <span></span>
-                </div>
-              </div>
-            </>;
+              </>
+            );
           }
 
           return (
             <>
-              <div className="flex h-[calc(9dvh)] flex-col">
+              <div className="flex flex-col h-[calc(9dvh)]">
                 <div className="w-[calc(5dvw)] truncate">
                   <span>{day.getDate()}</span>
                 </div>
