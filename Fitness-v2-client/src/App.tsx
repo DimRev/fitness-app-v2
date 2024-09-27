@@ -30,6 +30,7 @@ import PageNotFound from "./features/views/components/PageNotFound";
 import RegisterPage from "./features/views/components/RegisterPage";
 import TestPage from "./features/views/components/TestPage";
 import { cn } from "./lib/utils";
+import DashboardMeasurementsPage from "./features/views/components/DashboardMeasurementsPage";
 
 const queryClient = new QueryClient();
 
@@ -107,6 +108,10 @@ function App() {
                 <Route
                   path="food_item/add"
                   element={<DashboardFoodItemPendingAddPage />}
+                />
+                <Route
+                  path="measurement"
+                  element={<DashboardMeasurementsPage />}
                 />
                 <Route path="calendar" element={<DashboardCalendarPage />} />
               </Route>

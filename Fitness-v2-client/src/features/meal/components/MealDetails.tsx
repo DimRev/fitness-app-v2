@@ -16,6 +16,7 @@ import FoodItemBadge from "~/features/food_item/components/FoodItemBadge";
 import useDeleteMeal from "../hooks/useDeleteMeal";
 import { toast } from "sonner";
 import { useEffect } from "react";
+import useLayoutStore from "~/features/layout/hooks/useLayoutStore";
 
 type Props = {
   mealId: string;
@@ -34,6 +35,7 @@ function MealDetails({ mealId }: Props) {
       mealId,
     });
   const { mutateAsync: deleteMeal } = useDeleteMeal();
+  const { setIsConfirmationDialogOpen } = useLayoutStore();
 
   const navigate = useNavigate();
 
@@ -44,24 +46,30 @@ function MealDetails({ mealId }: Props) {
   }, [isError, navigate]);
 
   function handleDelete(mealId: string) {
-    void deleteMeal(
-      {
-        meal_id: mealId,
-      },
-      {
-        onSuccess: () => {
-          toast.success("Successfully deleted!", {
-            dismissible: true,
-            description: `Deleted ${mealWithNutritionAndFoodItems?.meal.meal.name}`,
-          });
-          navigate("/dashboard/meal");
-        },
-        onError: (err) => {
-          toast.error("Failed to delete", {
-            dismissible: true,
-            description: `Error: ${err.message}`,
-          });
-        },
+    setIsConfirmationDialogOpen(
+      true,
+      "Are you sure you want to delete this meal?",
+      () => {
+        void deleteMeal(
+          {
+            meal_id: mealId,
+          },
+          {
+            onSuccess: () => {
+              toast.success("Successfully deleted!", {
+                dismissible: true,
+                description: `Deleted ${mealWithNutritionAndFoodItems?.meal.meal.name}`,
+              });
+              navigate("/dashboard/meal");
+            },
+            onError: (err) => {
+              toast.error("Failed to delete", {
+                dismissible: true,
+                description: `Error: ${err.message}`,
+              });
+            },
+          },
+        );
       },
     );
   }

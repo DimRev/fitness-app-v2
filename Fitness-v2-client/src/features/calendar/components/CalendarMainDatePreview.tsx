@@ -23,8 +23,8 @@ function CalendarMainDatePreview({
           <div className="py-2 border-b">
             <H3>Meals</H3>
           </div>
-          <div className="px2">
-            <div>Loading...</div>
+          <div className="px-2">
+            <div className="py-2">Loading...</div>
           </div>
         </div>
         <Separator />
@@ -32,8 +32,8 @@ function CalendarMainDatePreview({
           <div className="py-2 border-b">
             <H3>Nutritional Values</H3>
           </div>
-          <div className="px2">
-            <div>Loading...</div>
+          <div className="px-2">
+            <div className="py-2">Loading...</div>
           </div>
         </div>
         <Separator />
@@ -50,7 +50,9 @@ function CalendarMainDatePreview({
             <H3>Meals</H3>
           </div>
           <div className="px-2">
-            <div>Select a date to see the meals and nutritional values</div>
+            <div className="py-2">
+              Select a date to see the meals and nutritional values
+            </div>
           </div>
         </div>
         <Separator />
@@ -59,7 +61,9 @@ function CalendarMainDatePreview({
             <H3>Nutritional Values</H3>
           </div>
           <div className="px-2">
-            <div>Select a date to see the meals and nutritional values</div>
+            <div className="py-2">
+              Select a date to see the meals and nutritional values
+            </div>
           </div>
         </div>
         <Separator />
@@ -85,7 +89,9 @@ function CalendarMainDatePreview({
               {meals.name}
             </Link>
           ))}
-          {calendarData?.meals?.length === 0 && <div>No meals recorded</div>}
+          {calendarData?.meals?.length === 0 && (
+            <div className="py-2">No meals recorded</div>
+          )}
         </div>
       </div>
       <Separator />

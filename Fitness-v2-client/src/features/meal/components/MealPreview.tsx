@@ -20,6 +20,7 @@ import useGetConsumedMealsByMealID from "../hooks/useGetConsumedMealsByMealID";
 import useToggleToggleConsumeMeal from "../hooks/useToggleConsumeMeal";
 import { toast } from "sonner";
 import useDeleteMeal from "../hooks/useDeleteMeal";
+import useLayoutStore from "~/features/layout/hooks/useLayoutStore";
 
 type Props = {
   mealWithNutrition: MealWithNutrition;
@@ -28,6 +29,7 @@ type Props = {
 function MealPreview({ mealWithNutrition }: Props) {
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const { setIsConfirmationDialogOpen } = useLayoutStore();
 
   const {
     data: consumedMeals,
@@ -86,23 +88,29 @@ function MealPreview({ mealWithNutrition }: Props) {
   }
 
   function handleDelete(mealId: string) {
-    void deleteMeal(
-      {
-        meal_id: mealId,
-      },
-      {
-        onSuccess: () => {
-          toast.success("Successfully deleted!", {
-            dismissible: true,
-            description: `Deleted ${mealWithNutrition.meal.name}`,
-          });
-        },
-        onError: (err) => {
-          toast.error("Failed to delete", {
-            dismissible: true,
-            description: `Error: ${err.message}`,
-          });
-        },
+    setIsConfirmationDialogOpen(
+      true,
+      "Are you sure you want to delete this meal?",
+      () => {
+        void deleteMeal(
+          {
+            meal_id: mealId,
+          },
+          {
+            onSuccess: () => {
+              toast.success("Successfully deleted!", {
+                dismissible: true,
+                description: `Deleted ${mealWithNutrition.meal.name}`,
+              });
+            },
+            onError: (err) => {
+              toast.error("Failed to delete", {
+                dismissible: true,
+                description: `Error: ${err.message}`,
+              });
+            },
+          },
+        );
       },
     );
   }
