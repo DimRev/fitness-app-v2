@@ -21,12 +21,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "react-helmet": "^6.1.0"
   },
   "devDependencies": {
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "@semantic-release/github": "^10.3.3",
+    "@types/react-helmet": "^6.1.11",
     "semantic-release": "^24.1.1"
   }
 }

@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import DashboardPageWrapper from "./DashboardPageWrapper";
 import useGetFoodItemsByID from "~/features/food_item/hooks/useGetFoodItemByID";
 import FoodItemEditForm from "~/features/food_item/components/FoodItemEditForm";
+import { Helmet } from "react-helmet";
 
 function AdminFoodItemEditPage() {
   const { foodItemId } = useParams();
@@ -14,13 +15,18 @@ function AdminFoodItemEditPage() {
   console.log(foodItem);
 
   return (
-    <DashboardPageWrapper
-      title="Edit Food Items"
-      LucideIcon={Edit}
-      to="/admin/food_item/edit"
-    >
-      {foodItemId ? <FoodItemEditForm foodItemId={foodItemId} /> : null}
-    </DashboardPageWrapper>
+    <>
+      <Helmet>
+        <title>Admin - Edit Food Items</title>
+      </Helmet>
+      <DashboardPageWrapper
+        title="Edit Food Items"
+        LucideIcon={Edit}
+        to="/admin/food_item/edit"
+      >
+        {foodItemId ? <FoodItemEditForm foodItemId={foodItemId} /> : null}
+      </DashboardPageWrapper>
+    </>
   );
 }
 
