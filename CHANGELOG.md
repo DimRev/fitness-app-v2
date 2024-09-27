@@ -1,3 +1,18 @@
+# [0.11.0](https://github.com/DimRev/fitness-app-v2/compare/v0.10.0...v0.11.0) (2024-09-27)
+
+
+### Bug Fixes
+
+* Add dairy to food enums inc, migrations ([08fa623](https://github.com/DimRev/fitness-app-v2/commit/08fa62380ab330a047bff26ee7475f117816b350))
+* remove helmet from main repo dpdcs ([fb2e75a](https://github.com/DimRev/fitness-app-v2/commit/fb2e75a668b0399e81b439c405f926d9a5a60644))
+
+
+### Features
+
+* Add dashboard measurements page and add conf to delete btns ([459510c](https://github.com/DimRev/fitness-app-v2/commit/459510c8f93aec812263cf2441698810c49a5240))
+* Add helmet to pages ([9339133](https://github.com/DimRev/fitness-app-v2/commit/933913334dbf3d3ce455a64adc5019a757b27896))
+* Add search params ([ad55489](https://github.com/DimRev/fitness-app-v2/commit/ad55489012abc13f594ee2d50c28ec1198fe0134))
+
 # [0.10.0](https://github.com/DimRev/fitness-app-v2/compare/v0.9.0...v0.10.0) (2024-09-26)
 
 
