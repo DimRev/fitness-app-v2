@@ -24,6 +24,15 @@ function useDeleteMeal() {
           QUERY_KEYS.MEALS.GET_MEAL_BY_ID,
           { meal_id: meal_id },
         ]);
+
+        // Calendars and charts
+
+        void queryClient.invalidateQueries([
+          QUERY_KEYS.CHART_DATA.GET_CHART_DATA_MEALS_CONSUMED,
+        ]);
+        void queryClient.invalidateQueries([
+          QUERY_KEYS.CALENDAR_DATA.GET_CALENDAR_DATA_BY_DATE,
+        ]);
       },
     },
   );
