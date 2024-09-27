@@ -1,6 +1,7 @@
 import { Scale } from "lucide-react";
 import DashboardPageWrapper from "./DashboardPageWrapper";
 import { Helmet } from "react-helmet";
+import MeasurementRecords from "~/features/measurement/components/MeasurementRecords";
 
 function DashboardMeasurementsPage() {
   return (
@@ -13,7 +14,7 @@ function DashboardMeasurementsPage() {
         LucideIcon={Scale}
         to="/dashboard/measurement"
       >
-        DashboardMeasurementsPage
+        <MeasurementRecords />
       </DashboardPageWrapper>
     </>
   );
