@@ -3,6 +3,7 @@ import { DashboardContentCards } from "~/features/shared/components/CustomCards"
 import useGetCalendarDataByDate from "../hooks/useGetCalendarDataByDate";
 import CalendarMainDatePreview from "./CalendarMainDatePreview";
 import CalendarView, { type CalendarMatchers } from "./CalendarView";
+import useGetChartDataMealsConsumed from "~/features/chart/hooks/useGetChartDataMealsConsumed";
 
 const modifiersStyles = {
   "very-good": "bg-green-600 text-zinc-800",
@@ -22,6 +23,7 @@ function CalendarMain() {
     "very-bad": [],
     "very-good": [],
   });
+  const [calDateMap, setCalDateMap] = useState<Record<string, number>>({});
 
   const formattedDate = useMemo(() => {
     if (!selectedDate) return;
@@ -33,22 +35,45 @@ function CalendarMain() {
   const { data: calendarData, isLoading } = useGetCalendarDataByDate({
     date: formattedDate,
   });
-  useEffect(() => {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const twoDaysAgo = new Date();
-    twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
-    const threeDaysAgo = new Date();
-    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+  const { data: mealsConsumedChartData } = useGetChartDataMealsConsumed({});
 
-    setMatchers({
-      good: [yesterday],
+  useEffect(() => {
+    const currMatchers: CalendarMatchers = {
+      good: [],
       bad: [],
-      normal: [twoDaysAgo],
-      "very-bad": [threeDaysAgo],
+      normal: [],
+      "very-bad": [],
       "very-good": [],
-    });
-  }, []);
+    };
+    const currCalDateMap: Record<string, number> = {};
+
+    if (mealsConsumedChartData) {
+      const filledMealsConsumedChartData = fillMissingDates(
+        mealsConsumedChartData,
+      );
+
+      filledMealsConsumedChartData.forEach((mealsConsumedDataRow) => {
+        currCalDateMap[
+          new Date(mealsConsumedDataRow.date).toISOString().split("T")[0]
+        ] = mealsConsumedDataRow.total_calories;
+
+        if (mealsConsumedDataRow.total_calories > 200) {
+          currMatchers["very-good"].push(new Date(mealsConsumedDataRow.date));
+        } else if (mealsConsumedDataRow.total_calories > 100) {
+          currMatchers.good.push(new Date(mealsConsumedDataRow.date));
+        } else if (mealsConsumedDataRow.total_calories > 50) {
+          currMatchers.normal.push(new Date(mealsConsumedDataRow.date));
+        } else if (mealsConsumedDataRow.total_calories > 20) {
+          currMatchers.bad.push(new Date(mealsConsumedDataRow.date));
+        } else {
+          currMatchers["very-bad"].push(new Date(mealsConsumedDataRow.date));
+        }
+      });
+    }
+
+    setCalDateMap(currCalDateMap);
+    setMatchers(currMatchers);
+  }, [mealsConsumedChartData]);
 
   const modifiers = {
     good: matchers.good,
@@ -57,6 +82,43 @@ function CalendarMain() {
     "very-bad": matchers["very-bad"],
     "very-good": matchers["very-good"],
   };
+
+  function fillMissingDates(
+    data: MealsConsumedChartData[],
+  ): MealsConsumedChartData[] {
+    if (data.length === 0) return [];
+    const firstDate = new Date(data[0].date);
+    const lastDate = new Date(data[data.length - 1].date);
+    const diffTimestamp = lastDate.getTime() - firstDate.getTime();
+    const diffDays = Math.ceil(diffTimestamp / (1000 * 60 * 60 * 24));
+
+    const dateMap: Record<string, MealsConsumedChartData> = {};
+    for (const item of data) {
+      const itemDate = new Date(item.date).toISOString().split("T")[0];
+      dateMap[itemDate] = item;
+    }
+
+    const currentDate = firstDate;
+    const filledData: MealsConsumedChartData[] = [];
+
+    for (let i = 0; i <= diffDays; i++) {
+      const currentISOString = currentDate.toISOString().split("T")[0];
+      if (dateMap[currentISOString]) {
+        filledData.push(dateMap[currentISOString]);
+      } else {
+        filledData.push({
+          date: currentISOString,
+          total_calories: 0,
+          total_fat: 0,
+          total_protein: 0,
+          total_carbs: 0,
+        });
+      }
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return filledData;
+  }
 
   return (
     <DashboardContentCards title="Calendar">
@@ -68,6 +130,7 @@ function CalendarMain() {
             setSelectedDate={setSelectedDate}
             modifiers={modifiers}
             modifiersStyles={modifiersStyles}
+            caloriesDateMap={calDateMap}
           />
         </div>
         <div className="flex-[3]">

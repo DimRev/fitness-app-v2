@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet";
 import LoginForm from "~/features/auth/components/LoginForm";
 import {
   Card,
@@ -7,17 +8,22 @@ import {
 
 function LoginPage() {
   return (
-    <div className="relative h-main w-main">
-      <Card className="absolute left-1/2 top-1/2 w-[80%] max-w-lg -translate-x-1/2 -translate-y-1/2">
-        <CardHeader className="flex items-center justify-center text-xl font-bold">
-          Login
-        </CardHeader>
-        <div className="mx-4 border-b-2 border-muted"></div>
-        <CardContent>
-          <LoginForm />
-        </CardContent>
-      </Card>
-    </div>
+    <>
+      <Helmet>
+        <title>Login</title>
+      </Helmet>
+      <div className="relative w-main h-main">
+        <Card className="top-1/2 left-1/2 absolute w-[80%] max-w-lg -translate-x-1/2 -translate-y-1/2">
+          <CardHeader className="flex justify-center items-center font-bold text-xl">
+            Login
+          </CardHeader>
+          <div className="border-muted mx-4 border-b-2"></div>
+          <CardContent>
+            <LoginForm />
+          </CardContent>
+        </Card>
+      </div>
+    </>
   );
 }
 

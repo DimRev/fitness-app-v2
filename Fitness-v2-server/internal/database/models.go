@@ -21,6 +21,7 @@ const (
 	FoodItemTypeFruit     FoodItemType = "fruit"
 	FoodItemTypeGrain     FoodItemType = "grain"
 	FoodItemTypeProtein   FoodItemType = "protein"
+	FoodItemTypeDairy     FoodItemType = "dairy"
 )
 
 func (e *FoodItemType) Scan(src interface{}) error {
