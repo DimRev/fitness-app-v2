@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 import {
   type ChartConfig,
   ChartContainer,
@@ -58,7 +58,7 @@ function ChartMeasurements() {
   useEffect(() => {
     if (mealsConsumedChartData) {
       const filledData = fillMissingDates(mealsConsumedChartData);
-      console.log(filledData);
+
       setChartData(
         filledData.map((item) => ({
           ...item,
@@ -119,7 +119,10 @@ function ChartMeasurements() {
             })
           }
         />
-        <ChartTooltip content={<ChartTooltipContent className="w-40" />} />
+        <YAxis dataKey="weight" tickFormatter={(value: number) => `${value}`} />
+        <ChartTooltip
+          content={<ChartTooltipContent hideLabel className="w-40" />}
+        />
         <ChartLegend content={<ChartLegendContent />} />
         <Line
           dataKey="weight"
