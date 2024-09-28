@@ -12,7 +12,7 @@ import (
 )
 
 const checkTodayMeasurement = `-- name: CheckTodayMeasurement :one
-SELECT user_id, weight, height, date, created_at, updated_at FROM measurements
+SELECT user_id, weight, height, bmi, date, created_at, updated_at FROM measurements
 WHERE user_id = $1
 AND date = CURRENT_DATE
 `
@@ -24,6 +24,51 @@ func (q *Queries) CheckTodayMeasurement(ctx context.Context, userID uuid.UUID) (
 		&i.UserID,
 		&i.Weight,
 		&i.Height,
+		&i.Bmi,
+		&i.Date,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const createMeasurement = `-- name: CreateMeasurement :one
+INSERT INTO measurements (
+  user_id, 
+  weight, 
+  height, 
+  bmi,
+  date
+)
+VALUES (
+  $1, 
+  $2, 
+  $3, 
+  $4,
+  CURRENT_DATE
+) RETURNING user_id, weight, height, bmi, date, created_at, updated_at
+`
+
+type CreateMeasurementParams struct {
+	UserID uuid.UUID
+	Weight string
+	Height string
+	Bmi    string
+}
+
+func (q *Queries) CreateMeasurement(ctx context.Context, arg CreateMeasurementParams) (Measurement, error) {
+	row := q.db.QueryRowContext(ctx, createMeasurement,
+		arg.UserID,
+		arg.Weight,
+		arg.Height,
+		arg.Bmi,
+	)
+	var i Measurement
+	err := row.Scan(
+		&i.UserID,
+		&i.Weight,
+		&i.Height,
+		&i.Bmi,
 		&i.Date,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -32,7 +77,7 @@ func (q *Queries) CheckTodayMeasurement(ctx context.Context, userID uuid.UUID) (
 }
 
 const getMeasurementsByUserID = `-- name: GetMeasurementsByUserID :many
-SELECT user_id, weight, height, date, created_at, updated_at FROM measurements
+SELECT user_id, weight, height, bmi, date, created_at, updated_at FROM measurements
 WHERE user_id = $1
 `
 
@@ -49,6 +94,7 @@ func (q *Queries) GetMeasurementsByUserID(ctx context.Context, userID uuid.UUID)
 			&i.UserID,
 			&i.Weight,
 			&i.Height,
+			&i.Bmi,
 			&i.Date,
 			&i.CreatedAt,
 			&i.UpdatedAt,

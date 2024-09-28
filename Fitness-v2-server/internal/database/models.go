@@ -193,6 +193,7 @@ type Measurement struct {
 	UserID    uuid.UUID
 	Weight    string
 	Height    string
+	Bmi       string
 	Date      time.Time
 	CreatedAt time.Time
 	UpdatedAt time.Time

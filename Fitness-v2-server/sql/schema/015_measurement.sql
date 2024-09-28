@@ -5,6 +5,7 @@ CREATE TABLE measurements (
   
   weight NUMERIC(10, 2) NOT NULL,
   height NUMERIC(10, 2) NOT NULL,
+  bmi NUMERIC(10, 2) NOT NULL,
 
   date DATE NOT NULL,
   
@@ -12,7 +13,7 @@ CREATE TABLE measurements (
   updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
 
   PRIMARY KEY (user_id, date)
-)
+);
 
 -- +goose Down
 
