@@ -3,6 +3,7 @@ import DashboardPageWrapper from "./DashboardPageWrapper";
 import ChartMealsConsumed from "~/features/chart/components/ChartMealsConsumed";
 import { DashboardContentCards } from "~/features/shared/components/CustomCards";
 import { Helmet } from "react-helmet";
+import ChartMeasurements from "~/features/chart/components/ChartMeasurements";
 
 function DashboardOverviewPage() {
   return (
@@ -18,6 +19,7 @@ function DashboardOverviewPage() {
         <DashboardContentCards title="Charts">
           <div className="gap-4 grid grid-cols-1 lg:grid-cols-2">
             <ChartMealsConsumed />
+            <ChartMeasurements />
           </div>
         </DashboardContentCards>
       </DashboardPageWrapper>

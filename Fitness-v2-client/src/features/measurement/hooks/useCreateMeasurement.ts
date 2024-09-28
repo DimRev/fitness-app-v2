@@ -3,48 +3,44 @@ import { useMutation, useQueryClient } from "react-query";
 import axiosInstance from "~/lib/axios";
 import { QUERY_KEYS } from "~/lib/reactQuery";
 
-type DeleteMealRequestBody = {
-  meal_id: string;
+type CreateMeasurementRequestBody = {
+  weight: string;
+  height: string;
 };
 
 type ErrorResponseBody = {
   message: string;
 };
 
-function useDeleteMeal() {
+function useCreateMeasurement() {
   const queryClient = useQueryClient();
-  return useMutation<MealWithFoodItems, Error, DeleteMealRequestBody>(
-    deleteMeal,
+  return useMutation<Measurement, Error, CreateMeasurementRequestBody>(
+    createMeasurement,
     {
-      onSuccess: (_data, { meal_id }) => {
+      onSuccess: () => {
         void queryClient.invalidateQueries([
-          QUERY_KEYS.MEALS.GET_MEALS_BY_USER_ID,
+          QUERY_KEYS.MEASUREMENT.GET_CHECK_TODAY_MEASUREMENT,
         ]);
         void queryClient.invalidateQueries([
-          QUERY_KEYS.MEALS.GET_MEAL_BY_ID,
-          { meal_id: meal_id },
-        ]);
-
-        // Calendars and charts
-
-        void queryClient.invalidateQueries([
-          QUERY_KEYS.CHART_DATA.GET_CHART_DATA_MEALS_CONSUMED,
+          QUERY_KEYS.MEASUREMENT.GET_MEASUREMENTS_BY_USER_ID,
         ]);
         void queryClient.invalidateQueries([
-          QUERY_KEYS.CALENDAR_DATA.GET_CALENDAR_DATA_BY_DATE,
+          QUERY_KEYS.CHART_DATA.GET_CHART_DATA_MEASUREMENTS,
         ]);
       },
     },
   );
 }
 
-async function deleteMeal({
-  meal_id,
-}: DeleteMealRequestBody): Promise<MealWithFoodItems> {
+async function createMeasurement({
+  weight,
+  height,
+}: CreateMeasurementRequestBody): Promise<Measurement> {
   try {
-    const response = await axiosInstance.delete<MealWithFoodItems>(
-      `/meals/${meal_id}`,
-    );
+    const response = await axiosInstance.post<Measurement>(`/measurements`, {
+      weight,
+      height,
+    });
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
@@ -57,4 +53,4 @@ async function deleteMeal({
   }
 }
 
-export default useDeleteMeal;
+export default useCreateMeasurement;

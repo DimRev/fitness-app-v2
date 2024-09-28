@@ -5,3 +5,10 @@ type MealsConsumedChartData = {
   total_protein: number;
   total_carbs: number;
 };
+
+type MeasurementsChartData = {
+  date: string;
+  weight: number;
+  height: number;
+  bmi: number;
+};

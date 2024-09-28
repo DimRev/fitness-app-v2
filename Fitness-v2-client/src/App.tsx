@@ -31,6 +31,7 @@ import RegisterPage from "./features/views/components/RegisterPage";
 import TestPage from "./features/views/components/TestPage";
 import { cn } from "./lib/utils";
 import DashboardMeasurementsPage from "./features/views/components/DashboardMeasurementsPage";
+import DashboardMeasurementsAddPage from "./features/views/components/DashboardMeasurementsAddPage";
 
 const queryClient = new QueryClient();
 
@@ -112,6 +113,10 @@ function App() {
                 <Route
                   path="measurement"
                   element={<DashboardMeasurementsPage />}
+                />
+                <Route
+                  path="measurement/add"
+                  element={<DashboardMeasurementsAddPage />}
                 />
                 <Route path="calendar" element={<DashboardCalendarPage />} />
               </Route>

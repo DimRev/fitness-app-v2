@@ -5,7 +5,7 @@ import useSocket from "~/features/socket/hooks/useSocket";
 import axiosInstance from "~/lib/axios";
 import { QUERY_KEYS, USE_QUERY_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
-type GetFoodItemsRequestBody = {
+type GetChartDataMeasurementsRequestBody = {
   nothing?: string;
 };
 
@@ -13,31 +13,31 @@ type ErrorResponseBody = {
   message: string;
 };
 
-function useGetChartDataMealsConsumed(params: GetFoodItemsRequestBody) {
+function useGetChartDataMeasurements(
+  params: GetChartDataMeasurementsRequestBody,
+) {
   const { joinSocketGroup, leaveSocketGroup } = useSocket();
   useEffect(() => {
-    void joinSocketGroup(QUERY_KEYS.CHART_DATA.GET_CHART_DATA_MEALS_CONSUMED);
+    void joinSocketGroup(QUERY_KEYS.CHART_DATA.GET_CHART_DATA_MEASUREMENTS);
     return () => {
-      void leaveSocketGroup(
-        QUERY_KEYS.CHART_DATA.GET_CHART_DATA_MEALS_CONSUMED,
-      );
+      void leaveSocketGroup(QUERY_KEYS.CHART_DATA.GET_CHART_DATA_MEASUREMENTS);
     };
   }, [joinSocketGroup, leaveSocketGroup]);
-  return useQuery<MealsConsumedChartData[], Error>({
+  return useQuery<MeasurementsChartData[], Error>({
     ...USE_QUERY_DEFAULT_OPTIONS,
-    queryKey: [QUERY_KEYS.CHART_DATA.GET_CHART_DATA_MEALS_CONSUMED, {}],
+    queryKey: [QUERY_KEYS.CHART_DATA.GET_CHART_DATA_MEASUREMENTS, {}],
 
-    queryFn: () => getChartDataMealsConsumed(params),
+    queryFn: () => getChartDataMeasurement(params),
     enabled: !!params,
   });
 }
 
-async function getChartDataMealsConsumed({
+async function getChartDataMeasurement({
   nothing,
-}: GetFoodItemsRequestBody): Promise<MealsConsumedChartData[]> {
+}: GetChartDataMeasurementsRequestBody): Promise<MeasurementsChartData[]> {
   try {
-    const response = await axiosInstance.get<MealsConsumedChartData[]>(
-      `/charts/meals`,
+    const response = await axiosInstance.get<MeasurementsChartData[]>(
+      `/charts/measurements`,
       {
         params: { nothing },
       },
@@ -54,4 +54,4 @@ async function getChartDataMealsConsumed({
   }
 }
 
-export default useGetChartDataMealsConsumed;
+export default useGetChartDataMeasurements;

@@ -20,7 +20,7 @@ export function DashboardContentCards({
   return (
     <Card
       className={cn(
-        "border-2 border-foreground",
+        "border-2 border-foreground [&:not(:first-child)]:mt-4",
         isSidebarOpen
           ? "w-dashboard-card-md md:w-dashboard-card-lg"
           : "w-dashboard-card-sm",
