@@ -189,6 +189,16 @@ type MealConsumed struct {
 	UpdatedAt time.Time
 }
 
+type Measurement struct {
+	UserID    uuid.UUID
+	Weight    string
+	Height    string
+	Bmi       string
+	Date      time.Time
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
 type Notification struct {
 	ID        uuid.UUID
 	Type      NotificationType

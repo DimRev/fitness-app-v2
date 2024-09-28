@@ -43,12 +43,17 @@ export const QUERY_KEYS = {
   NOTIFICATION: {
     GET_NEW_USER_NOTIFICATIONS: "get-new-user-notifications",
   },
+  MEASUREMENT: {
+    GET_CHECK_TODAY_MEASUREMENT: "get-check-today-measurement",
+    GET_MEASUREMENTS_BY_USER_ID: "get-measurements-by-user-id",
+  },
   CHART_DATA: {
     GET_CHART_DATA_MEALS_CONSUMED: "get-chart-data-meals-consumed",
+    GET_CHART_DATA_MEASUREMENTS: "get-chart-data-meals-measurements",
   },
   CALENDAR_DATA: {
-    GET_CALENDAR_DATA_BY_DATE: "get-calendar-data-by-date"
-  }
+    GET_CALENDAR_DATA_BY_DATE: "get-calendar-data-by-date",
+  },
 } as const;
 
 type QueryKeyValues<T> =

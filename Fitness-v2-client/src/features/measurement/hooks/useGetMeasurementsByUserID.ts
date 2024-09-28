@@ -5,43 +5,37 @@ import useSocket from "~/features/socket/hooks/useSocket";
 import axiosInstance from "~/lib/axios";
 import { QUERY_KEYS, USE_QUERY_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
-type GetFoodItemsRequestBody = {
-  nothing?: string;
+type GetMeasurementsByUserIDRequestBody = {
+  never?: never;
 };
 
 type ErrorResponseBody = {
   message: string;
 };
 
-function useGetChartDataMealsConsumed(params: GetFoodItemsRequestBody) {
+function useGetMeasurementsByUserID(
+  params: GetMeasurementsByUserIDRequestBody,
+) {
   const { joinSocketGroup, leaveSocketGroup } = useSocket();
   useEffect(() => {
-    void joinSocketGroup(QUERY_KEYS.CHART_DATA.GET_CHART_DATA_MEALS_CONSUMED);
+    void joinSocketGroup(QUERY_KEYS.MEASUREMENT.GET_MEASUREMENTS_BY_USER_ID);
     return () => {
-      void leaveSocketGroup(
-        QUERY_KEYS.CHART_DATA.GET_CHART_DATA_MEALS_CONSUMED,
-      );
+      void leaveSocketGroup(QUERY_KEYS.MEASUREMENT.GET_MEASUREMENTS_BY_USER_ID);
     };
   }, [joinSocketGroup, leaveSocketGroup]);
-  return useQuery<MealsConsumedChartData[], Error>({
+  return useQuery<Measurement[], Error>({
     ...USE_QUERY_DEFAULT_OPTIONS,
-    queryKey: [QUERY_KEYS.CHART_DATA.GET_CHART_DATA_MEALS_CONSUMED, {}],
+    queryKey: [QUERY_KEYS.MEASUREMENT.GET_MEASUREMENTS_BY_USER_ID],
 
-    queryFn: () => getChartDataMealsConsumed(params),
-    enabled: !!params,
+    queryFn: () => getFoodItemsPending(params),
   });
 }
 
-async function getChartDataMealsConsumed({
-  nothing,
-}: GetFoodItemsRequestBody): Promise<MealsConsumedChartData[]> {
+async function getFoodItemsPending({
+  never: _never,
+}: GetMeasurementsByUserIDRequestBody): Promise<Measurement[]> {
   try {
-    const response = await axiosInstance.get<MealsConsumedChartData[]>(
-      `/charts/meals`,
-      {
-        params: { nothing },
-      },
-    );
+    const response = await axiosInstance.get<Measurement[]>(`/measurements`);
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
@@ -54,4 +48,4 @@ async function getChartDataMealsConsumed({
   }
 }
 
-export default useGetChartDataMealsConsumed;
+export default useGetMeasurementsByUserID;

@@ -35,7 +35,7 @@ function DashboardPageWrapper({
       <PageHeader to={to} LucideIcon={LucideIcon} iconClasses={iconClasses}>
         {title}
       </PageHeader>
-      <div className="rounded-lg border border-muted/70">
+      <div className="border-muted/70 border rounded-lg">
         <ScrollArea
           className={cn(
             "relative h-main-content rounded-lg p-2",
