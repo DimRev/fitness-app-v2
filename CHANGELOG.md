@@ -1,3 +1,16 @@
+# [0.12.0](https://github.com/DimRev/fitness-app-v2/compare/v0.11.0...v0.12.0) (2024-09-28)
+
+
+### Bug Fixes
+
+* Add invalidate to update, delete meal hooks ([c00b50f](https://github.com/DimRev/fitness-app-v2/commit/c00b50f11be9875580507820e1b096821bec6234))
+
+
+### Features
+
+* Implamented measurement logic ([d3d984c](https://github.com/DimRev/fitness-app-v2/commit/d3d984ca003ce9b026c92e1af9039af8e4fec950))
+* Record daily measurments ([6ddf25c](https://github.com/DimRev/fitness-app-v2/commit/6ddf25cc5ef72be3763c156182599fed78570ff8))
+
 # [0.11.0](https://github.com/DimRev/fitness-app-v2/compare/v0.10.0...v0.11.0) (2024-09-27)
 
 
