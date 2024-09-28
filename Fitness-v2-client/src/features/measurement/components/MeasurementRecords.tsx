@@ -33,7 +33,7 @@ function MeasurementRecords() {
       {measurement.measurement && (
         <>
           <div>Weight: {measurement.measurement?.weight} kg</div>
-          <div>Height: {measurement.measurement?.height} cm</div>
+          <div>Height: {measurement.measurement?.height} m</div>
           <div>BMI: {measurement.measurement?.bmi}</div>
         </>
       )}

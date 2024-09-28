@@ -79,6 +79,8 @@ func (q *Queries) CreateMeasurement(ctx context.Context, arg CreateMeasurementPa
 const getMeasurementsByUserID = `-- name: GetMeasurementsByUserID :many
 SELECT user_id, weight, height, bmi, date, created_at, updated_at FROM measurements
 WHERE user_id = $1
+ORDER BY date DESC
+LIMIT 5
 `
 
 func (q *Queries) GetMeasurementsByUserID(ctx context.Context, userID uuid.UUID) ([]Measurement, error) {

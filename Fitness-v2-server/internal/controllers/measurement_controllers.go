@@ -62,11 +62,23 @@ func GetMeasurementsByUserID(c echo.Context) error {
 				"message": "Failed to get user notifications, trouble with server",
 			})
 		}
+		bmi, err := strconv.ParseFloat(measurement.Bmi, 64)
+		if err != nil {
+			utils.FmtLogError(
+				"notification_controller.go",
+				"GetUserNotifications",
+				fmt.Errorf("failed to parse bmi: %s", err),
+			)
+			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+				"message": "Failed to get user notifications, trouble with server",
+			})
+		}
 
 		respMeasurements[i] = models.Measurement{
 			UserID:    measurement.UserID.String(),
 			Weight:    weight,
 			Height:    height,
+			Bmi:       bmi,
 			Date:      measurement.Date,
 			CreatedAt: measurement.CreatedAt,
 			UpdatedAt: measurement.UpdatedAt,
@@ -130,7 +142,17 @@ func GetCheckTodayMeasurement(c echo.Context) error {
 		})
 	}
 
-	bmi := utils.CalculateBMI(weight, height)
+	bmi, err := strconv.ParseFloat(measurement.Bmi, 64)
+	if err != nil {
+		utils.FmtLogError(
+			"measurement_controller.go",
+			"GetCheckTodayMeasurement",
+			fmt.Errorf("failed to parse bmi: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to get check today measurement, trouble with server",
+		})
+	}
 
 	measurementResp := models.Measurement{
 		UserID:    user.ID.String(),

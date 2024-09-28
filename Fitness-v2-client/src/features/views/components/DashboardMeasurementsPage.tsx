@@ -2,6 +2,7 @@ import { Scale } from "lucide-react";
 import DashboardPageWrapper from "./DashboardPageWrapper";
 import { Helmet } from "react-helmet";
 import MeasurementRecords from "~/features/measurement/components/MeasurementRecords";
+import MeasurementLatest from "~/features/measurement/components/MeasurementLatest";
 
 function DashboardMeasurementsPage() {
   return (
@@ -15,6 +16,7 @@ function DashboardMeasurementsPage() {
         to="/dashboard/measurement"
       >
         <MeasurementRecords />
+        <MeasurementLatest />
       </DashboardPageWrapper>
     </>
   );

@@ -63,3 +63,48 @@ func (q *Queries) GetMealsConsumedChartData(ctx context.Context, userID uuid.UUI
 	}
 	return items, nil
 }
+
+const getMeasurementsChartData = `-- name: GetMeasurementsChartData :many
+SELECT
+  m.date as date,
+  m.weight as weight,
+  m.height as height,
+  m.bmi as bmi
+  FROM measurements AS m
+  WHERE m.user_id = $1
+`
+
+type GetMeasurementsChartDataRow struct {
+	Date   time.Time
+	Weight string
+	Height string
+	Bmi    string
+}
+
+func (q *Queries) GetMeasurementsChartData(ctx context.Context, userID uuid.UUID) ([]GetMeasurementsChartDataRow, error) {
+	rows, err := q.db.QueryContext(ctx, getMeasurementsChartData, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetMeasurementsChartDataRow
+	for rows.Next() {
+		var i GetMeasurementsChartDataRow
+		if err := rows.Scan(
+			&i.Date,
+			&i.Weight,
+			&i.Height,
+			&i.Bmi,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

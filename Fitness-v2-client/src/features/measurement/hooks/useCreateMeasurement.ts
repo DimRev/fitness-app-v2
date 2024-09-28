@@ -24,6 +24,9 @@ function useCreateMeasurement() {
         void queryClient.invalidateQueries([
           QUERY_KEYS.MEASUREMENT.GET_MEASUREMENTS_BY_USER_ID,
         ]);
+        void queryClient.invalidateQueries([
+          QUERY_KEYS.CHART_DATA.GET_CHART_DATA_MEASUREMENTS,
+        ]);
       },
     },
   );

@@ -81,3 +81,64 @@ func GetMealsConsumedChartData(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, respConsumedMealsChartData)
 }
+
+func GetMeasurementsChartData(c echo.Context) error {
+	user, ok := c.Get("user").(database.User)
+	if !ok {
+		utils.FmtLogError(
+			"chart_controllers.go",
+			"GetMeasurementsChartData",
+			fmt.Errorf("reached get measurements chart data without user"),
+		)
+		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
+			"message": "Failed to get measurements chart data, unauthorized",
+		})
+	}
+
+	measurementsChartData, err := config.Queries.GetMeasurementsChartData(c.Request().Context(), user.ID)
+	if err != nil {
+		utils.FmtLogError(
+			"chart_controllers.go",
+			"GetMeasurementsChartData",
+			fmt.Errorf("failed to query for measurements chart data: %w", err),
+		)
+	}
+
+	respMeasurementsChartData := make([]models.MeasurementsChartData, len(measurementsChartData))
+	for idx, measurementRow := range measurementsChartData {
+		weight, err := strconv.ParseFloat(measurementRow.Weight, 64)
+		if err != nil {
+			utils.FmtLogError(
+				"chart_controllers.go",
+				"GetMeasurementsChartData",
+				fmt.Errorf("failed to parse weight: %w", err),
+			)
+		}
+		height, err := strconv.ParseFloat(measurementRow.Height, 64)
+		if err != nil {
+			utils.FmtLogError(
+				"chart_controllers.go",
+				"GetMeasurementsChartData",
+				fmt.Errorf("failed to parse height: %w", err),
+			)
+		}
+		bmi, err := strconv.ParseFloat(measurementRow.Bmi, 64)
+		if err != nil {
+			utils.FmtLogError(
+				"chart_controllers.go",
+				"GetMeasurementsChartData",
+				fmt.Errorf("failed to parse bmi: %w", err),
+			)
+		}
+
+		respMeasurementsChartDataItem := models.MeasurementsChartData{
+			Date:   measurementRow.Date,
+			Weight: weight,
+			Height: height,
+			Bmi:    bmi,
+		}
+		respMeasurementsChartData[idx] = respMeasurementsChartDataItem
+	}
+
+	return c.JSON(http.StatusOK, respMeasurementsChartData)
+}

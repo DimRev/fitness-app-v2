@@ -11,3 +11,12 @@ SELECT
   WHERE mc.user_id = $1
   GROUP BY mc.date
   ORDER BY mc.date ASC;
+
+-- name: GetMeasurementsChartData :many
+SELECT
+  m.date as date,
+  m.weight as weight,
+  m.height as height,
+  m.bmi as bmi
+  FROM measurements AS m
+  WHERE m.user_id = $1;

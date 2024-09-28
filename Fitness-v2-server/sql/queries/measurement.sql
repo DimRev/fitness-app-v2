@@ -1,6 +1,8 @@
 -- name: GetMeasurementsByUserID :many
 SELECT * FROM measurements
-WHERE user_id = $1;
+WHERE user_id = $1
+ORDER BY date DESC
+LIMIT 5;
 
 -- name: CheckTodayMeasurement :one
 SELECT * FROM measurements

@@ -49,6 +49,7 @@ export const QUERY_KEYS = {
   },
   CHART_DATA: {
     GET_CHART_DATA_MEALS_CONSUMED: "get-chart-data-meals-consumed",
+    GET_CHART_DATA_MEASUREMENTS: "get-chart-data-meals-measurements",
   },
   CALENDAR_DATA: {
     GET_CALENDAR_DATA_BY_DATE: "get-calendar-data-by-date",
