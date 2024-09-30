@@ -1,6 +1,4 @@
-import axios from "axios";
-import { useMutation, useQueryClient } from "react-query";
-import axiosInstance from "~/lib/axios";
+import useMutateQuery from "~/features/shared/hooks/useMutateQuery";
 import { QUERY_KEYS } from "~/lib/reactQuery";
 
 type UpdateMealRequestBody = {
@@ -14,64 +12,38 @@ type UpdateMealRequestBody = {
   meal_id: string;
 };
 
-type ErrorResponseBody = {
+interface ErrorResponseBody extends Error {
   message: string;
-};
-
-function useUpdateMeal() {
-  const queryClient = useQueryClient();
-  return useMutation<MealWithFoodItems, Error, UpdateMealRequestBody>(
-    updateMeal,
-    {
-      onSuccess: (_data, { meal_id }) => {
-        void queryClient.invalidateQueries([
-          QUERY_KEYS.MEALS.GET_MEALS_BY_USER_ID,
-        ]);
-        void queryClient.invalidateQueries([
-          QUERY_KEYS.MEALS.GET_MEAL_BY_ID,
-          { meal_id: meal_id },
-        ]);
-
-        // Calendars and charts
-
-        void queryClient.invalidateQueries([
-          QUERY_KEYS.CHART_DATA.GET_CHART_DATA_MEALS_CONSUMED,
-        ]);
-        void queryClient.invalidateQueries([
-          QUERY_KEYS.CALENDAR_DATA.GET_CALENDAR_DATA_BY_DATE,
-        ]);
-      },
-    },
-  );
 }
 
-async function updateMeal({
-  description,
-  image_url,
-  name,
-  food_items,
-  meal_id,
-}: UpdateMealRequestBody): Promise<MealWithFoodItems> {
-  try {
-    const response = await axiosInstance.put<MealWithFoodItems>(
-      `/meals/${meal_id}`,
+function useUpdateMeal() {
+  return useMutateQuery<
+    UpdateMealRequestBody,
+    MealWithFoodItems,
+    ErrorResponseBody
+  >(
+    (_d, v) => [
       {
-        name,
-        description,
-        image_url,
-        food_items,
+        queryKey: QUERY_KEYS.MEALS.GET_MEALS_BY_USER_ID,
+        isBroadcast: false,
       },
-    );
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      const errResponse = error.response.data as ErrorResponseBody;
-      console.error(`${error.response.status} | ${errResponse.message}`);
-      throw new Error(errResponse.message);
-    } else {
-      throw new Error("An unexpected error occurred");
-    }
-  }
+      {
+        queryKey: QUERY_KEYS.MEALS.GET_MEAL_BY_ID,
+        params: { meal_id: v.meal_id },
+        isBroadcast: false,
+      },
+      {
+        queryKey: QUERY_KEYS.CHART_DATA.GET_CHART_DATA_MEALS_CONSUMED,
+        isBroadcast: false,
+      },
+      {
+        queryKey: QUERY_KEYS.CALENDAR_DATA.GET_CALENDAR_DATA_BY_DATE,
+        isBroadcast: false,
+      },
+    ],
+    (d) => `/meals/${d.meal_id}`,
+    "put",
+  );
 }
 
 export default useUpdateMeal;

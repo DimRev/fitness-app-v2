@@ -1,6 +1,4 @@
-import axios from "axios";
-import { useMutation, useQueryClient } from "react-query";
-import axiosInstance from "~/lib/axios";
+import useMutateQuery from "~/features/shared/hooks/useMutateQuery";
 import { QUERY_KEYS } from "~/lib/reactQuery";
 
 type MarkNotificationAsReadBody = {
@@ -12,48 +10,27 @@ type MarkNotificationAsReadResponseBody = {
   message: string;
 };
 
-type ErrorResponseBody = {
+interface ErrorResponseBody extends Error {
   message: string;
-};
-
-function useMarkNotificationAsRead() {
-  const queryClient = useQueryClient();
-  return useMutation<
-    MarkNotificationAsReadResponseBody,
-    Error,
-    MarkNotificationAsReadBody
-  >(removeConsumedMeal, {
-    onSuccess: (_data) => {
-      void queryClient.invalidateQueries([
-        QUERY_KEYS.NOTIFICATION.GET_NEW_USER_NOTIFICATIONS,
-      ]);
-    },
-  });
 }
 
-async function removeConsumedMeal({
-  type,
-  food_item_pending_id,
-}: MarkNotificationAsReadBody): Promise<MarkNotificationAsReadResponseBody> {
-  try {
-    const response =
-      await axiosInstance.put<MarkNotificationAsReadResponseBody>(
-        `/notifications/read`,
+function useMarkNotificationAsRead() {
+  return useMutateQuery<
+    MarkNotificationAsReadBody,
+    MarkNotificationAsReadResponseBody,
+    ErrorResponseBody
+  >(
+    () => {
+      return [
         {
-          type,
-          food_item_pending_id,
+          queryKey: QUERY_KEYS.NOTIFICATION.GET_NEW_USER_NOTIFICATIONS,
+          isBroadcast: false,
         },
-      );
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      const errResponse = error.response.data as ErrorResponseBody;
-      console.error(`${error.response.status} | ${errResponse.message}`);
-      throw new Error(errResponse.message);
-    } else {
-      throw new Error("An unexpected error occurred");
-    }
-  }
+      ];
+    },
+    () => "/notifications/read",
+    "put",
+  );
 }
 
 export default useMarkNotificationAsRead;

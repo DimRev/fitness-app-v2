@@ -1,5 +1,12 @@
-import { useEffect, useState } from "react";
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
+import { useEffect, useMemo, useState } from "react";
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  ReferenceLine,
+  XAxis,
+  YAxis,
+} from "recharts";
 import {
   type ChartConfig,
   ChartContainer,
@@ -9,6 +16,7 @@ import {
   ChartTooltipContent,
 } from "~/features/shared/components/ui/chart";
 import useGetChartDataMealsConsumed from "../hooks/useGetChartDataMealsConsumed";
+import useGetCheckTodayMeasurement from "~/features/measurement/hooks/useGetCheckTodayMeasurement";
 
 const initChartData = [
   {
@@ -57,26 +65,28 @@ const initChartData = [
 
 const chartConfig = {
   total_calories: {
-    label: "Total Calories",
+    label: "Total Calories (kcal)",
     color: "#2563eb",
   },
   total_fat: {
-    label: "Total Fat",
+    label: "Total Fat (g)",
     color: "#60a5fa",
   },
   total_protein: {
-    label: "Total Protein",
+    label: "Total Protein (g)",
     color: "#f59e0b",
   },
   total_carbs: {
-    label: "Total Carbs",
+    label: "Total Carbs (g)",
     color: "#f59e0b",
   },
 } satisfies ChartConfig;
 
 function ChartMealsConsumed() {
   const [chartData, setChartData] = useState(initChartData);
+
   const { data: mealsConsumedChartData } = useGetChartDataMealsConsumed({});
+  const { data: todayMeasurement } = useGetCheckTodayMeasurement({});
   useEffect(() => {
     if (mealsConsumedChartData) {
       const filledData = fillMissingDates(mealsConsumedChartData);
@@ -88,6 +98,21 @@ function ChartMealsConsumed() {
       );
     }
   }, [mealsConsumedChartData]);
+
+  const referenceLineData = useMemo(() => {
+    if (!todayMeasurement?.measurement) return null;
+
+    const W = todayMeasurement.measurement.weight;
+    const H = todayMeasurement.measurement.height;
+    const A = 33;
+    const G = "male";
+
+    if (G === "male") {
+      return 10 * W + 625 * H - 5 * A + 5;
+    } else {
+      return 10 * W + 625 * H - 5 * A - 161;
+    }
+  }, [todayMeasurement]);
 
   function fillMissingDates(
     data: MealsConsumedChartData[],
@@ -143,7 +168,28 @@ function ChartMealsConsumed() {
             })
           }
         />
-        <ChartTooltip content={<ChartTooltipContent className="w-40" />} />
+        <YAxis
+          domain={
+            referenceLineData
+              ? [0, Math.floor((referenceLineData * 2) / 100) * 100]
+              : undefined
+          }
+          dataKey="total_calories"
+          tickFormatter={(value: number) => `${value}`}
+        />
+        {referenceLineData && (
+          <ReferenceLine
+            y={referenceLineData}
+            label="Basal Metabolic Rate (kCal)"
+            className="text-red-500"
+            stroke="red"
+            strokeDasharray="3 3"
+            position="start"
+          />
+        )}
+        <ChartTooltip
+          content={<ChartTooltipContent hideLabel className="w-48" />}
+        />
         <ChartLegend content={<ChartLegendContent />} />
         <Line
           dataKey="total_calories"

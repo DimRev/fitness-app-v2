@@ -14,9 +14,10 @@ export const measurementSchema = z.object({
   height: z
     .preprocess(
       (val) => {
-        const num = Number(val);
-        if (isNaN(num)) throw new Error("Height must be a valid number");
-        return num;
+        const cmHeight = Number(val);
+        if (isNaN(cmHeight)) throw new Error("Height must be a valid number");
+        const mHeight = cmHeight / 100;
+        return mHeight;
       },
       z.number().min(0, { message: "Height must be greater then 0" }),
     )

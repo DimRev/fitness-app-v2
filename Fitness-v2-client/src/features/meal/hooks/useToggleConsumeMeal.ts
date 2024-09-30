@@ -1,6 +1,4 @@
-import axios from "axios";
-import { useMutation, useQueryClient } from "react-query";
-import axiosInstance from "~/lib/axios";
+import useMutateQuery from "~/features/shared/hooks/useMutateQuery";
 import { QUERY_KEYS } from "~/lib/reactQuery";
 
 type ToggleConsumeMealRequestBody = {
@@ -8,9 +6,9 @@ type ToggleConsumeMealRequestBody = {
   date: Date;
 };
 
-type ErrorResponseBody = {
+interface ErrorResponseBody extends Error {
   message: string;
-};
+}
 
 type ToggleConsumeMealResponseBody = {
   message: string;
@@ -18,61 +16,40 @@ type ToggleConsumeMealResponseBody = {
 };
 
 function useToggleToggleConsumeMeal() {
-  const queryClient = useQueryClient();
-  return useMutation<
+  return useMutateQuery<
+    ToggleConsumeMealRequestBody,
     ToggleConsumeMealResponseBody,
-    Error,
-    ToggleConsumeMealRequestBody
-  >(toggleConsumeMeal, {
-    onSuccess: (_data, variables) => {
-      void queryClient.invalidateQueries([
-        QUERY_KEYS.MEALS_CONSUMED.GET_MEALS_CONSUMED_BY_MEAL_ID,
-        { meal_id: variables.meal_id },
-      ]);
-      void queryClient.invalidateQueries([
-        QUERY_KEYS.MEALS_CONSUMED.GET_MEALS_CONSUMED_BY_DATE,
-        { date: variables.date },
-      ]);
-      void queryClient.invalidateQueries([
-        QUERY_KEYS.MEALS.GET_MEAL_BY_ID,
-        { meal_id: variables.meal_id },
-      ]);
-
-      // Calendars and charts
-
-      void queryClient.invalidateQueries([
-        QUERY_KEYS.CHART_DATA.GET_CHART_DATA_MEALS_CONSUMED,
-      ]);
-      void queryClient.invalidateQueries([
-        QUERY_KEYS.CALENDAR_DATA.GET_CALENDAR_DATA_BY_DATE,
-        { date: variables.date },
-      ]);
-    },
-  });
-}
-
-async function toggleConsumeMeal({
-  meal_id,
-  date,
-}: ToggleConsumeMealRequestBody): Promise<ToggleConsumeMealResponseBody> {
-  try {
-    const response = await axiosInstance.post<ToggleConsumeMealResponseBody>(
-      `/meals/consume/toggle`,
+    ErrorResponseBody
+  >(
+    (_d, v) => [
       {
-        meal_id,
-        date,
+        queryKey: QUERY_KEYS.MEALS_CONSUMED.GET_MEALS_CONSUMED_BY_MEAL_ID,
+        params: { meal_id: v.meal_id },
+        isBroadcast: false,
       },
-    );
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      const errResponse = error.response.data as ErrorResponseBody;
-      console.error(`${error.response.status} | ${errResponse.message}`);
-      throw new Error(errResponse.message);
-    } else {
-      throw new Error("An unexpected error occurred");
-    }
-  }
+      {
+        queryKey: QUERY_KEYS.MEALS_CONSUMED.GET_MEALS_CONSUMED_BY_DATE,
+        params: { date: v.date },
+        isBroadcast: false,
+      },
+      {
+        queryKey: QUERY_KEYS.MEALS.GET_MEAL_BY_ID,
+        params: { meal_id: v.meal_id },
+        isBroadcast: false,
+      },
+      {
+        queryKey: QUERY_KEYS.CHART_DATA.GET_CHART_DATA_MEALS_CONSUMED,
+        isBroadcast: false,
+      },
+      {
+        queryKey: QUERY_KEYS.CALENDAR_DATA.GET_CALENDAR_DATA_BY_DATE,
+        params: { date: v.date },
+        isBroadcast: false,
+      },
+    ],
+    () => "/meals/consume/toggle",
+    "post",
+  );
 }
 
 export default useToggleToggleConsumeMeal;
