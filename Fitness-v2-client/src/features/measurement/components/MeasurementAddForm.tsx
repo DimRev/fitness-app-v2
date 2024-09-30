@@ -69,7 +69,7 @@ function MeasurementAddForm() {
             name="height"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Height (m)</FormLabel>
+                <FormLabel>Height (cm)</FormLabel>
                 <FormControl>
                   <Input placeholder="Height" type="number" {...field} />
                 </FormControl>
