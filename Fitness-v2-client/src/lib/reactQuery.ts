@@ -64,3 +64,4 @@ type QueryKeyValues<T> =
     : never;
 
 export type ConstQueryKeys = QueryKeyValues<typeof QUERY_KEYS>;
+

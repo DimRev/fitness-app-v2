@@ -18,12 +18,14 @@ type MessageActions =
 type BroadcastData = {
   group: ConstQueryKeys[];
   action: BroadcastDataAction;
-  data: {
-    limit?: number;
-    offset?: number;
-    text_filter?: string | null;
-    food_item_id?: string;
-  };
+  data: ParamsAsData;
+};
+
+type ParamsAsData = {
+  limit?: number;
+  offset?: number;
+  text_filter?: string | null;
+  food_item_id?: string;
 };
 
 type BroadcastDataAction = "invalidate";
