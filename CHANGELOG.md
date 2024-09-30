@@ -1,3 +1,11 @@
+## [0.12.1](https://github.com/DimRev/fitness-app-v2/compare/v0.12.0...v0.12.1) (2024-09-30)
+
+
+### Bug Fixes
+
+* Add useGetQuery and useMutateQuery hooks to impl queries ([a4b768b](https://github.com/DimRev/fitness-app-v2/commit/a4b768b3b8c74750f70c3dae2fae2c4344f90d34))
+* Add yAxis to charts, and referance line, change measurment height units ([d79e607](https://github.com/DimRev/fitness-app-v2/commit/d79e6071354075f4f5298b5c9349c419ed4a1f6d))
+
 # [0.12.0](https://github.com/DimRev/fitness-app-v2/compare/v0.11.0...v0.12.0) (2024-09-28)
 
 
