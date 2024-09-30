@@ -26,6 +26,7 @@ type ParamsAsData = {
   offset?: number;
   text_filter?: string | null;
   food_item_id?: string;
+  meal_id?: string;
 };
 
 type BroadcastDataAction = "invalidate";

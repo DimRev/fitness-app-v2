@@ -19,7 +19,7 @@ function useGetMealsByUserID(
     GetMealsByUserIDRequestBody,
     MealWithNutritionWithPages,
     ErrorResponseBody
-  >(params, QUERY_KEYS.MEALS.GET_MEALS_BY_USER_ID, "/meals");
+  >(params, QUERY_KEYS.MEALS.GET_MEALS_BY_USER_ID, "/meals", false);
 }
 
 export default useGetMealsByUserID;

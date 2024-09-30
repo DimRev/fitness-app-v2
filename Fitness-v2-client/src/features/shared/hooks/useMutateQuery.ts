@@ -1,12 +1,21 @@
-import axios from "axios";
+import axios, { type AxiosResponse } from "axios";
 import { type QueryClient, useMutation, useQueryClient } from "react-query";
 import useSocket from "~/features/socket/hooks/useSocket";
 import axiosInstance from "~/lib/axios";
 import { USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
 function useMutateQuery<ReqBodyType, ResponseType, ErrorType extends Error>(
-  queryKeyParamsArray: { queryKey: string; params?: ParamsAsData }[],
-  route: string,
+  queryKeyParamsArrayCB: (
+    d: ResponseType,
+    v: ReqBodyType,
+    c: unknown,
+  ) => {
+    queryKey: string;
+    params?: ParamsAsData;
+    isBroadcast?: boolean;
+  }[],
+  routeCB: (d: ReqBodyType) => string,
+  method?: "post" | "put" | "delete",
 ) {
   const queryClient = useQueryClient();
   const { sendSocketGroupMessage } = useSocket();
@@ -14,15 +23,19 @@ function useMutateQuery<ReqBodyType, ResponseType, ErrorType extends Error>(
     (reqBody) =>
       createFoodItemPending<ReqBodyType, ResponseType, ErrorType>(
         reqBody,
-        route,
+        routeCB(reqBody),
+        method,
       ),
     {
       ...USE_MUTATION_DEFAULT_OPTIONS,
-      onSuccess: () => {
-        invalidateSocketAndQueryClient(
+      onSuccess: (data, variables, context) => {
+        invalidateSocketAndQueryClient<ReqBodyType, ResponseType>(
           queryClient,
           sendSocketGroupMessage,
-          queryKeyParamsArray,
+          queryKeyParamsArrayCB,
+          data,
+          variables,
+          context,
         );
       },
     },
@@ -33,9 +46,26 @@ async function createFoodItemPending<
   ReqBodyType,
   ResponseType,
   ErrorType extends Error,
->(reqBody: ReqBodyType, route: string): Promise<ResponseType> {
+>(
+  reqBody: ReqBodyType,
+  route: string,
+  method?: "post" | "put" | "delete",
+): Promise<ResponseType> {
   try {
-    const response = await axiosInstance.post<ResponseType>(route, reqBody);
+    let response: AxiosResponse<ResponseType>;
+    switch (method) {
+      case "delete":
+        response = await axiosInstance.delete<ResponseType>(route, {
+          params: reqBody,
+        });
+        break;
+      case "put":
+        response = await axiosInstance.put<ResponseType>(route, reqBody);
+        break;
+      default: // default == "post"
+        response = await axiosInstance.post<ResponseType>(route, reqBody);
+        break;
+    }
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
@@ -48,20 +78,31 @@ async function createFoodItemPending<
   }
 }
 
-function invalidateSocketAndQueryClient(
+function invalidateSocketAndQueryClient<T, U>(
   queryClient: QueryClient,
   sendSocketGroupMessage: (group: string, msg: BroadcastData) => Promise<void>,
-  queryKeyParamsArray: { queryKey: string; params?: ParamsAsData }[],
-  broadcastToSocket = true,
+  queryKeyParamsArrayCB: (
+    d: U,
+    v: T,
+    c: unknown,
+  ) => {
+    queryKey: string;
+    params?: ParamsAsData;
+    isBroadcast?: boolean;
+  }[],
+  data: U,
+  variables: T,
+  context: unknown,
 ) {
-  queryKeyParamsArray.forEach(({ queryKey, params }) => {
+  const queryKeyParamsArray = queryKeyParamsArrayCB(data, variables, context);
+  queryKeyParamsArray.forEach(({ queryKey, params, isBroadcast }) => {
     const invalidateData: BroadcastData = {
       group: [queryKey],
       action: "invalidate",
       data: params ?? {},
     };
 
-    if (broadcastToSocket) {
+    if (isBroadcast) {
       void sendSocketGroupMessage(queryKey, invalidateData);
     }
     if (params) {

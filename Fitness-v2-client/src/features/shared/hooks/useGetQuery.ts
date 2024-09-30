@@ -31,7 +31,12 @@ function useGetQuery<ParamsType, ResponseType, ErrorType extends Error>(
     ...options,
     queryKey: [queryKey, params],
 
-    queryFn: () => getQuery<ParamsType, ResponseType, ErrorType>(params, route),
+    queryFn: () =>
+      getQuery<ParamsType, ResponseType, ErrorType>(
+        params,
+        route,
+        enabledWithoutParams,
+      ),
     enabled: enabledWithoutParams || !!params,
   });
 }
@@ -39,10 +44,11 @@ function useGetQuery<ParamsType, ResponseType, ErrorType extends Error>(
 async function getQuery<ParamsType, ResponseType, ErrorType extends Error>(
   params: ParamsType,
   route: string,
+  enabledWithoutParams: boolean,
 ): Promise<ResponseType> {
   try {
     const response = await axiosInstance.get<ResponseType>(route, {
-      params: params,
+      params: enabledWithoutParams ? undefined : params,
     });
     return response.data;
   } catch (error) {
