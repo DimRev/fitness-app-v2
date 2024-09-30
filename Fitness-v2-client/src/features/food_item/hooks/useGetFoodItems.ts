@@ -16,7 +16,7 @@ function useGetFoodItems(params: GetFoodItemsRequestBody) {
     GetFoodItemsRequestBody,
     FoodItemWithPages,
     ErrorResponseBody
-  >(params, QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS, "/food_items");
+  >(params, QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS, "/food_items", false);
 }
 
 export default useGetFoodItems;

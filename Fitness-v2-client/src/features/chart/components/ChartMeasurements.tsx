@@ -54,7 +54,7 @@ const chartConfig = {
 
 function ChartMeasurements() {
   const [chartData, setChartData] = useState(initChartData);
-  const { data: mealsConsumedChartData } = useGetChartDataMeasurements({});
+  const { data: mealsConsumedChartData } = useGetChartDataMeasurements();
   useEffect(() => {
     if (mealsConsumedChartData) {
       const filledData = fillMissingDates(mealsConsumedChartData);
@@ -119,7 +119,11 @@ function ChartMeasurements() {
             })
           }
         />
-        <YAxis dataKey="weight" tickFormatter={(value: number) => `${value}`} />
+        <YAxis
+          dataKey="weight"
+          domain={[0, 300]}
+          tickFormatter={(value: number) => `${value}`}
+        />
         <ChartTooltip
           content={<ChartTooltipContent hideLabel className="w-40" />}
         />
