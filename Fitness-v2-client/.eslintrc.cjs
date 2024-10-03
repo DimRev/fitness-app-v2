@@ -2,7 +2,7 @@
 const path = require("path");
 const config = {
   root: true,
-  env: { browser: true, es2020: true },
+  env: { browser: true, es2020: true, "vitest/globals": true },
   parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: 2020,
@@ -23,15 +23,17 @@ const config = {
     "plugin:react-hooks/recommended",
     "plugin:@typescript-eslint/recommended-type-checked",
     "plugin:@typescript-eslint/stylistic-type-checked",
+    "plugin:vitest/recommended",
   ],
   ignorePatterns: [
     "dist",
     ".eslintrc.cjs",
     "prettier.config.js",
     "vite.config.ts",
+    "vitest.config.ts",
     "tailwind.config.js",
   ],
-  plugins: ["react-refresh", "@typescript-eslint"],
+  plugins: ["react-refresh", "@typescript-eslint", "vitest"],
   rules: {
     "@typescript-eslint/array-type": "off",
     "@typescript-eslint/consistent-type-definitions": "off",
