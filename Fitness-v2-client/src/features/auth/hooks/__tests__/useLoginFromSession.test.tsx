@@ -1,7 +1,6 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { vi } from "vitest";
-import useLogin from "../useLogin";
+import useLoginFromSession from "../useLoginFromSession";
 
 // Mock the useSocket hook
 const signInSocketMock = vi.fn();
@@ -14,7 +13,7 @@ vi.mock("~/features/socket/hooks/useSocket", () => {
   };
 });
 
-describe("useLogin", () => {
+describe("useLoginFromSession", () => {
   const createTestQueryClient = () =>
     new QueryClient({
       defaultOptions: {
@@ -31,20 +30,19 @@ describe("useLogin", () => {
     signInSocketMock.mockClear();
   });
 
-  test("successful login", async () => {
+  test("successful login from session", async () => {
     const queryClient = createTestQueryClient();
 
     const wrapper = ({ children }: { children: React.ReactNode }) => (
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     );
 
-    const { result } = renderHook(() => useLogin(), { wrapper });
+    const { result } = renderHook(() => useLoginFromSession(), { wrapper });
 
     // Perform the login mutation
     act(() => {
       result.current.mutate({
-        email: "test@test.com",
-        password: "test",
+        session_token: "test_token",
       });
     });
 
@@ -60,24 +58,25 @@ describe("useLogin", () => {
       session_token: "test",
     });
 
+    document.cookie = "";
+
     // Verify that signInSocket was called with the correct email
     expect(signInSocketMock).toHaveBeenCalledWith("test@test.com");
   });
 
-  test("failed login", async () => {
+  test("failed login from session", async () => {
     const queryClient = createTestQueryClient();
 
     const wrapper = ({ children }: { children: React.ReactNode }) => (
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     );
 
-    const { result } = renderHook(() => useLogin(), { wrapper });
+    const { result } = renderHook(() => useLoginFromSession(), { wrapper });
 
-    // Perform the login mutation with incorrect credentials
+    // Perform the login mutation
     act(() => {
       result.current.mutate({
-        email: "wrong@example.com",
-        password: "wrongpassword",
+        session_token: "wrong_token",
       });
     });
 
@@ -87,7 +86,7 @@ describe("useLogin", () => {
     // Assert that the error message is correct
     expect(result.current.error).toBeInstanceOf(Error);
     expect(result.current.error?.message).toBe(
-      "Failed to login, wrong email or password",
+      "Failed to login, invalid session token",
     );
 
     // Ensure signInSocket was not called

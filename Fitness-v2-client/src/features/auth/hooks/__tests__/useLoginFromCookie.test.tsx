@@ -1,7 +1,6 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { vi } from "vitest";
-import useLogin from "../useLogin";
+import useLoginFromCookie from "../useLoginFromCookie";
 
 // Mock the useSocket hook
 const signInSocketMock = vi.fn();
@@ -14,7 +13,7 @@ vi.mock("~/features/socket/hooks/useSocket", () => {
   };
 });
 
-describe("useLogin", () => {
+describe("useLoginFromCookie", () => {
   const createTestQueryClient = () =>
     new QueryClient({
       defaultOptions: {
@@ -31,21 +30,19 @@ describe("useLogin", () => {
     signInSocketMock.mockClear();
   });
 
-  test("successful login", async () => {
+  test("successful login from cookie", async () => {
     const queryClient = createTestQueryClient();
 
     const wrapper = ({ children }: { children: React.ReactNode }) => (
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     );
 
-    const { result } = renderHook(() => useLogin(), { wrapper });
+    const { result } = renderHook(() => useLoginFromCookie(), { wrapper });
+    document.cookie = "jwt=test";
 
     // Perform the login mutation
     act(() => {
-      result.current.mutate({
-        email: "test@test.com",
-        password: "test",
-      });
+      result.current.mutate();
     });
 
     // Wait for the mutation to succeed
@@ -60,35 +57,34 @@ describe("useLogin", () => {
       session_token: "test",
     });
 
+    document.cookie = "";
+
     // Verify that signInSocket was called with the correct email
     expect(signInSocketMock).toHaveBeenCalledWith("test@test.com");
   });
 
-  test("failed login", async () => {
+  test("failed login from cookie", async () => {
     const queryClient = createTestQueryClient();
 
     const wrapper = ({ children }: { children: React.ReactNode }) => (
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     );
 
-    const { result } = renderHook(() => useLogin(), { wrapper });
+    const { result } = renderHook(() => useLoginFromCookie(), { wrapper });
 
-    // Perform the login mutation with incorrect credentials
+    // Perform the login mutation
     act(() => {
-      result.current.mutate({
-        email: "wrong@example.com",
-        password: "wrongpassword",
-      });
+      result.current.mutate();
     });
+
+    document.cookie = "jwt=wrongCookie";
 
     // Wait for the mutation to fail
     await waitFor(() => expect(result.current.isError).toBe(true));
 
     // Assert that the error message is correct
     expect(result.current.error).toBeInstanceOf(Error);
-    expect(result.current.error?.message).toBe(
-      "Failed to login, wrong email or password",
-    );
+    expect(result.current.error?.message).toBe("missing or invalid jwt");
 
     // Ensure signInSocket was not called
     expect(signInSocketMock).not.toHaveBeenCalled();
