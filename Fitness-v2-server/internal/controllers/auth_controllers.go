@@ -96,12 +96,19 @@ func Login(c echo.Context) error {
 }
 
 func Logout(c echo.Context) error {
-	sessionToken, ok := c.Get("session_token").(string)
-	if !ok {
-		utils.FmtLogError("auth_controllers.go", "Logout", fmt.Errorf("reached logout without user"))
-		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
-			"message": "Failed to logout, unauthorized",
-		})
+	recCookie, err := c.Cookie("jwt")
+	// Delete session upon logging out if a session exists
+	if err == nil {
+		issuer, err := services.ExtractIssuerFromCookie(recCookie.Value)
+		if err == nil {
+			user, err := config.Queries.GetUserByID(c.Request().Context(), issuer)
+			if err == nil {
+				sessionToken, err := services.GenerateSession(c, user.ID)
+				if err == nil {
+					services.DeleteSession(c, sessionToken)
+				}
+			}
+		}
 	}
 
 	cookie := new(http.Cookie)
@@ -120,14 +127,6 @@ func Logout(c echo.Context) error {
 	}
 
 	c.SetCookie(cookie)
-
-	err := services.DeleteSession(c, sessionToken)
-	if err != nil {
-		utils.FmtLogError("auth_controllers.go", "Logout", fmt.Errorf("failed to delete session: %s", err))
-		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-			"message": "Failed to logout, trouble with session",
-		})
-	}
 
 	return c.JSON(http.StatusOK, map[string]string{
 		"message": "Logged out",

@@ -66,4 +66,6 @@ export const authHandlers = [
       { status: 401 },
     );
   }),
+
+  http.post("*/auth/logout", async ({ request }) => {}),
 ];

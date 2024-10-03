@@ -40,7 +40,7 @@ const queryClient = new QueryClient({
     },
     queries: {
       retry: 3,
-      retryDelay: 1000,
+      retryDelay: 300,
       cacheTime: 1000 * 60 * 5, // 5 minutes
       staleTime: 1000 * 60 * 5, // 5 minutes
     },

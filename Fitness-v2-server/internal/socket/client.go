@@ -165,5 +165,6 @@ func (c *Client) HandleMessage(msg Message) {
 	case SignOut:
 		utils.FmtLogInfo("socket_controllers.go", "HandleMessage", fmt.Sprintf("SignOut [%s]: %s", c.ID, msg.Data))
 		c.User = models.User{}
+		c.Groups = []string{}
 	}
 }
