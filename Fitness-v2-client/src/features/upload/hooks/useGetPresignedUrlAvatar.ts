@@ -1,7 +1,6 @@
 import axios from "axios";
 import { useMutation, type UseMutationResult } from "react-query";
 import axiosInstance from "~/lib/axios";
-import { USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
 type GetPresignedUrlAvatarRequestBody = {
   file_name: string;
@@ -27,9 +26,7 @@ function useGetPresignedUrlAvatar(): UseMutationResult<
     GetPresignedUrlAvatarRespBody,
     Error,
     GetPresignedUrlAvatarRequestBody
-  >(getPresignedUrlAvatar, {
-    ...USE_MUTATION_DEFAULT_OPTIONS,
-  });
+  >(getPresignedUrlAvatar);
 }
 
 async function getPresignedUrlAvatar({

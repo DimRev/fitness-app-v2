@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useMutation, useQueryClient } from "react-query";
 import axiosInstance from "~/lib/axios";
-import { QUERY_KEYS, USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
+import { QUERY_KEYS } from "~/lib/reactQuery";
 import { type UserEditFormSchema } from "../user.schema";
 import useSocket from "~/features/socket/hooks/useSocket";
 
@@ -15,7 +15,6 @@ function useUpdateUserByAdmin() {
   return useMutation<User, Error, UserEditFormSchema & { userId: string }>(
     updateUserByAdmin,
     {
-      ...USE_MUTATION_DEFAULT_OPTIONS,
       retry: false,
       onSuccess: async () => {
         const invalidateData: BroadcastData = {

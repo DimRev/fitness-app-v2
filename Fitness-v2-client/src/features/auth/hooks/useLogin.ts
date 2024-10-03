@@ -6,7 +6,6 @@ import {
 } from "react-query";
 import useSocket from "~/features/socket/hooks/useSocket";
 import axiosInstance from "~/lib/axios";
-import { USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
 type LoginRequestBody = {
   email: string;
@@ -22,7 +21,6 @@ function useLogin(): UseMutationResult<AuthUser, Error, LoginRequestBody> {
   const { signInSocket } = useSocket();
 
   return useMutation<AuthUser, Error, LoginRequestBody>(login, {
-    ...USE_MUTATION_DEFAULT_OPTIONS,
     onSuccess: async (data) => {
       await queryClient.invalidateQueries();
       void signInSocket(data.email);

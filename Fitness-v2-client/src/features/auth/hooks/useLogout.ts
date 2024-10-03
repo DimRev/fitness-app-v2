@@ -2,7 +2,6 @@ import axios from "axios";
 import { useMutation, useQueryClient } from "react-query";
 import useSocket from "~/features/socket/hooks/useSocket";
 import axiosInstance from "~/lib/axios";
-import { USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
 type ErrorResponseBody = {
   message: string;
@@ -17,7 +16,6 @@ function useLogout() {
   const { signOutSocket } = useSocket();
 
   return useMutation<LogoutResponseBody, Error, void>(logout, {
-    ...USE_MUTATION_DEFAULT_OPTIONS,
     onSuccess: async () => {
       void signOutSocket();
       await queryClient.invalidateQueries();

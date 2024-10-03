@@ -6,7 +6,6 @@ import {
 } from "react-query";
 import useSocket from "~/features/socket/hooks/useSocket";
 import axiosInstance from "~/lib/axios";
-import { USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
 type ErrorResponseBody = {
   message: string;
@@ -17,7 +16,6 @@ function useLoginFromCookie(): UseMutationResult<AuthUser, Error, void> {
   const queryClient = useQueryClient();
 
   return useMutation<AuthUser, Error, void>(loginFromCookie, {
-    ...USE_MUTATION_DEFAULT_OPTIONS,
     retry: false,
     onSuccess: async (data) => {
       void signInSocket(data.email);

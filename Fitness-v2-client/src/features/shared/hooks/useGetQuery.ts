@@ -7,10 +7,7 @@ import {
 } from "react-query";
 import useSocket from "~/features/socket/hooks/useSocket";
 import axiosInstance from "~/lib/axios";
-import {
-  type ConstQueryKeys,
-  USE_QUERY_DEFAULT_OPTIONS,
-} from "~/lib/reactQuery";
+import { type ConstQueryKeys } from "~/lib/reactQuery";
 
 function useGetQuery<ParamsType, ResponseType, ErrorType extends Error>(
   params: ParamsType,
@@ -27,7 +24,6 @@ function useGetQuery<ParamsType, ResponseType, ErrorType extends Error>(
     };
   }, [joinSocketGroup, leaveSocketGroup, queryKey]);
   return useQuery<ResponseType, Error>({
-    ...USE_QUERY_DEFAULT_OPTIONS,
     ...options,
     queryKey: [queryKey, params],
 
