@@ -22,7 +22,7 @@ function useLogout() {
         It drops the user attached to the socket and leaves the groups that
         that socket was included in, so in order to let that set in we wait a bit
       */
-      await signOutSocket();
+      void signOutSocket();
       setTimeout(() => {
         void queryClient.invalidateQueries();
       }, 500);

@@ -67,5 +67,7 @@ export const authHandlers = [
     );
   }),
 
-  http.post("*/auth/logout", async ({ request }) => {}),
+  http.post("*/auth/logout", async () => {
+    return HttpResponse.json({ message: "Logged out" }, { status: 200 });
+  }),
 ];
