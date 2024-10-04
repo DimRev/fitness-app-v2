@@ -85,8 +85,8 @@ const chartConfig = {
 function ChartMealsConsumed() {
   const [chartData, setChartData] = useState(initChartData);
 
-  const { data: mealsConsumedChartData } = useGetChartDataMealsConsumed({});
-  const { data: todayMeasurement } = useGetCheckTodayMeasurement({});
+  const { data: mealsConsumedChartData } = useGetChartDataMealsConsumed();
+  const { data: todayMeasurement } = useGetCheckTodayMeasurement();
   useEffect(() => {
     if (mealsConsumedChartData) {
       const filledData = fillMissingDates(mealsConsumedChartData);
