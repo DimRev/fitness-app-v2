@@ -28,6 +28,14 @@ function useDeleteFoodItem() {
         queryKey: QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS_INF_QUERY,
         isBroadcast: true,
       },
+      {
+        queryKey: QUERY_KEYS.CHART_DATA.GET_CHART_DATA_MEALS_CONSUMED,
+        isBroadcast: false,
+      },
+      {
+        queryKey: QUERY_KEYS.CALENDAR_DATA.GET_CALENDAR_DATA_BY_DATE,
+        isBroadcast: false,
+      },
     ],
     (d) => `/food_items/${d.food_item_id}`,
     "delete",

@@ -1,8 +1,8 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { act } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
-import useUpdateFoodItem from "../useUpdateFoodItem";
 import { QUERY_KEYS } from "~/lib/reactQuery";
+import useDeleteFoodItem from "../useDeleteFoodItem";
 
 // Mock the useSocket hook
 const sendSocketGroupMessageMock = vi.fn();
@@ -15,7 +15,7 @@ vi.mock("~/features/socket/hooks/useSocket", () => {
   };
 });
 
-describe("useUpdateFoodItem", () => {
+describe("useDeleteFoodItem", () => {
   const createTestQueryClient = () =>
     new QueryClient({
       defaultOptions: {
@@ -32,53 +32,37 @@ describe("useUpdateFoodItem", () => {
     sendSocketGroupMessageMock.mockClear();
   });
 
-  test("successful update food item by id", async () => {
+  test("successful delete food item by id", async () => {
     const queryClient = createTestQueryClient();
 
     const wrapper = ({ children }: { children: React.ReactNode }) => (
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     );
 
-    const { result: useUpdateFoodItemResult } = renderHook(
-      () => useUpdateFoodItem(),
+    const { result: useDeleteFoodItemResult } = renderHook(
+      () => useDeleteFoodItem(),
       { wrapper },
     );
 
     await act(async () => {
-      const mutationPromise = useUpdateFoodItemResult.current.mutateAsync({
+      const mutationPromise = useDeleteFoodItemResult.current.mutateAsync({
         food_item_id: "1",
-        name: "test food item 1",
-        calories: "1000",
-        carbs: "1000",
-        fat: "1000",
-        protein: "1000",
-        food_type: "protein",
-        description: "test description 1",
-        image_url: null,
       });
 
       // Wait for the mutation to start
       setTimeout(() => {
-        expect(useUpdateFoodItemResult.current.isLoading).toBe(true);
+        expect(useDeleteFoodItemResult.current.isLoading).toBe(true);
       }, 300);
 
       await mutationPromise;
     });
 
     await waitFor(() =>
-      expect(useUpdateFoodItemResult.current.isSuccess).toBe(true),
+      expect(useDeleteFoodItemResult.current.isSuccess).toBe(true),
     );
 
-    expect(useUpdateFoodItemResult.current.data).toEqual({
-      id: "1",
-      name: "test food item 1",
-      calories: "1000",
-      carbs: "1000",
-      fat: "1000",
-      protein: "1000",
-      food_type: "protein",
-      description: "test description 1",
-      image_url: undefined,
+    expect(useDeleteFoodItemResult.current.data).toEqual({
+      message: "Successfully deleted food item",
     });
 
     const invalidateAllFoodItemsData: BroadcastData = {
@@ -101,18 +85,6 @@ describe("useUpdateFoodItem", () => {
       invalidateAllFoodItemsInfQueryData,
     );
 
-    const invalidateAllFoodItemByID: BroadcastData = {
-      group: [QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS_BY_ID],
-      action: "invalidate",
-      data: {
-        food_item_id: "1",
-      },
-    };
-    expect(sendSocketGroupMessageMock).toHaveBeenCalledWith(
-      QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS_BY_ID,
-      invalidateAllFoodItemByID,
-    );
-
     expect(sendSocketGroupMessageMock).not.toHaveBeenCalledWith(
       QUERY_KEYS.CHART_DATA.GET_CHART_DATA_MEALS_CONSUMED,
     );
@@ -122,38 +94,30 @@ describe("useUpdateFoodItem", () => {
     );
   });
 
-  test("fail to update food item by id, not found", async () => {
+  test("fail to delete food item by id, not found", async () => {
     const queryClient = createTestQueryClient();
 
     const wrapper = ({ children }: { children: React.ReactNode }) => (
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     );
 
-    const { result: useUpdateFoodItemResult } = renderHook(
-      () => useUpdateFoodItem(),
+    const { result: useDeleteFoodItemResult } = renderHook(
+      () => useDeleteFoodItem(),
       { wrapper },
     );
 
     act(() =>
-      useUpdateFoodItemResult.current.mutate({
+      useDeleteFoodItemResult.current.mutate({
         food_item_id: "5",
-        name: "test food item 1",
-        calories: "1000",
-        carbs: "1000",
-        fat: "1000",
-        protein: "1000",
-        food_type: "protein",
-        description: "test description 1",
-        image_url: null,
       }),
     );
 
     await waitFor(() =>
-      expect(useUpdateFoodItemResult.current.isError).toBe(true),
+      expect(useDeleteFoodItemResult.current.isError).toBe(true),
     );
 
-    expect(useUpdateFoodItemResult.current.error).toEqual(
-      new Error("Failed update food item, food item not found"),
+    expect(useDeleteFoodItemResult.current.error).toEqual(
+      new Error("Failed to delete food item, food item not found"),
     );
 
     expect(sendSocketGroupMessageMock).not.toHaveBeenCalled();
