@@ -42,7 +42,7 @@ describe("useLogin", () => {
 
     // Perform the login mutation
     act(() => {
-      result.current.mutate({
+      result.current.mutateAsync({
         email: "test@test.com",
         password: "test",
       });

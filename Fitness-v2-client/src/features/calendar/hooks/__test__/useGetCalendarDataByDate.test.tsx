@@ -31,6 +31,7 @@ describe("useGetCalendarDataByDate", () => {
 
   afterEach(() => {
     joinSocketGroupMock.mockClear();
+    leaveSocketGroupMock.mockClear();
   });
 
   test("successful get calendar data by date", async () => {

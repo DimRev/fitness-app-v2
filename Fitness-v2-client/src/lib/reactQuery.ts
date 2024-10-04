@@ -13,7 +13,7 @@ export const QUERY_KEYS = {
   FOOD_ITEMS: {
     GET_FOOD_ITEMS: "get-food-items",
     GET_FOOD_ITEMS_INF_QUERY: "get-food-items-infinite-query",
-    GET_FOOD_ITEMS_BY_USER_ID: "get-food-items-by-user-id",
+    GET_FOOD_ITEMS_BY_ID: "get-food-items-by-user-id",
   },
   FOOD_ITEMS_PENDING: {
     GET_FOOD_ITEMS_PENDING: "get-food-items-pending",
