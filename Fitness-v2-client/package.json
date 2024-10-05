@@ -12,6 +12,7 @@
     "prettier:check": "prettier --check .",
     "preview": "vite preview",
     "test": "vitest",
+    "test:ci": "vitest --run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest --watch"
   },
