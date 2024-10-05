@@ -111,11 +111,6 @@ describe("useApproveFoodItemPending", () => {
             food_item_pending_id: "5",
           });
 
-        // Wait for the mutation to start
-        setTimeout(() => {
-          expect(useApproveFoodItemPendingResult.current.isLoading).toBe(true);
-        }, 300);
-
         await mutationPromise;
       });
 

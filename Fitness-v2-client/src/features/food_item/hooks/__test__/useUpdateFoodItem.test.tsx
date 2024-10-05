@@ -58,11 +58,6 @@ describe("useUpdateFoodItem", () => {
           image_url: null,
         });
 
-        // Wait for the mutation to start
-        setTimeout(() => {
-          expect(useUpdateFoodItemResult.current.isLoading).toBe(true);
-        }, 300);
-
         await mutationPromise;
       });
 

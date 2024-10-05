@@ -105,7 +105,13 @@ func Logout(c echo.Context) error {
 			if err == nil {
 				sessionToken, err := services.GenerateSession(c, user.ID)
 				if err == nil {
-					services.DeleteSession(c, sessionToken)
+					err := services.DeleteSession(c, sessionToken)
+					if err != nil {
+						utils.FmtLogError("auth_controllers.go", "Logout", fmt.Errorf("failed to delete session: %s", err))
+						return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+							"message": "Failed to logout, trouble with session",
+						})
+					}
 				}
 			}
 		}

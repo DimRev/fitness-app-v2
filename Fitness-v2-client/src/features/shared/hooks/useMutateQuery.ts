@@ -1,6 +1,6 @@
 import axios, { type AxiosResponse } from "axios";
 import {
-  MutateOptions,
+  type MutateOptions,
   type QueryClient,
   useMutation,
   useQueryClient,

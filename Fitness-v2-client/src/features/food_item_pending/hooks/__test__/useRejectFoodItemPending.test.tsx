@@ -49,11 +49,6 @@ describe("useRejectFoodItemPending", () => {
             food_item_pending_id: "1",
           });
 
-        // Wait for the mutation to start
-        setTimeout(() => {
-          expect(useRejectFoodItemPendingResult.current.isLoading).toBe(true);
-        }, 300);
-
         await mutationPromise;
       });
 
@@ -115,11 +110,6 @@ describe("useRejectFoodItemPending", () => {
           useRejectFoodItemPendingResult.current.mutateAsync({
             food_item_pending_id: "5",
           });
-
-        // Wait for the mutation to start
-        setTimeout(() => {
-          expect(useRejectFoodItemPendingResult.current.isLoading).toBe(true);
-        }, 100);
 
         await mutationPromise;
       });

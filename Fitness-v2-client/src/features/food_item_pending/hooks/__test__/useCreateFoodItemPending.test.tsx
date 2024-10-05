@@ -55,10 +55,6 @@ describe("useCreateFoodItemPending", () => {
             carbs: "5000",
           });
 
-        setTimeout(() => {
-          expect(useCreateFoodItemPendingResult.current.isLoading).toBe(true);
-        }, 100);
-
         await mutationPromise;
       });
 

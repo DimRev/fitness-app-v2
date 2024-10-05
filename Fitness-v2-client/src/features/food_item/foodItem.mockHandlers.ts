@@ -1,5 +1,5 @@
 import { http, HttpResponse } from "msw";
-import { FoodItemFormSchema } from "./foodItem.schema";
+import { type FoodItemFormSchema } from "./foodItem.schema";
 
 const FOOD_ITEMS: FoodItem[] = [
   {

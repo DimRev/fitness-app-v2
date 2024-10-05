@@ -26,7 +26,7 @@ export const authHandlers = [
   }),
 
   http.post("*/auth/loginFromCookie", async ({ cookies }) => {
-    if (cookies["jwt"] === "test") {
+    if (cookies.jwt === "test") {
       const validUser: AuthUser = {
         email: "test@test.com",
         username: "test",

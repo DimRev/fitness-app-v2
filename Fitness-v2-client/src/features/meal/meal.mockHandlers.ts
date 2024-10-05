@@ -1,5 +1,5 @@
 import { http, HttpResponse } from "msw";
-import { CreateMealRequestBody } from "./hooks/useCreateMeal";
+import { type CreateMealRequestBody } from "./hooks/useCreateMeal";
 
 const MEALS: Meal[] = [
   {

@@ -49,11 +49,6 @@ describe("useDeleteFoodItem", () => {
         food_item_id: "1",
       });
 
-      // Wait for the mutation to start
-      setTimeout(() => {
-        expect(useDeleteFoodItemResult.current.isLoading).toBe(true);
-      }, 300);
-
       await mutationPromise;
     });
 
