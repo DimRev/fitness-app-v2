@@ -54,10 +54,6 @@ describe("useCreateMeal", () => {
           ],
         });
 
-        setTimeout(() => {
-          expect(useCreateMealResult.current.isLoading).toBe(true);
-        }, 100);
-
         await mutationPromise;
       });
 

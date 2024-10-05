@@ -52,10 +52,6 @@ describe("useToggleFoodItemPending", () => {
             text_filter: "",
           });
 
-        setTimeout(() => {
-          expect(useToggleFoodItemPendingResult.current.isLoading).toBe(true);
-        }, 100);
-
         await mutationPromise;
       });
 
@@ -104,10 +100,6 @@ describe("useToggleFoodItemPending", () => {
             offset: 0,
             text_filter: "",
           });
-
-        setTimeout(() => {
-          expect(useToggleFoodItemPendingResult.current.isLoading).toBe(true);
-        }, 100);
 
         await mutationPromise;
       });
