@@ -609,6 +609,11 @@ func ApproveFoodItemPending(c echo.Context) error {
 
 	err = config.Queries.ApproveFoodItemPending(c.Request().Context(), foodItemPendingID)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return echo.NewHTTPError(http.StatusNotFound, map[string]string{
+				"message": "Failed to approve food item pending, food item pending not found",
+			})
+		}
 		utils.FmtLogError(
 			"food_item_pending_controller.go",
 			"ApproveFoodItemPending",
@@ -651,6 +656,11 @@ func RejectFoodItemPending(c echo.Context) error {
 
 	err = config.Queries.RejectFoodItemPending(c.Request().Context(), foodItemPendingID)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return echo.NewHTTPError(http.StatusNotFound, map[string]string{
+				"message": "Failed to reject food item pending, food item pending not found",
+			})
+		}
 		utils.FmtLogError(
 			"food_item_pending_controller.go",
 			"RejectFoodItemPending",

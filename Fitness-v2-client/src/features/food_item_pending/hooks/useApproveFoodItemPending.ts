@@ -3,8 +3,6 @@ import { QUERY_KEYS } from "~/lib/reactQuery";
 
 type ApproveFoodItemPendingRequestParams = {
   food_item_pending_id: string;
-  limit: number;
-  offset: number;
 };
 
 interface ErrorResponseBody extends Error {
@@ -31,7 +29,7 @@ function useApproveFoodItemPending() {
         isBroadcast: true,
       },
       {
-        queryKey: QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS_INF_QUERY,
+        queryKey: QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS,
         isBroadcast: true,
       },
     ],

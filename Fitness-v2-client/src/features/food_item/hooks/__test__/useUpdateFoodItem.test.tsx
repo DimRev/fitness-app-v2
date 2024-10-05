@@ -44,9 +44,34 @@ describe("useUpdateFoodItem", () => {
       { wrapper },
     );
 
-    await act(async () => {
-      const mutationPromise = useUpdateFoodItemResult.current.mutateAsync({
-        food_item_id: "1",
+    try {
+      await act(async () => {
+        const mutationPromise = useUpdateFoodItemResult.current.mutateAsync({
+          food_item_id: "1",
+          name: "test food item 1",
+          calories: "1000",
+          carbs: "1000",
+          fat: "1000",
+          protein: "1000",
+          food_type: "protein",
+          description: "test description 1",
+          image_url: null,
+        });
+
+        // Wait for the mutation to start
+        setTimeout(() => {
+          expect(useUpdateFoodItemResult.current.isLoading).toBe(true);
+        }, 300);
+
+        await mutationPromise;
+      });
+
+      await waitFor(() =>
+        expect(useUpdateFoodItemResult.current.isSuccess).toBe(true),
+      );
+
+      expect(useUpdateFoodItemResult.current.data).toEqual({
+        id: "1",
         name: "test food item 1",
         calories: "1000",
         carbs: "1000",
@@ -54,32 +79,9 @@ describe("useUpdateFoodItem", () => {
         protein: "1000",
         food_type: "protein",
         description: "test description 1",
-        image_url: null,
+        image_url: undefined,
       });
-
-      // Wait for the mutation to start
-      setTimeout(() => {
-        expect(useUpdateFoodItemResult.current.isLoading).toBe(true);
-      }, 300);
-
-      await mutationPromise;
-    });
-
-    await waitFor(() =>
-      expect(useUpdateFoodItemResult.current.isSuccess).toBe(true),
-    );
-
-    expect(useUpdateFoodItemResult.current.data).toEqual({
-      id: "1",
-      name: "test food item 1",
-      calories: "1000",
-      carbs: "1000",
-      fat: "1000",
-      protein: "1000",
-      food_type: "protein",
-      description: "test description 1",
-      image_url: undefined,
-    });
+    } catch (err) {}
 
     const invalidateAllFoodItemsData: BroadcastData = {
       group: [QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS],

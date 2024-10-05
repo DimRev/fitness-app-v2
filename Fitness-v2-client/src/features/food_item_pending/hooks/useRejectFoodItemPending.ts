@@ -3,8 +3,6 @@ import { QUERY_KEYS } from "~/lib/reactQuery";
 
 type RejectFoodItemPendingRequestParams = {
   food_item_pending_id: string;
-  limit: number;
-  offset: number;
 };
 
 interface ErrorResponseBody extends Error {
