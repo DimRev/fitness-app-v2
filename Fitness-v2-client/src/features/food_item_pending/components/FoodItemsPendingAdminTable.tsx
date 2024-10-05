@@ -41,8 +41,6 @@ function FoodItemsPendingAdminTable() {
     void approveFoodItemPending(
       {
         food_item_pending_id: foodItemPendingId,
-        limit: pageSize,
-        offset,
       },
       {
         onSuccess: (data) => {
@@ -71,8 +69,6 @@ function FoodItemsPendingAdminTable() {
     void rejectFoodItemPending(
       {
         food_item_pending_id: foodItemPendingId,
-        limit: pageSize,
-        offset,
       },
       {
         onSuccess: (data) => {

@@ -15,6 +15,29 @@ import (
 	"github.com/labstack/echo"
 )
 
+func GenerateSession(c echo.Context, userId uuid.UUID) (string, error) {
+	// Collect request data
+	ipAddress := c.RealIP()
+	userAgent := c.Request().UserAgent()
+
+	if ipAddress == "" || userAgent == "" {
+		return "", fmt.Errorf("unable to collect request data")
+	}
+
+	// Generate session token
+	tokenData := strings.Join([]string{
+		userId.String(),
+		ipAddress,
+		userAgent,
+	}, ":")
+
+	hash := sha256.New()
+	hash.Write([]byte(tokenData))
+	sessionToken := hex.EncodeToString(hash.Sum(nil))
+
+	return sessionToken, nil
+}
+
 // GenerateAndRefresh generates a session token and session data based on the user's request and user ID
 func GenerateAndRefresh(c echo.Context, userId uuid.UUID) (string, error) {
 	// Collect request data

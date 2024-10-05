@@ -26,7 +26,7 @@ function useUpdateFoodItem() {
         isBroadcast: true,
       },
       {
-        queryKey: QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS_BY_USER_ID,
+        queryKey: QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS_BY_ID,
         isBroadcast: true,
         params: { food_item_id: v.food_item_id },
       },
