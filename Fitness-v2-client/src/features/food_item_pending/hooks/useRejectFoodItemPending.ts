@@ -29,7 +29,7 @@ function useRejectFoodItemPending() {
         isBroadcast: true,
       },
       {
-        queryKey: QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS_INF_QUERY,
+        queryKey: QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS,
         isBroadcast: true,
       },
     ],
