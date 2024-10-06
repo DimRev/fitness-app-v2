@@ -1,5 +1,6 @@
 import { http, HttpResponse } from "msw";
 import { type CreateMealRequestBody } from "./hooks/useCreateMeal";
+import { type UpdateMealRequestBody } from "./hooks/useUpdateMeal";
 
 const MEALS: Meal[] = [
   {
@@ -290,6 +291,87 @@ export const mealMockHandlers = [
           },
         };
       }),
+    });
+  }),
+
+  http.put("*/meals/:meal_id", async ({ params, request }) => {
+    const { meal_id } = params;
+
+    const meal = MEALS.find((m) => m.id === meal_id);
+    if (!meal) {
+      return HttpResponse.json(
+        { message: "Failed to update meal, meal not found" },
+        { status: 404 },
+      );
+    }
+    const requestBody = (await request.json()) as UpdateMealRequestBody;
+    const foodItemsWithAmount = requestBody.food_items.map((fi) => {
+      const foodItem = FOOD_ITEMS.find((f) => f.id === fi.food_item_id)!;
+
+      return { foodItem: foodItem, amount: fi.amount };
+    });
+
+    if (!foodItemsWithAmount.every(({ foodItem }) => foodItem)) {
+      return HttpResponse.json(
+        { message: "Failed to update meal, food item not found" },
+        { status: 404 },
+      );
+    }
+
+    const updatedMeal: Meal = {
+      id: meal.id,
+      name: requestBody.name,
+      description: requestBody.description ?? undefined,
+      image_url: requestBody.image_url ?? undefined,
+      created_at: meal.created_at,
+      updated_at: new Date().toISOString().split("T")[0] + "T00:00:00.000Z",
+    };
+
+    const foodItems = foodItemsWithAmount.map(({ foodItem }) => {
+      return foodItem;
+    });
+
+    return HttpResponse.json<MealWithFoodItems>({
+      meal: updatedMeal,
+      food_items: foodItems,
+    });
+  }),
+
+  http.delete("*/meals/:meal_id", async ({ params }) => {
+    const { meal_id } = params;
+
+    const meal = MEALS.find((m) => m.id === meal_id);
+    if (!meal) {
+      return HttpResponse.json(
+        { message: "Failed to delete meal, meal not found" },
+        { status: 404 },
+      );
+    }
+
+    const mealFoodItemRel = MEAL_FOOD_ITEM_REL.filter(
+      (rel) => rel.meal_id === meal_id,
+    );
+
+    const foodItemsWithAmount = mealFoodItemRel.map((fi) => {
+      const foodItem = FOOD_ITEMS.find((f) => f.id === fi.food_item_id)!;
+
+      return { foodItem: foodItem, amount: fi.amount };
+    });
+
+    if (!foodItemsWithAmount.every(({ foodItem }) => foodItem)) {
+      return HttpResponse.json(
+        { message: "Failed to delete meal, food item not found" },
+        { status: 404 },
+      );
+    }
+
+    const foodItems = foodItemsWithAmount.map(({ foodItem }) => {
+      return foodItem;
+    });
+
+    return HttpResponse.json<MealWithFoodItems>({
+      meal: meal,
+      food_items: foodItems,
     });
   }),
 ];

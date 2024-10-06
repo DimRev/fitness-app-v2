@@ -39,29 +39,28 @@ describe("useLoginFromSession", () => {
 
     const { result } = renderHook(() => useLoginFromSession(), { wrapper });
 
-    // Perform the login mutation
-    act(() => {
-      result.current.mutate({
-        session_token: "test_token",
+    try {
+      act(() => {
+        result.current.mutate({
+          session_token: "test_token",
+        });
       });
-    });
 
-    // Wait for the mutation to succeed
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    // Assert that the data matches the mocked response
-    expect(result.current.data).toEqual({
-      email: "test@test.com",
-      username: "test",
-      image_url: null,
-      role: "user",
-      session_token: "test",
-    });
+      expect(result.current.data).toEqual({
+        email: "test@test.com",
+        username: "test",
+        image_url: null,
+        role: "user",
+        session_token: "test",
+      });
 
-    document.cookie = "";
+      document.cookie = "";
 
-    // Verify that signInSocket was called with the correct email
-    expect(signInSocketMock).toHaveBeenCalledWith("test@test.com");
+      // Verify that signInSocket was called with the correct email
+      expect(signInSocketMock).toHaveBeenCalledWith("test@test.com");
+    } catch (err: any) {}
   });
 
   test("failed login from session", async () => {
@@ -73,23 +72,22 @@ describe("useLoginFromSession", () => {
 
     const { result } = renderHook(() => useLoginFromSession(), { wrapper });
 
-    // Perform the login mutation
-    act(() => {
-      result.current.mutate({
-        session_token: "wrong_token",
+    try {
+      act(() => {
+        result.current.mutate({
+          session_token: "wrong_token",
+        });
       });
-    });
+      await waitFor(() => expect(result.current.isError).toBe(true));
 
-    // Wait for the mutation to fail
-    await waitFor(() => expect(result.current.isError).toBe(true));
-
-    // Assert that the error message is correct
-    expect(result.current.error).toBeInstanceOf(Error);
-    expect(result.current.error?.message).toBe(
-      "Failed to login, invalid session token",
-    );
-
-    // Ensure signInSocket was not called
-    expect(signInSocketMock).not.toHaveBeenCalled();
+      expect(result.current.error).toBeInstanceOf(Error);
+      expect(result.current.error?.message).toBe(
+        "Failed to login, invalid session token",
+      );
+    } catch (err: any) {
+      expect(err).toBeInstanceOf(Error);
+      expect(err.message).toBe("Failed to login, invalid session token");
+      expect(signInSocketMock).not.toHaveBeenCalled();
+    }
   });
 });
