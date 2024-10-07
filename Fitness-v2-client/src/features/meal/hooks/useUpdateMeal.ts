@@ -1,7 +1,7 @@
 import useMutateQuery from "~/features/shared/hooks/useMutateQuery";
 import { QUERY_KEYS } from "~/lib/reactQuery";
 
-type UpdateMealRequestBody = {
+export type UpdateMealRequestBody = {
   name: string;
   description: string | null;
   image_url: string | null;

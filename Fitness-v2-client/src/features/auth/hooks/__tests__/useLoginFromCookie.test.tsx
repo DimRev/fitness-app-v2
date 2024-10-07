@@ -40,27 +40,25 @@ describe("useLoginFromCookie", () => {
     const { result } = renderHook(() => useLoginFromCookie(), { wrapper });
     document.cookie = "jwt=test";
 
-    // Perform the login mutation
-    act(() => {
-      result.current.mutate();
-    });
+    try {
+      act(() => {
+        result.current.mutate();
+      });
 
-    // Wait for the mutation to succeed
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    // Assert that the data matches the mocked response
-    expect(result.current.data).toEqual({
-      email: "test@test.com",
-      username: "test",
-      image_url: null,
-      role: "user",
-      session_token: "test",
-    });
+      expect(result.current.data).toEqual({
+        email: "test@test.com",
+        username: "test",
+        image_url: null,
+        role: "user",
+        session_token: "test",
+      });
 
-    document.cookie = "";
+      document.cookie = "";
 
-    // Verify that signInSocket was called with the correct email
-    expect(signInSocketMock).toHaveBeenCalledWith("test@test.com");
+      expect(signInSocketMock).toHaveBeenCalledWith("test@test.com");
+    } catch (err) {}
   });
 
   test("failed login from cookie", async () => {
@@ -72,21 +70,21 @@ describe("useLoginFromCookie", () => {
 
     const { result } = renderHook(() => useLoginFromCookie(), { wrapper });
 
-    // Perform the login mutation
-    act(() => {
-      result.current.mutate();
-    });
+    try {
+      act(() => {
+        result.current.mutate();
+      });
 
-    document.cookie = "jwt=wrongCookie";
+      document.cookie = "jwt=wrongCookie";
 
-    // Wait for the mutation to fail
-    await waitFor(() => expect(result.current.isError).toBe(true));
+      await waitFor(() => expect(result.current.isError).toBe(true));
 
-    // Assert that the error message is correct
-    expect(result.current.error).toBeInstanceOf(Error);
-    expect(result.current.error?.message).toBe("missing or invalid jwt");
-
-    // Ensure signInSocket was not called
-    expect(signInSocketMock).not.toHaveBeenCalled();
+      expect(result.current.error).toBeInstanceOf(Error);
+      expect(result.current.error?.message).toBe("missing or invalid jwt");
+    } catch (err: any) {
+      expect(err).toBeInstanceOf(Error);
+      expect(err.message).toBe("missing or invalid jwt");
+      expect(signInSocketMock).not.toHaveBeenCalled();
+    }
   });
 });

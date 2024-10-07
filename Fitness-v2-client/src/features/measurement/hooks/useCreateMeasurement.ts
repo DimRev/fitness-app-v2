@@ -1,7 +1,7 @@
 import useMutateQuery from "~/features/shared/hooks/useMutateQuery";
 import { QUERY_KEYS } from "~/lib/reactQuery";
 
-type CreateMeasurementRequestBody = {
+export type CreateMeasurementRequestBody = {
   weight: string;
   height: string;
 };

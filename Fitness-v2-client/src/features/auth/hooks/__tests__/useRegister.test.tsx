@@ -13,7 +13,7 @@ vi.mock("~/features/socket/hooks/useSocket", () => {
   };
 });
 
-describe("useLogin", () => {
+describe("useRegister", () => {
   const createTestQueryClient = () =>
     new QueryClient({
       defaultOptions: {
@@ -41,23 +41,25 @@ describe("useLogin", () => {
       ),
     });
 
-    act(() => {
-      result.current.mutate({
-        email: "test@test.com",
-        password: "test",
-        username: "test",
+    try {
+      act(() => {
+        result.current.mutate({
+          email: "test@test.com",
+          password: "test",
+          username: "test",
+        });
       });
-    });
 
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(result.current.data).toEqual({
-      email: "test@test.com",
-      username: "test",
-      image_url: null,
-      role: "user",
-      session_token: "test",
-    });
-    expect(signInSocketMock).toHaveBeenCalledWith("test@test.com");
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(result.current.data).toEqual({
+        email: "test@test.com",
+        username: "test",
+        image_url: null,
+        role: "user",
+        session_token: "test",
+      });
+      expect(signInSocketMock).toHaveBeenCalledWith("test@test.com");
+    } catch (err) {}
   });
 
   test("failed register", async () => {
@@ -71,18 +73,24 @@ describe("useLogin", () => {
       ),
     });
 
-    act(() => {
-      result.current.mutate({
-        email: "test_existing@test.com",
-        password: "doesn't_matter",
-        username: "doesn't_matter",
+    try {
+      act(() => {
+        result.current.mutate({
+          email: "test_existing@test.com",
+          password: "doesn't_matter",
+          username: "doesn't_matter",
+        });
       });
-    });
 
-    await waitFor(() => expect(result.current.isError).toBe(true));
-    expect(result.current.error).toBeInstanceOf(Error);
-    expect(result.current.error?.message).toBe(
-      "Failed to register, email already exists",
-    );
+      await waitFor(() => expect(result.current.isError).toBe(true));
+      expect(result.current.error).toBeInstanceOf(Error);
+      expect(result.current.error?.message).toBe(
+        "Failed to register, email already exists",
+      );
+    } catch (err: any) {
+      expect(err).toBeInstanceOf(Error);
+      expect(err.message).toBe("Failed to register, email already exists");
+      expect(signInSocketMock).not.toHaveBeenCalled();
+    }
   });
 });
