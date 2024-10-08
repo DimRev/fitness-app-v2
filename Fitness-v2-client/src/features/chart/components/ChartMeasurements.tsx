@@ -73,8 +73,13 @@ function ChartMeasurements() {
     data: MeasurementsChartData[],
   ): MeasurementsChartData[] {
     if (data.length === 0) return [];
-    const firstDate = new Date(data[0].date);
-    const lastDate = new Date(data[data.length - 1].date);
+    const firstDate = new Date(
+      new Date(data[0].date).toISOString().split("T")[0] + "T00:00:00.000Z",
+    );
+    const lastDate = new Date(
+      new Date(data[data.length - 1].date).toISOString().split("T")[0] +
+        "T00:00:00.000Z",
+    );
     const diffTimestamp = lastDate.getTime() - firstDate.getTime();
     const diffDays = Math.ceil(diffTimestamp / (1000 * 60 * 60 * 24));
 
@@ -94,7 +99,10 @@ function ChartMeasurements() {
         filledData.push(dateMap[currentISOString]);
         prevExistingDateISOstring = currentISOString;
       } else {
-        filledData.push(dateMap[prevExistingDateISOstring]);
+        filledData.push({
+          ...dateMap[prevExistingDateISOstring],
+          date: currentDate.toISOString(),
+        });
       }
       currentDate.setDate(currentDate.getDate() + 1);
     }
