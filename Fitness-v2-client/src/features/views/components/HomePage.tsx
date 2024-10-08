@@ -1,6 +1,7 @@
 import { Home } from "lucide-react";
 import MainPageWrapper from "./MainPageWrapper";
 import { Helmet } from "react-helmet";
+import HomeContent from "~/features/home/components/HomeContent";
 
 function HomePage() {
   return (
@@ -9,7 +10,7 @@ function HomePage() {
         <title>Fitness App</title>
       </Helmet>
       <MainPageWrapper LucideIcon={Home} title="Home Page" to="/">
-        <div>This is the home page</div>
+        <HomeContent />
       </MainPageWrapper>
     </>
   );
