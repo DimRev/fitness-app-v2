@@ -77,20 +77,12 @@ VITE_WS_URL="wss://fitness-v2-server.fly.dev/ws"
 pnpm run install:all
 ```
 
-## Deploy
+## Development and Deployment
 
-### Client Deploy
+Fork the project, and clone it to your local machine, create a branch off the staging branch to develop your features or fix bugs.
 
-Merging a branch to main will deploy the client to vercel.
+After the feature is complete squash your commit and give your commit a prefix with the relative commit action, the repo is using `semantic-release` to assign a version number and generate a changelog based on the commits. ([commit message format]("https://github.com/semantic-release/semantic-release?tab=readme-ov-file#commit-message-format"))
 
-### Server Deploy
+Create a pull request to the staging branch.
 
-```bash
-cd Fitness-v2-server && fly deploy
-```
-
-## Current DB structure & permissions
-
-![Database Structure](./assets/001.png)
-
-<!-- Testing new github user email -->
+After the staging branch will be tested and merged into the main branch, a release will be triggered - a version will be assigned and a changelog will be generated, the app will also be built and deployed to fly.io and vercel.
