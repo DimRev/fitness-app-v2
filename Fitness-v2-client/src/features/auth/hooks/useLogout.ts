@@ -2,7 +2,6 @@ import axios from "axios";
 import { useMutation, useQueryClient } from "react-query";
 import useSocket from "~/features/socket/hooks/useSocket";
 import axiosInstance from "~/lib/axios";
-import { USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
 type ErrorResponseBody = {
   message: string;
@@ -17,10 +16,16 @@ function useLogout() {
   const { signOutSocket } = useSocket();
 
   return useMutation<LogoutResponseBody, Error, void>(logout, {
-    ...USE_MUTATION_DEFAULT_OPTIONS,
     onSuccess: async () => {
+      /*
+        We need the timeout because the logout isn't closing the socket
+        It drops the user attached to the socket and leaves the groups that
+        that socket was included in, so in order to let that set in we wait a bit
+      */
       void signOutSocket();
-      await queryClient.invalidateQueries();
+      setTimeout(() => {
+        void queryClient.invalidateQueries();
+      }, 500);
     },
   });
 }

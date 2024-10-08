@@ -1,8 +1,12 @@
 import axios, { type AxiosResponse } from "axios";
-import { type QueryClient, useMutation, useQueryClient } from "react-query";
+import {
+  type MutateOptions,
+  type QueryClient,
+  useMutation,
+  useQueryClient,
+} from "react-query";
 import useSocket from "~/features/socket/hooks/useSocket";
 import axiosInstance from "~/lib/axios";
-import { USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
 function useMutateQuery<ReqBodyType, ResponseType, ErrorType extends Error>(
   queryKeyParamsArrayCB: (
@@ -16,6 +20,7 @@ function useMutateQuery<ReqBodyType, ResponseType, ErrorType extends Error>(
   }[],
   routeCB: (d: ReqBodyType) => string,
   method?: "post" | "put" | "delete",
+  options?: MutateOptions<ResponseType, ErrorType, ReqBodyType>,
 ) {
   const queryClient = useQueryClient();
   const { sendSocketGroupMessage } = useSocket();
@@ -27,7 +32,7 @@ function useMutateQuery<ReqBodyType, ResponseType, ErrorType extends Error>(
         method,
       ),
     {
-      ...USE_MUTATION_DEFAULT_OPTIONS,
+      ...options,
       onSuccess: (data, variables, context) => {
         invalidateSocketAndQueryClient<ReqBodyType, ResponseType>(
           queryClient,

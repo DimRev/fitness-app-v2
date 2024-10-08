@@ -1,7 +1,6 @@
 import axios from "axios";
 import { useMutation, type UseMutationResult } from "react-query";
 import axiosInstance from "~/lib/axios";
-import { USE_MUTATION_DEFAULT_OPTIONS } from "~/lib/reactQuery";
 
 type GetPresignedUrlFoodImageRequestBody = {
   file_name: string;
@@ -27,9 +26,7 @@ function useGetPresignedUrlFoodImage(): UseMutationResult<
     GetPresignedUrlFoodImageRespBody,
     Error,
     GetPresignedUrlFoodImageRequestBody
-  >(getPresignedUrlFoodImage, {
-    ...USE_MUTATION_DEFAULT_OPTIONS,
-  });
+  >(getPresignedUrlFoodImage);
 }
 
 async function getPresignedUrlFoodImage({

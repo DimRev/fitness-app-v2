@@ -402,13 +402,10 @@ func DeleteFoodItem(c echo.Context) error {
 		})
 	}
 
+	// TODO: Delete the s3 asset if it exists
+
 	foodItem, err := config.Queries.DeleteFoodItem(c.Request().Context(), foodItemId)
 	if err != nil {
-		utils.FmtLogError(
-			"food_item_controllers.go",
-			"DeleteFoodItem",
-			fmt.Errorf("failed to delete food item: %s", err),
-		)
 		if err == sql.ErrNoRows {
 			return echo.NewHTTPError(http.StatusNotFound, map[string]string{
 				"message": "Failed to delete food item, food item not found",
@@ -417,7 +414,7 @@ func DeleteFoodItem(c echo.Context) error {
 			utils.FmtLogError(
 				"food_item_controllers.go",
 				"DeleteFoodItem",
-				fmt.Errorf("non-PostgreSQL error detected: %s", err),
+				fmt.Errorf("failed to delete food item: %s", err),
 			)
 			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 				"message": "Failed to delete food item, trouble with server",
@@ -467,6 +464,11 @@ func GetFoodItemByID(c echo.Context) error {
 
 	foodItem, err := config.Queries.GetFoodItemByID(c.Request().Context(), foodItemID)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return echo.NewHTTPError(http.StatusNotFound, map[string]string{
+				"message": "Failed fetch food item, food item not found",
+			})
+		}
 		utils.FmtLogError(
 			"food_item_controllers.go",
 			"GetFoodItemByID",
@@ -548,6 +550,11 @@ func UpdateFoodItem(c echo.Context) error {
 
 	foodItem, err := config.Queries.GetFoodItemByID(c.Request().Context(), foodItemId)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return echo.NewHTTPError(http.StatusNotFound, map[string]string{
+				"message": "Failed update food item, food item not found",
+			})
+		}
 		utils.FmtLogError(
 			"food_item_controllers.go",
 			"UpdateFoodItem",
@@ -558,10 +565,13 @@ func UpdateFoodItem(c echo.Context) error {
 		})
 	}
 
-	// Remove existing S3 asset if
-	// Image url already exists AND
-	// Image upload comes with no image url
-	// Image upload comes with an image url that is different from the existing one
+	/*
+		Remove existing S3 asset if
+		Image url already exists AND
+		Image upload comes with no image url
+		Image upload comes with an image url that is different from the existing one
+	*/
+
 	if foodItem.ImageUrl.Valid &&
 		updateFoodItemReq.ImageUrl == nil ||
 		(updateFoodItemReq.ImageUrl != nil &&

@@ -521,6 +521,11 @@ func GetMealByID(c echo.Context) error {
 
 	mealWithNut, err := config.Queries.GetMealByID(c.Request().Context(), mealID)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return c.JSON(http.StatusNotFound, map[string]string{
+				"message": "Failed to get meal, meal not found",
+			})
+		}
 		utils.FmtLogError(
 			"meal_controller.go",
 			"GetMealByID",

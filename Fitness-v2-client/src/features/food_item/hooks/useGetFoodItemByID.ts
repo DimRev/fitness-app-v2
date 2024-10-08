@@ -12,7 +12,7 @@ interface ErrorResponseBody extends Error {
 function useGetFoodItemsByID(params: GetFoodItemsByIDRequestBody) {
   return useGetQuery<GetFoodItemsByIDRequestBody, FoodItem, ErrorResponseBody>(
     params,
-    QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS_BY_USER_ID,
+    QUERY_KEYS.FOOD_ITEMS.GET_FOOD_ITEMS_BY_ID,
     `/food_items/${params.food_item_id}`,
     true,
   );
