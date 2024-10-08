@@ -1,3 +1,21 @@
+# [0.13.0](https://github.com/DimRev/fitness-app-v2/compare/v0.12.1...v0.13.0) (2024-10-08)
+
+
+### Bug Fixes
+
+* Add Vitest and MSW dpdcs and start adding tests to client ([67b1072](https://github.com/DimRev/fitness-app-v2/commit/67b1072d74c7f745a6bb807f76989a25ce65511b))
+* Fix measurement chart fill date ([7f19ebc](https://github.com/DimRev/fitness-app-v2/commit/7f19ebcfa65d434eb4c8e5676ad16d9b380d4ad7))
+* link in readme ([b965fc6](https://github.com/DimRev/fitness-app-v2/commit/b965fc63479ff569232da62c697e13cf5f21ce25))
+* Move reactQuery defaults to the init of the queryClient ([90b7659](https://github.com/DimRev/fitness-app-v2/commit/90b7659429c4b9e34c202a36a2be75eef11ec969))
+* Rework how logout is being handled, clears the session in the server and the cookie ([2893338](https://github.com/DimRev/fitness-app-v2/commit/2893338e7fe23490a07892242a7e91790c939c7a))
+* Rework messages for food item handlers, for emptySql errors when grabbing by ID ([0e4ab3b](https://github.com/DimRev/fitness-app-v2/commit/0e4ab3b6229dfd88c11f343f30ddf8fec33c0add))
+* Y-axis fix domain values ([97cabe1](https://github.com/DimRev/fitness-app-v2/commit/97cabe1f01056c05b19ad84f3b82c1062f805e83))
+
+
+### Features
+
+* Implament client CI for tests, incomplete ([5fb90e0](https://github.com/DimRev/fitness-app-v2/commit/5fb90e0397c2c43a4be07ffa4d1619b33b762400))
+
 ## [0.12.1](https://github.com/DimRev/fitness-app-v2/compare/v0.12.0...v0.12.1) (2024-09-30)
 
 
