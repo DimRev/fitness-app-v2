@@ -52,13 +52,15 @@ describe("useGetMeasurementsByUserID", () => {
       expect(useGetCheckTodayMeasurementResult.current.isSuccess).toBe(true);
     });
 
+    const currDate = new Date().toISOString().split("T")[0] + "T00:00:00.000Z";
+
     expect(useGetCheckTodayMeasurementResult.current.data).toEqual({
       isMeasuredToday: true,
       measurement: {
         bmi: 1234,
         height: 1000,
         weight: 1000,
-        date: "2024-10-07T00:00:00.000Z",
+        date: currDate,
       },
     });
 

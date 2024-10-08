@@ -147,12 +147,30 @@ function ChartMealsConsumed() {
       }
       currentDate.setDate(currentDate.getDate() + 1);
     }
-
     return filledData;
   }
 
+  const maxValue = useMemo(() => {
+    if (chartData.length === 0) {
+      return 500;
+    }
+    let max = 0;
+    chartData.forEach((item) => {
+      const localMax = Math.max(
+        item.total_calories,
+        item.total_carbs,
+        item.total_fat,
+        item.total_protein,
+      );
+      if (localMax > max) {
+        max = localMax;
+      }
+    });
+    return Math.floor((max * 2) / 100) * 100;
+  }, [chartData]);
+
   return (
-    <ChartContainer config={chartConfig} className="w-full max-h-96">
+    <ChartContainer config={chartConfig} className="max-h-96 w-full">
       <LineChart accessibilityLayer data={chartData}>
         <CartesianGrid vertical={false} />
         <XAxis
@@ -171,8 +189,14 @@ function ChartMealsConsumed() {
         <YAxis
           domain={
             referenceLineData
-              ? [0, Math.floor((referenceLineData * 2) / 100) * 100]
-              : undefined
+              ? [
+                  0,
+                  Math.max(
+                    Math.floor((referenceLineData * 2) / 100) * 100,
+                    maxValue,
+                  ),
+                ]
+              : [0, maxValue]
           }
           dataKey="total_calories"
           tickFormatter={(value: number) => `${value}`}

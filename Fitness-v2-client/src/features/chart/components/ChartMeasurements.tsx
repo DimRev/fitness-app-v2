@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 import {
   type ChartConfig,
@@ -102,8 +102,22 @@ function ChartMeasurements() {
     return filledData;
   }
 
+  const maxValue = useMemo(() => {
+    if (chartData.length === 0) {
+      return 500;
+    }
+    let max = 0;
+    chartData.forEach((item) => {
+      const localMax = Math.max(item.bmi, item.height, item.weight);
+      if (localMax > max) {
+        max = localMax;
+      }
+    });
+    return Math.floor((max * 2) / 100) * 100;
+  }, [chartData]);
+
   return (
-    <ChartContainer config={chartConfig} className="w-full max-h-96">
+    <ChartContainer config={chartConfig} className="max-h-96 w-full">
       <LineChart accessibilityLayer data={chartData}>
         <CartesianGrid vertical={false} />
         <XAxis
@@ -121,7 +135,7 @@ function ChartMeasurements() {
         />
         <YAxis
           dataKey="weight"
-          domain={[0, 300]}
+          domain={[0, maxValue]}
           tickFormatter={(value: number) => `${value}`}
         />
         <ChartTooltip
