@@ -81,7 +81,7 @@ pnpm run install:all
 
 Fork the project, and clone it to your local machine, create a branch off the staging branch to develop your features or fix bugs.
 
-After the feature is complete squash your commit and give your commit a prefix with the relative commit action, the repo is using `semantic-release` to assign a version number and generate a changelog based on the commits. ([commit message format]("https://github.com/semantic-release/semantic-release?tab=readme-ov-file#commit-message-format"))
+After the feature is complete squash your commit and give your commit a prefix with the relative commit action, the repo is using `semantic-release` to assign a version number and generate a changelog based on the commits. [commit message format](https://github.com/semantic-release/semantic-release?tab=readme-ov-file#commit-message-format)
 
 Create a pull request to the staging branch.
 
