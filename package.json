@@ -14,8 +14,11 @@
     "lint:client": "cd Fitness-v2-client && pnpm run lint",
     "lint:server": "cd Fitness-v2-server && gosec -exclude-generated ./...",
     "prettier:client": "cd Fitness-v2-client && pnpm run prettier:write && pnpm run prettier:check",
-    "test:client": "cd Fitness-v2-client && pnpm run test",
-    "test:server": "cd Fitness-v2-server && go test -v ./..."
+    "test:client": "cd Fitness-v2-client && pnpm run test:ci",
+    "test:server": "cd Fitness-v2-server && go test -v ./...",
+    "ci:client": "set -e && pnpm run lint:client && pnpm run prettier:client && pnpm run test:client",
+    "ci:server": "set -e && pnpm run lint:server && pnpm run test:server",
+    "ci:all": "pnpm run ci:client && pnpm run ci:server"
   },
   "keywords": [],
   "author": "",
