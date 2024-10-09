@@ -100,6 +100,49 @@ func (ns NullNotificationType) Value() (driver.Value, error) {
 	return string(ns.NotificationType), nil
 }
 
+type SupportTicketTypes string
+
+const (
+	SupportTicketTypesBug      SupportTicketTypes = "bug"
+	SupportTicketTypesFeature  SupportTicketTypes = "feature"
+	SupportTicketTypesQuestion SupportTicketTypes = "question"
+)
+
+func (e *SupportTicketTypes) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = SupportTicketTypes(s)
+	case string:
+		*e = SupportTicketTypes(s)
+	default:
+		return fmt.Errorf("unsupported scan type for SupportTicketTypes: %T", src)
+	}
+	return nil
+}
+
+type NullSupportTicketTypes struct {
+	SupportTicketTypes SupportTicketTypes
+	Valid              bool // Valid is true if SupportTicketTypes is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullSupportTicketTypes) Scan(value interface{}) error {
+	if value == nil {
+		ns.SupportTicketTypes, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.SupportTicketTypes.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullSupportTicketTypes) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.SupportTicketTypes), nil
+}
+
 type UserRole string
 
 const (
@@ -229,6 +272,17 @@ type Session struct {
 	ExpiresAt    sql.NullTime
 	SessionToken string
 	SessionData  json.RawMessage
+}
+
+type SupportTicket struct {
+	ID                uuid.UUID
+	SupportTicketType SupportTicketTypes
+	Title             string
+	Description       string
+	IsClosed          sql.NullBool
+	CreatedAt         sql.NullTime
+	UpdatedAt         sql.NullTime
+	UserID            uuid.UUID
 }
 
 type User struct {
