@@ -168,7 +168,7 @@ function MealPreview({ mealWithNutrition }: Props) {
         <div className="flex justify-between w-full">
           <Popover open={isOpen} onOpenChange={setIsOpen}>
             <PopoverTrigger asChild>
-              <Button>Consume</Button>
+              <Button>Record</Button>
             </PopoverTrigger>
             <PopoverContent className="z-10">
               <Card>
@@ -251,7 +251,7 @@ export function MealPreviewSkeleton() {
           <Button disabled>Edit</Button>
         </div>
         <div className="flex justify-between w-full">
-          <Button disabled>Consume</Button>
+          <Button disabled>Record</Button>
           <Button disabled variant="destructive">
             Delete
           </Button>
@@ -296,7 +296,7 @@ export function MealPreviewEmpty() {
           <Button disabled>Edit</Button>
         </div>
         <div className="flex justify-between w-full">
-          <Button disabled>Consume</Button>
+          <Button disabled>Record</Button>
           <Button disabled variant="destructive">
             Delete
           </Button>
