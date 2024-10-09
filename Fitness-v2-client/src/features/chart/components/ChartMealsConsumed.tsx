@@ -96,6 +96,8 @@ function ChartMealsConsumed() {
           date: new Date(item.date),
         })),
       );
+    } else {
+      setChartData(initChartData);
     }
   }, [mealsConsumedChartData]);
 
@@ -170,7 +172,7 @@ function ChartMealsConsumed() {
   }, [chartData]);
 
   return (
-    <ChartContainer config={chartConfig} className="max-h-96 w-full">
+    <ChartContainer config={chartConfig} className="w-full max-h-96">
       <LineChart accessibilityLayer data={chartData}>
         <CartesianGrid vertical={false} />
         <XAxis

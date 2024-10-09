@@ -58,7 +58,6 @@ function ChartMeasurements() {
   useEffect(() => {
     if (mealsConsumedChartData) {
       const filledData = fillMissingDates(mealsConsumedChartData);
-
       setChartData(
         filledData.map((item) => ({
           ...item,
@@ -66,6 +65,8 @@ function ChartMeasurements() {
           date: new Date(item.date),
         })),
       );
+    } else {
+      setChartData(initChartData);
     }
   }, [mealsConsumedChartData]);
 
@@ -125,7 +126,7 @@ function ChartMeasurements() {
   }, [chartData]);
 
   return (
-    <ChartContainer config={chartConfig} className="max-h-96 w-full">
+    <ChartContainer config={chartConfig} className="w-full max-h-96">
       <LineChart accessibilityLayer data={chartData}>
         <CartesianGrid vertical={false} />
         <XAxis

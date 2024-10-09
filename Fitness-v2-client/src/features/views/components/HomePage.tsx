@@ -1,7 +1,7 @@
 import { Home } from "lucide-react";
-import MainPageWrapper from "./MainPageWrapper";
 import { Helmet } from "react-helmet";
 import HomeContent from "~/features/home/components/HomeContent";
+import MainPageWrapper from "./MainPageWrapper";
 
 function HomePage() {
   return (
