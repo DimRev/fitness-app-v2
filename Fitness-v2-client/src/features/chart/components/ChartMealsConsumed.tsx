@@ -96,6 +96,8 @@ function ChartMealsConsumed() {
           date: new Date(item.date),
         })),
       );
+    } else {
+      setChartData(initChartData);
     }
   }, [mealsConsumedChartData]);
 

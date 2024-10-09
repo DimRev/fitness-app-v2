@@ -14,7 +14,7 @@ function MeasurementRecords() {
   if (!measurement.isMeasuredToday) {
     return (
       <DashboardContentCards title="Measurements Records">
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           <H3>No recorded measurements today</H3>
           <Link to="/dashboard/measurement/add" className={buttonVariants()}>
             Record measurement
@@ -26,7 +26,7 @@ function MeasurementRecords() {
 
   return (
     <DashboardContentCards title="Measurements Records">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <H3>Already recorded measurements today</H3>
         <Button disabled>Record measurement</Button>
       </div>

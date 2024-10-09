@@ -58,7 +58,6 @@ function ChartMeasurements() {
   useEffect(() => {
     if (mealsConsumedChartData) {
       const filledData = fillMissingDates(mealsConsumedChartData);
-
       setChartData(
         filledData.map((item) => ({
           ...item,
@@ -66,6 +65,8 @@ function ChartMeasurements() {
           date: new Date(item.date),
         })),
       );
+    } else {
+      setChartData(initChartData);
     }
   }, [mealsConsumedChartData]);
 

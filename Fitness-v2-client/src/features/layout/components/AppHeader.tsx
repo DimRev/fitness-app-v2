@@ -13,7 +13,7 @@ function AppHeader() {
   }, [location]);
 
   return (
-    <div className="flex justify-between items-center border-foreground bg-header px-4 border-b h-header">
+    <div className="flex h-header items-center justify-between border-b border-foreground bg-header px-4">
       <Link to="/">
         <div>Fitness</div>
       </Link>

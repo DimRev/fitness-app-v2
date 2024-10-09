@@ -75,7 +75,7 @@ function FoodItemsAdminTable() {
   if (foodItemsLoading) {
     return (
       <DashboardContentCards title="Pending Food Items">
-        <div className="border rounded-md">
+        <div className="rounded-md border">
           <Table>
             <TableHeader>
               <TableRow>
@@ -116,7 +116,7 @@ function FoodItemsAdminTable() {
 
   return (
     <DashboardContentCards title="Pending Food Items">
-      <div className="border rounded-md">
+      <div className="rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>

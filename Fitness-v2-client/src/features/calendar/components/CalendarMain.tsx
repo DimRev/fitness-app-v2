@@ -35,7 +35,7 @@ function CalendarMain() {
   const { data: calendarData, isLoading } = useGetCalendarDataByDate({
     date: formattedDate,
   });
-  const { data: mealsConsumedChartData } = useGetChartDataMealsConsumed({});
+  const { data: mealsConsumedChartData } = useGetChartDataMealsConsumed();
 
   useEffect(() => {
     const currMatchers: CalendarMatchers = {

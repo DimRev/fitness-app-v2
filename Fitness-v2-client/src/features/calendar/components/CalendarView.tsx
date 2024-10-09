@@ -141,7 +141,7 @@ function CalendarView({
             return (
               <HoverCard>
                 <HoverCardTrigger>
-                  <div className="flex flex-col h-[calc(9dvh)]">
+                  <div className="flex h-[calc(9dvh)] flex-col">
                     <div className="w-[calc(5dvw)] truncate">
                       <span>{day.getDate()}</span>
                     </div>
@@ -167,7 +167,7 @@ function CalendarView({
 
             return (
               <>
-                <div className="flex flex-col h-[calc(9dvh)]">
+                <div className="flex h-[calc(9dvh)] flex-col">
                   <div className="w-[calc(5dvw)] truncate">
                     <span>{day.getDate()}</span>
                   </div>
@@ -187,7 +187,7 @@ function CalendarView({
 
           return (
             <>
-              <div className="flex flex-col h-[calc(9dvh)]">
+              <div className="flex h-[calc(9dvh)] flex-col">
                 <div className="w-[calc(5dvw)] truncate">
                   <span>{day.getDate()}</span>
                 </div>
