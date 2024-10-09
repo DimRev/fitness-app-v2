@@ -26,16 +26,16 @@ function MeasurementLatest() {
             {Array.from({ length: 5 }).map((_, idx) => (
               <TableRow key={idx}>
                 <TableCell>
-                  <Skeleton className="w-full h-[19.5px]" />
+                  <Skeleton className="h-[19.5px] w-full" />
                 </TableCell>
                 <TableCell>
-                  <Skeleton className="w-full h-[19.5px]" />
+                  <Skeleton className="h-[19.5px] w-full" />
                 </TableCell>
                 <TableCell>
-                  <Skeleton className="w-full h-[19.5px]" />
+                  <Skeleton className="h-[19.5px] w-full" />
                 </TableCell>
                 <TableCell>
-                  <Skeleton className="w-full h-[19.5px]" />
+                  <Skeleton className="h-[19.5px] w-full" />
                 </TableCell>
               </TableRow>
             ))}
@@ -92,16 +92,16 @@ function MeasurementLatest() {
           {new Array(5 - measurements.length).fill(null).map((_, idx) => (
             <TableRow key={idx}>
               <TableCell>
-                <div className="w-full h-[19.5px]"></div>
+                <div className="h-[19.5px] w-full"></div>
               </TableCell>
               <TableCell>
-                <div className="w-full h-[19.5px]"></div>
+                <div className="h-[19.5px] w-full"></div>
               </TableCell>
               <TableCell>
-                <div className="w-full h-[19.5px]"></div>
+                <div className="h-[19.5px] w-full"></div>
               </TableCell>
               <TableCell>
-                <div className="w-full h-[19.5px]"></div>
+                <div className="h-[19.5px] w-full"></div>
               </TableCell>
             </TableRow>
           ))}

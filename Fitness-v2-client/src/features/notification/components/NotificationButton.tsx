@@ -30,7 +30,7 @@ function NotificationButton() {
         <Button
           variant="outline"
           size="icon"
-          className="relative bg-header border-none me-4"
+          className="relative me-4 border-none bg-header"
         >
           <Bell
             className={cn(
@@ -41,8 +41,8 @@ function NotificationButton() {
             )}
           />
           {!isLoading && notifications && notifications.length > 0 && (
-            <div className="-top-1 absolute flex justify-center items-center border-foreground bg-orange-500 dark:bg-orange-800 border rounded-full -end-1 size-4">
-              <span className="font-extrabold text-foreground text-xs">
+            <div className="absolute -end-1 -top-1 flex size-4 items-center justify-center rounded-full border border-foreground bg-orange-500 dark:bg-orange-800">
+              <span className="text-xs font-extrabold text-foreground">
                 {notifications.length}
               </span>
             </div>

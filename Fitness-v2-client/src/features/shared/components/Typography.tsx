@@ -73,8 +73,20 @@ export function H6({ children, className, ...props }: Props) {
 }
 
 export function P({ children, className, ...props }: Props) {
+  if (typeof children === "string") {
+    const firstChar = children.charAt(0);
+    const rest = children.slice(1);
+    return (
+      <p className={cn("my-2 font-bold tracking-wide", className)} {...props}>
+        <span className="text-xl font-extrabold tracking-wide">
+          {firstChar}
+        </span>
+        {rest}
+      </p>
+    );
+  }
   return (
-    <p className={cn(className)} {...props}>
+    <p className={cn("my-2 font-bold", className)} {...props}>
       {children}
     </p>
   );
@@ -110,7 +122,10 @@ export function PageHeader({
   return (
     <div className="mt-4 rounded-md border-2 border-foreground bg-popover stroke-popover-foreground px-5 py-4 text-popover-foreground">
       <div className="flex items-center justify-between border-b">
-        <H1 className="truncate" {...props}>
+        <H1
+          className="truncate bg-gradient-to-l from-primary/50 via-primary/80 to-primary bg-clip-text text-primary/10"
+          {...props}
+        >
           {children}
         </H1>
         <LucideIcon className={cn("size-7", iconClasses)} />

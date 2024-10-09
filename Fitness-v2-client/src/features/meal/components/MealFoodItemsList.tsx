@@ -88,10 +88,10 @@ function MealFoodItemsList({ toggleFoodItems, initFoodItems }: Props) {
   }
 
   return (
-    <div className="flex flex-col gap-2 mt-4">
+    <div className="mt-4 flex flex-col gap-2">
       <Popover>
         <PopoverTrigger>
-          <div className="flex flex-wrap justify-start items-center gap-2 bg-input px-1 py-2 border border-black/25 rounded-md min-h-10">
+          <div className="flex min-h-10 flex-wrap items-center justify-start gap-2 rounded-md border border-black/25 bg-input px-1 py-2">
             {selectedFoodItems.map((foodItem) => (
               <Badge
                 key={foodItem.id}
@@ -103,7 +103,7 @@ function MealFoodItemsList({ toggleFoodItems, initFoodItems }: Props) {
                 variant="secondary"
               >
                 <div>{foodItem.name}</div>
-                <div className="m-0 p-0 rounded-full size-4">
+                <div className="m-0 size-4 rounded-full p-0">
                   <X className="size-4" />
                 </div>
               </Badge>
@@ -127,7 +127,7 @@ function MealFoodItemsList({ toggleFoodItems, initFoodItems }: Props) {
                       variant="ghost"
                       type="button"
                       key={foodItem.id}
-                      className="items-center gap-2 grid grid-cols-[1fr_10fr] w-full"
+                      className="grid w-full grid-cols-[1fr_10fr] items-center gap-2"
                     >
                       {selectedFoodItems.find(
                         (currFoodItem) => currFoodItem.id === foodItem.id,
@@ -140,7 +140,7 @@ function MealFoodItemsList({ toggleFoodItems, initFoodItems }: Props) {
                     </Button>
                   ))}
                   {foodItemsList.length === 0 && (
-                    <div className="items-center gap-2 grid grid-cols-[1fr_10fr] w-full font-bold">
+                    <div className="grid w-full grid-cols-[1fr_10fr] items-center gap-2 font-bold">
                       <X />
                       <div className="text-center">No food items found</div>
                     </div>

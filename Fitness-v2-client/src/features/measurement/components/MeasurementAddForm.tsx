@@ -91,7 +91,7 @@ function MeasurementAddForm() {
             )}
           />
 
-          <div className="flex justify-end mt-4">
+          <div className="mt-4 flex justify-end">
             {isError && <div className="text-destructive">{error.message}</div>}
             <Button type="submit" disabled={isCreateMeasurementLoading}>
               {isCreateMeasurementLoading ? "Creating..." : "Create"}

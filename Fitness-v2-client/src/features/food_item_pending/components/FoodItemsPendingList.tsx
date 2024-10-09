@@ -90,7 +90,7 @@ function FoodItemsPendingList() {
             Add Food Item
           </Link>
         </div>
-        <div className="gap-3 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 mt-2">
+        <div className="mt-2 grid grid-cols-1 gap-3 lg:grid-cols-2 xl:grid-cols-4">
           {new Array(4).fill(null).map((_, idx) => (
             <FoodItemPendingPreviewSkeleton key={idx} />
           ))}
@@ -117,8 +117,8 @@ function FoodItemsPendingList() {
             Add Food Item
           </Link>
         </div>
-        <div className="mt-2 font-bold text-center text-destructive text-lg">
-          <span className="flex justify-center items-center gap-2">
+        <div className="mt-2 text-center text-lg font-bold text-destructive">
+          <span className="flex items-center justify-center gap-2">
             <XCircleIcon /> An Error Has Occurred
           </span>
         </div>
@@ -138,7 +138,7 @@ function FoodItemsPendingList() {
           Add Food Item
         </Link>
       </div>
-      <div className="gap-3 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 mt-2">
+      <div className="mt-2 grid grid-cols-1 gap-3 lg:grid-cols-2 xl:grid-cols-4">
         {foodItemsPending.food_items_pending.map((foodItemPending) => (
           <FoodItemPendingPreview
             key={foodItemPending.id}

@@ -25,7 +25,7 @@ function SidebarDashboard() {
     >
       {isSidebarOpen ? (
         <>
-          <div className="flex justify-between items-center gap-2 w-full">
+          <div className="flex w-full items-center justify-between gap-2">
             <H3 className="truncate">Dashboard</H3>
             <Button
               className="border-foreground bg-sidebar"
@@ -49,7 +49,7 @@ function SidebarDashboard() {
           </Button>
         </>
       )}
-      <div className="border-foreground border-b w-full"></div>
+      <div className="w-full border-b border-foreground"></div>
       <SidebarNavLink
         LucideIcon={LineChart}
         to="/dashboard"

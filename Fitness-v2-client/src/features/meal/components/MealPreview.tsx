@@ -121,35 +121,35 @@ function MealPreview({ mealWithNutrition }: Props) {
         <H2>{mealWithNutrition.meal.name}</H2>
       </CardHeader>
       <CardContent>
-        <div className="gap-2 grid grid-cols-[3fr_2fr]">
+        <div className="grid grid-cols-[3fr_2fr] gap-2">
           <div className="line-clamp-3 whitespace-pre-wrap">
             {mealWithNutrition.meal.description ?? "No description"}
           </div>
           <div className="truncate">
-            <div className="flex justify-between items-center gap-2">
+            <div className="flex items-center justify-between gap-2">
               <div>Calories:</div>
               <div>{mealWithNutrition.total_calories.toFixed(2)}</div>
             </div>
-            <div className="flex justify-between items-center gap-2">
+            <div className="flex items-center justify-between gap-2">
               <div>Fat:</div>
               <div>{mealWithNutrition.total_fat.toFixed(2)}</div>
             </div>
-            <div className="flex justify-between items-center gap-2">
+            <div className="flex items-center justify-between gap-2">
               <div>Carbs:</div>
               <div>{mealWithNutrition.total_carbs.toFixed(2)}</div>
             </div>
-            <div className="flex justify-between items-center gap-2">
+            <div className="flex items-center justify-between gap-2">
               <div>Protein:</div>
               <div>{mealWithNutrition.total_protein.toFixed(2)}</div>
             </div>
           </div>
         </div>
       </CardContent>
-      <CardFooter className="flex flex-col gap-2 w-full">
+      <CardFooter className="flex w-full flex-col gap-2">
         {isError && (
           <div className="font-extrabold text-destructive">{error.message}</div>
         )}
-        <div className="flex justify-between w-full">
+        <div className="flex w-full justify-between">
           <Button
             onClick={() =>
               navigate(`/dashboard/meal/details/${mealWithNutrition.meal.id}`)
@@ -165,10 +165,10 @@ function MealPreview({ mealWithNutrition }: Props) {
             Edit
           </Button>
         </div>
-        <div className="flex justify-between w-full">
+        <div className="flex w-full justify-between">
           <Popover open={isOpen} onOpenChange={setIsOpen}>
             <PopoverTrigger asChild>
-              <Button>Consume</Button>
+              <Button>Record</Button>
             </PopoverTrigger>
             <PopoverContent className="z-10">
               <Card>
@@ -207,51 +207,51 @@ export function MealPreviewSkeleton() {
   return (
     <Card>
       <CardHeader>
-        <Skeleton className="w-full h-4" />
+        <Skeleton className="h-4 w-full" />
       </CardHeader>
       <CardContent>
-        <div className="gap-2 grid grid-cols-[3fr_2fr]">
+        <div className="grid grid-cols-[3fr_2fr] gap-2">
           <div className="flex flex-col gap-2">
-            <Skeleton className="w-full h-4" />
-            <Skeleton className="w-full h-4" />
-            <Skeleton className="w-full h-4" />
-            <Skeleton className="w-full h-4" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
           </div>
           <div className="truncate">
-            <div className="flex justify-between items-center gap-2">
+            <div className="flex items-center justify-between gap-2">
               <div>Calories:</div>
               <div className="text-end">
-                <Skeleton className="w-20 h-4" />
+                <Skeleton className="h-4 w-20" />
               </div>
             </div>
-            <div className="flex justify-between items-center gap-2">
+            <div className="flex items-center justify-between gap-2">
               <div>Fat:</div>
               <div className="text-end">
-                <Skeleton className="w-20 h-4" />
+                <Skeleton className="h-4 w-20" />
               </div>
             </div>
-            <div className="flex justify-between items-center gap-2">
+            <div className="flex items-center justify-between gap-2">
               <div>Carbs:</div>
               <div className="text-end">
-                <Skeleton className="w-20 h-4" />
+                <Skeleton className="h-4 w-20" />
               </div>
             </div>
-            <div className="flex justify-between items-center gap-2">
+            <div className="flex items-center justify-between gap-2">
               <div>Protein:</div>
               <div className="text-end">
-                <Skeleton className="w-20 h-4" />
+                <Skeleton className="h-4 w-20" />
               </div>
             </div>
           </div>
         </div>
       </CardContent>
-      <CardFooter className="flex flex-col gap-2 w-full">
-        <div className="flex justify-between w-full">
+      <CardFooter className="flex w-full flex-col gap-2">
+        <div className="flex w-full justify-between">
           <Button disabled>Details</Button>
           <Button disabled>Edit</Button>
         </div>
-        <div className="flex justify-between w-full">
-          <Button disabled>Consume</Button>
+        <div className="flex w-full justify-between">
+          <Button disabled>Record</Button>
           <Button disabled variant="destructive">
             Delete
           </Button>
@@ -268,35 +268,35 @@ export function MealPreviewEmpty() {
         <H2>Empty</H2>
       </CardHeader>
       <CardContent>
-        <div className="gap-2 grid grid-cols-[3fr_2fr]">
+        <div className="grid grid-cols-[3fr_2fr] gap-2">
           <div>N/A</div>
           <div className="truncate">
-            <div className="flex justify-between items-center gap-2">
+            <div className="flex items-center justify-between gap-2">
               <div>Calories:</div>
               <div className="text-end">0.00</div>
             </div>
-            <div className="flex justify-between items-center gap-2">
+            <div className="flex items-center justify-between gap-2">
               <div>Fat:</div>
               <div className="text-end">0.00</div>
             </div>
-            <div className="flex justify-between items-center gap-2">
+            <div className="flex items-center justify-between gap-2">
               <div>Carbs:</div>
               <div className="text-end">0.00</div>
             </div>
-            <div className="flex justify-between items-center gap-2">
+            <div className="flex items-center justify-between gap-2">
               <div>Protein:</div>
               <div className="text-end">0.00</div>
             </div>
           </div>
         </div>
       </CardContent>
-      <CardFooter className="flex flex-col gap-2 w-full">
-        <div className="flex justify-between w-full">
+      <CardFooter className="flex w-full flex-col gap-2">
+        <div className="flex w-full justify-between">
           <Button disabled>Details</Button>
           <Button disabled>Edit</Button>
         </div>
-        <div className="flex justify-between w-full">
-          <Button disabled>Consume</Button>
+        <div className="flex w-full justify-between">
+          <Button disabled>Record</Button>
           <Button disabled variant="destructive">
             Delete
           </Button>
