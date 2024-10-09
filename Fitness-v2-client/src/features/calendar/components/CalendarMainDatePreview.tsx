@@ -20,7 +20,7 @@ function CalendarMainDatePreview({
         <H3>{selectedDate ? selectedDate.toDateString() : "Select a date"}</H3>
         <Separator />
         <div className="px-4">
-          <div className="py-2 border-b">
+          <div className="border-b py-2">
             <H3>Meals</H3>
           </div>
           <div className="px-2">
@@ -29,7 +29,7 @@ function CalendarMainDatePreview({
         </div>
         <Separator />
         <div className="px-4">
-          <div className="py-2 border-b">
+          <div className="border-b py-2">
             <H3>Nutritional Values</H3>
           </div>
           <div className="px-2">
@@ -46,7 +46,7 @@ function CalendarMainDatePreview({
         <H3>Select a date</H3>
         <Separator />
         <div className="px-4">
-          <div className="py-2 border-b">
+          <div className="border-b py-2">
             <H3>Meals</H3>
           </div>
           <div className="px-2">
@@ -57,7 +57,7 @@ function CalendarMainDatePreview({
         </div>
         <Separator />
         <div className="px-4">
-          <div className="py-2 border-b">
+          <div className="border-b py-2">
             <H3>Nutritional Values</H3>
           </div>
           <div className="px-2">
@@ -76,7 +76,7 @@ function CalendarMainDatePreview({
       <H3>{selectedDate ? selectedDate.toDateString() : "Select a date"}</H3>
       <Separator />
       <div className="px-4">
-        <div className="py-2 border-b">
+        <div className="border-b py-2">
           <H3>Meals</H3>
         </div>
         <div className="flex flex-col items-start px-2">
@@ -96,28 +96,28 @@ function CalendarMainDatePreview({
       </div>
       <Separator />
       <div className="px-4">
-        <div className="py-2 border-b">
+        <div className="border-b py-2">
           <H3>Nutritional Values</H3>
         </div>
         <div className="px-2">
-          <div className="flex justify-between items-center gap-4">
+          <div className="flex items-center justify-between gap-4">
             <div>Total calories:</div>
-            <div className="flex-1 bg-foreground h-[1px]"></div>
+            <div className="h-[1px] flex-1 bg-foreground"></div>
             <div>{calendarData?.total_calories ?? 0}</div>
           </div>
-          <div className="flex justify-between items-center gap-4">
+          <div className="flex items-center justify-between gap-4">
             <div>Total fats:</div>
-            <div className="flex-1 bg-foreground h-[1px]"></div>
+            <div className="h-[1px] flex-1 bg-foreground"></div>
             <div>{calendarData?.total_fat ?? 0}</div>
           </div>
-          <div className="flex justify-between items-center gap-4">
+          <div className="flex items-center justify-between gap-4">
             <div>Total protein:</div>
-            <div className="flex-1 bg-foreground h-[1px]"></div>
+            <div className="h-[1px] flex-1 bg-foreground"></div>
             <div>{calendarData?.total_protein ?? 0}</div>
           </div>
-          <div className="flex justify-between items-center gap-4">
+          <div className="flex items-center justify-between gap-4">
             <div>Total carbs:</div>
-            <div className="flex-1 bg-foreground h-[1px]"></div>
+            <div className="h-[1px] flex-1 bg-foreground"></div>
             <div>{calendarData?.total_carbs ?? 0}</div>
           </div>
         </div>

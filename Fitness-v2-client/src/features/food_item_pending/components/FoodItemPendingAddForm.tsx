@@ -159,7 +159,7 @@ function FoodItemPendingAddForm() {
             size={1024 * 1024 * 2}
           />
 
-          <div className="gap-x-2 grid grid-cols-2">
+          <div className="grid grid-cols-2 gap-x-2">
             <FormField
               control={form.control}
               name="calories"
@@ -187,7 +187,7 @@ function FoodItemPendingAddForm() {
               )}
             />
           </div>
-          <div className="gap-x-2 grid grid-cols-2">
+          <div className="grid grid-cols-2 gap-x-2">
             <FormField
               control={form.control}
               name="fat"
@@ -215,7 +215,7 @@ function FoodItemPendingAddForm() {
               )}
             />
           </div>
-          <div className="flex justify-end mt-4">
+          <div className="mt-4 flex justify-end">
             <Button type="submit" disabled={isPending}>
               {isPending ? "Creating..." : "Create"}
             </Button>

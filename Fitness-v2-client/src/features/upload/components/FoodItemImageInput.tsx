@@ -128,12 +128,12 @@ const FoodItemImageInput = forwardRef(
             <img
               src={fileUrl}
               alt={file.name}
-              className="rounded-md max-w-60 max-h-36 object-cover"
+              className="max-h-36 max-w-60 rounded-md object-cover"
             />
             <Button
               type="button"
               disabled={isLoading}
-              className="top-1 absolute end-1"
+              className="absolute end-1 top-1"
               onClick={handleRemove}
               size="icon"
               variant="destructive"
@@ -151,12 +151,12 @@ const FoodItemImageInput = forwardRef(
             <img
               src={fileUrl}
               alt="avatar"
-              className="rounded-md max-w-60 max-h-36 object-cover"
+              className="max-h-36 max-w-60 rounded-md object-cover"
             />
             <Button
               type="button"
               disabled={isLoading}
-              className="top-1 absolute end-1"
+              className="absolute end-1 top-1"
               onClick={handleRemove}
               size="icon"
               variant="destructive"

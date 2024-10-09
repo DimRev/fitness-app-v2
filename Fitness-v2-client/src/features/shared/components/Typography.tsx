@@ -78,7 +78,7 @@ export function P({ children, className, ...props }: Props) {
     const rest = children.slice(1);
     return (
       <p className={cn("my-2 font-bold tracking-wide", className)} {...props}>
-        <span className="font-extrabold text-xl tracking-wide">
+        <span className="text-xl font-extrabold tracking-wide">
           {firstChar}
         </span>
         {rest}
@@ -120,10 +120,10 @@ export function PageHeader({
   }, [to]);
 
   return (
-    <div className="border-2 border-foreground bg-popover mt-4 px-5 py-4 rounded-md text-popover-foreground stroke-popover-foreground">
-      <div className="flex justify-between items-center border-b">
+    <div className="mt-4 rounded-md border-2 border-foreground bg-popover stroke-popover-foreground px-5 py-4 text-popover-foreground">
+      <div className="flex items-center justify-between border-b">
         <H1
-          className="bg-clip-text bg-gradient-to-l from-primary/50 via-primary/80 to-primary text-primary/10 truncate"
+          className="truncate bg-gradient-to-l from-primary/50 via-primary/80 to-primary bg-clip-text text-primary/10"
           {...props}
         >
           {children}

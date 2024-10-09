@@ -202,11 +202,11 @@ function MealEditForm({ mealId }: Props) {
                     (foodItems) => foodItems.food_item,
                   )}
                 />
-                <div className="flex flex-wrap gap-5 mt-4">
+                <div className="mt-4 flex flex-wrap gap-5">
                   {foodItemsFields?.map((field, idx) => (
                     <div
                       key={field.id}
-                      className="flex flex-col gap-2 p-2 border rounded-md"
+                      className="flex flex-col gap-2 rounded-md border p-2"
                     >
                       <div className="flex items-center gap-4">
                         <H4>{foodItems[idx]?.name}</H4>
@@ -218,7 +218,7 @@ function MealEditForm({ mealId }: Props) {
                       {foodItems[idx]?.description && (
                         <div>{foodItems[idx]?.description}</div>
                       )}
-                      <div className="flex-1 gap-x-4 grid grid-cols-2">
+                      <div className="grid flex-1 grid-cols-2 gap-x-4">
                         <div>Calories:</div>
                         <div className="text-end">
                           {(
@@ -244,7 +244,7 @@ function MealEditForm({ mealId }: Props) {
                           ).toFixed(2)}
                         </div>
                       </div>
-                      <div className="flex justify-between items-center border rounded-md">
+                      <div className="flex items-center justify-between rounded-md border">
                         <Button
                           size="icon"
                           variant="ghost"
@@ -259,7 +259,7 @@ function MealEditForm({ mealId }: Props) {
                         >
                           <Minus />
                         </Button>
-                        <div className="flex flex-1 justify-center items-center bg-muted/50 h-full">
+                        <div className="flex h-full flex-1 items-center justify-center bg-muted/50">
                           {field.amount}
                         </div>
                         <Button
@@ -284,10 +284,10 @@ function MealEditForm({ mealId }: Props) {
             )}
           />
 
-          <div className="mt-4 p-2 border rounded-md">
+          <div className="mt-4 rounded-md border p-2">
             <H4>Total Nutrition</H4>
             <Separator className="mt-1" />
-            <div className="flex flex-col gap-2 mt-2">
+            <div className="mt-2 flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 <div>Calories:</div>
                 <div className="text-end">
@@ -311,7 +311,7 @@ function MealEditForm({ mealId }: Props) {
             </div>
           </div>
 
-          <div className="flex justify-end mt-4">
+          <div className="mt-4 flex justify-end">
             {isError && <div className="text-destructive">{error.message}</div>}
             <Button type="submit" disabled={isUpdateMealLoading}>
               {isUpdateMealLoading ? "Creating..." : "Create"}

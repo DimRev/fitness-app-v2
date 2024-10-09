@@ -172,7 +172,7 @@ function ChartMealsConsumed() {
   }, [chartData]);
 
   return (
-    <ChartContainer config={chartConfig} className="w-full max-h-96">
+    <ChartContainer config={chartConfig} className="max-h-96 w-full">
       <LineChart accessibilityLayer data={chartData}>
         <CartesianGrid vertical={false} />
         <XAxis
