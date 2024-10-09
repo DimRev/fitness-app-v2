@@ -1,3 +1,18 @@
+# [0.14.0](https://github.com/DimRev/fitness-app-v2/compare/v0.13.0...v0.14.0) (2024-10-09)
+
+
+### Bug Fixes
+
+* Change meal preview consume button to record button ([66b8d92](https://github.com/DimRev/fitness-app-v2/commit/66b8d92d5bb2e90aaeb245236e405f3eb4099d2f))
+* Run prettier write with prettier-plugin-tailwindcss ([5aa9500](https://github.com/DimRev/fitness-app-v2/commit/5aa9500682e6fc992f2b47a29e95522256293d0c))
+
+
+### Features
+
+* Add ci scripts to package json, run ci:all before pull requests ([6e43a6f](https://github.com/DimRev/fitness-app-v2/commit/6e43a6fe40a0bd805fe3dba7be992eebe673b6b8))
+* Add content to home page ([1c9e3dc](https://github.com/DimRev/fitness-app-v2/commit/1c9e3dcf73b5589f2aab9f4e7d6269986b132fed))
+* Add home content ([26e610a](https://github.com/DimRev/fitness-app-v2/commit/26e610a09f91786ecdd001bb798fd1ade97eda91))
+
 # [0.13.0](https://github.com/DimRev/fitness-app-v2/compare/v0.12.1...v0.13.0) (2024-10-08)
 
 
