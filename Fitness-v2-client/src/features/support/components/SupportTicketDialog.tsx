@@ -33,7 +33,7 @@ function SupportTicketDialog() {
     >
       <DialogContent className={cn(isDarkMode && "dark", "text-foreground")}>
         <DialogTitle>Support Ticket</DialogTitle>
-        <SupportTicketAddForm user={user} />
+        <SupportTicketAddForm />
         <DialogDescription>Submit a support ticket.</DialogDescription>
       </DialogContent>
     </Dialog>

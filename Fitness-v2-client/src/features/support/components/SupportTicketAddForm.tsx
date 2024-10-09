@@ -25,18 +25,13 @@ import {
 } from "../support.schema";
 import { Button } from "~/features/shared/components/ui/button";
 
-type Props = {
-  user: AuthUser;
-};
-
-function SupportTicketAddForm({ user }: Props) {
+function SupportTicketAddForm() {
   const form = useForm<SupportTicketAddFormSchema>({
     resolver: zodResolver(supportTicketAddFormSchema),
     defaultValues: {
       title: "",
       support_type: "bug",
       description: "",
-      author: user.email,
     },
   });
 
