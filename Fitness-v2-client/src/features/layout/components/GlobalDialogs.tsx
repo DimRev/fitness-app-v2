@@ -1,7 +1,7 @@
 import UserAdminEditDialog from "~/features/user/components/UserAdminEditDialog";
 import SettingsEditDialog from "./SettingsEditDialog";
 import ConfirmationDialog from "~/features/shared/components/ConfirmationDialog";
-import SupportTicketDialog from "./SupportTicketDialog";
+import SupportTicketDialog from "../../support/components/SupportTicketDialog";
 
 function GlobalDialogs() {
   return (

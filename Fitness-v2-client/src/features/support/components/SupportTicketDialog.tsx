@@ -4,10 +4,11 @@ import {
   DialogDescription,
   DialogTitle,
 } from "~/features/shared/components/ui/dialog";
-import useLayoutStore from "../hooks/useLayoutStore";
+import useLayoutStore from "../../layout/hooks/useLayoutStore";
 import { cn } from "~/lib/utils";
 import useAuthStore from "~/features/auth/hooks/useAuthStore";
-import ErrorDialog from "./ErrorDialog";
+import ErrorDialog from "../../layout/components/ErrorDialog";
+import SupportTicketAddForm from "./SupportTicketAddForm";
 
 function SupportTicketDialog() {
   const { isDarkMode, supportTicketDialogOpen, setSupportTicketDialogOpen } =
@@ -32,7 +33,7 @@ function SupportTicketDialog() {
     >
       <DialogContent className={cn(isDarkMode && "dark", "text-foreground")}>
         <DialogTitle>Support Ticket</DialogTitle>
-        Support ticket dialog
+        <SupportTicketAddForm user={user} />
         <DialogDescription>Submit a support ticket.</DialogDescription>
       </DialogContent>
     </Dialog>
