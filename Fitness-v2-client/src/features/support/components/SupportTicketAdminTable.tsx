@@ -9,7 +9,10 @@ import {
   TableHeader,
   TableRow,
 } from "~/features/shared/components/ui/table";
-import SupportTicketAdminTableRow from "./SupportTicketAdminTableRow";
+import SupportTicketAdminTableRow, {
+  SupportTicketAdminTableRowEmpty,
+  SupportTicketAdminTableRowSkeleton,
+} from "./SupportTicketAdminTableRow";
 
 function SupportTicketAdminTable() {
   const [page, setPage] = useState(1);
@@ -42,7 +45,39 @@ function SupportTicketAdminTable() {
   }
 
   if (supportTicketsLoading) {
-    return <div>Loading...</div>;
+    return (
+      <DashboardContentCards title="Support Tickets">
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="truncate">Title</TableHead>
+                <TableHead className="truncate">Type</TableHead>
+                <TableHead className="truncate">Description</TableHead>
+                <TableHead className="truncate">Created At</TableHead>
+                <TableHead className="truncate">Author</TableHead>
+                <TableHead className="truncate">Handler</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <SupportTicketAdminTableRowSkeleton />
+              <SupportTicketAdminTableRowSkeleton />
+              <SupportTicketAdminTableRowSkeleton />
+              <SupportTicketAdminTableRowSkeleton />
+              <SupportTicketAdminTableRowSkeleton />
+              <SupportTicketAdminTableRowSkeleton />
+              <SupportTicketAdminTableRowSkeleton />
+              <SupportTicketAdminTableRowSkeleton />
+            </TableBody>
+          </Table>
+        </div>
+        <ListPaginationButtons
+          page={page}
+          onChangePage={onChangePage}
+          totalPages={supportTickets}
+        />
+      </DashboardContentCards>
+    );
   }
 
   if (isSupportTicketsError || !supportTickets?.support_tickets) {
@@ -75,11 +110,11 @@ function SupportTicketAdminTable() {
                 supportTicket={supportTicket}
               />
             ))}
-            {/* {new Array(pageSize - supportTickets.support_tickets.length)
+            {new Array(pageSize - supportTickets.support_tickets.length)
               .fill(null)
               .map((_, i) => (
-                <FoodItemAdminTableRowEmpty key={`empty-${i}`} />
-              ))} */}
+                <SupportTicketAdminTableRowEmpty key={`empty-${i}`} />
+              ))}
           </TableBody>
         </Table>
       </div>

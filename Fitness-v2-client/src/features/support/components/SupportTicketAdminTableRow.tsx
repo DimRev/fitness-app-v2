@@ -1,3 +1,4 @@
+import { Skeleton } from "~/features/shared/components/ui/skeleton";
 import { TableCell, TableRow } from "~/features/shared/components/ui/table";
 
 type Props = {
@@ -5,9 +6,9 @@ type Props = {
   isPending: boolean;
 };
 
-function SupportTicketAdminTableRow({ supportTicket, isPending }: Props) {
+function SupportTicketAdminTableRow({ supportTicket }: Props) {
   return (
-    <TableRow>
+    <TableRow className="h-[65px]">
       <TableCell className="truncate">{supportTicket.title}</TableCell>
       <TableCell className="truncate">{supportTicket.support_type}</TableCell>
       <TableCell className="truncate">{supportTicket.description}</TableCell>
@@ -17,6 +18,55 @@ function SupportTicketAdminTableRow({ supportTicket, isPending }: Props) {
       <TableCell className="truncate">{supportTicket.author}</TableCell>
       <TableCell className="truncate">
         {supportTicket.handler ?? "Unassigned"}
+      </TableCell>
+    </TableRow>
+  );
+}
+
+export function SupportTicketAdminTableRowSkeleton() {
+  return (
+    <TableRow className="h-[65px]">
+      <TableCell>
+        <Skeleton className="h-[20px] w-full" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="h-[20px] w-full" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="h-[20px] w-full" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="h-[20px] w-full" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="h-[20px] w-full" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="h-[20px] w-full" />
+      </TableCell>
+    </TableRow>
+  );
+}
+export function SupportTicketAdminTableRowEmpty() {
+  return (
+    <TableRow className="h-[65px]">
+      <TableCell>
+        <div></div>
+      </TableCell>
+      <TableCell>
+        <div></div>
+      </TableCell>
+      <TableCell>
+        <div></div>
+      </TableCell>
+      <TableCell>
+        <div></div>
+      </TableCell>
+      <TableCell>
+        <div></div>
+      </TableCell>
+      <TableCell>
+        <div></div>
       </TableCell>
     </TableRow>
   );
