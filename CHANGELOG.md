@@ -1,3 +1,10 @@
+## [0.15.2](https://github.com/DimRev/fitness-app-v2/compare/v0.15.1...v0.15.2) (2024-10-11)
+
+
+### Bug Fixes
+
+* **ci:** Fix ci caching ([7d6e042](https://github.com/DimRev/fitness-app-v2/commit/7d6e042c74304e672300fc561723181eaf3dd7b2))
+
 ## [0.15.1](https://github.com/DimRev/fitness-app-v2/compare/v0.15.0...v0.15.1) (2024-10-11)
 
 
