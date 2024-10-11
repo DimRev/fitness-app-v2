@@ -19,7 +19,7 @@ function SupportTicketAdminTable() {
   // TODO: Make dynamic page size changes
   const [pageSize] = useState(8);
   const offset = useMemo(() => page * pageSize - pageSize, [page, pageSize]);
-  const [pendingIds, setPendingIds] = useState<string[]>([]);
+  const [pendingIds] = useState<string[]>([]);
 
   const {
     data: supportTickets,
@@ -85,8 +85,6 @@ function SupportTicketAdminTable() {
       <div> Error loading support tickets, {supportTicketsError?.message}</div>
     );
   }
-
-  console.log(supportTickets);
 
   return (
     <DashboardContentCards title="Support Tickets">

@@ -10,21 +10,10 @@ interface ErrorResponseBody extends Error {
   message: string;
 }
 
-export function useGetSupportTickets({
-  limit,
-  offset,
-}: GetSupportTicketsParams) {
+export function useGetSupportTickets(params: GetSupportTicketsParams) {
   return useGetQuery<
     GetSupportTicketsParams,
     SupportTicketsWithPages,
     ErrorResponseBody
-  >(
-    {
-      limit: limit,
-      offset: offset,
-    },
-    QUERY_KEYS.SUPPORT.GET_SUPPORT_TICKETS,
-    "/support_tickets",
-    true,
-  );
+  >(params, QUERY_KEYS.SUPPORT.GET_SUPPORT_TICKETS, "/support_tickets", false);
 }
