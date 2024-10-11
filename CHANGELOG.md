@@ -1,3 +1,17 @@
+# [0.15.0](https://github.com/DimRev/fitness-app-v2/compare/v0.14.0...v0.15.0) (2024-10-11)
+
+
+### Bug Fixes
+
+* Create SQL table for support tickets and relevant SQL queries ([c7cff4a](https://github.com/DimRev/fitness-app-v2/commit/c7cff4ae9c6da318c5ad367272cb078c806f42a1))
+
+
+### Features
+
+* **client-support_ticket:** Add empty & skeleton rows for admin table ([1aa0e70](https://github.com/DimRev/fitness-app-v2/commit/1aa0e70c9b131694d3377a36d6efcfeeb0e7bfc4))
+* **client-support_ticket:** Create form and dialog and hooks ([2a4ff92](https://github.com/DimRev/fitness-app-v2/commit/2a4ff92a11919efc4490d341122744959fda4f2c))
+* **server: support ticket:** Create routes and handlers for support ticket get and post queries ([5f7ee07](https://github.com/DimRev/fitness-app-v2/commit/5f7ee0768efb9f95a29f396770717720fdbef4ea))
+
 # [0.14.0](https://github.com/DimRev/fitness-app-v2/compare/v0.13.0...v0.14.0) (2024-10-09)
 
 
