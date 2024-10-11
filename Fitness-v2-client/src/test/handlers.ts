@@ -5,6 +5,7 @@ import { foodItemHandlers } from "~/features/food_item/foodItem.mockHandlers";
 import { foodItemsPendingHandlers } from "~/features/food_item_pending/foodItemsPending.mockHandlers";
 import { mealMockHandlers } from "~/features/meal/meal.mockHandlers";
 import { measurementMockHandlers } from "~/features/measurement/measurement.mockHandlers";
+import { supportMockHandlers } from "~/features/support/support.mockHandlers";
 
 export const handlers = [
   ...authHandlers,
@@ -14,4 +15,5 @@ export const handlers = [
   ...foodItemsPendingHandlers,
   ...mealMockHandlers,
   ...measurementMockHandlers,
+  ...supportMockHandlers,
 ];

@@ -32,6 +32,7 @@ import TestPage from "./features/views/components/TestPage";
 import { cn } from "./lib/utils";
 import DashboardMeasurementsPage from "./features/views/components/DashboardMeasurementsPage";
 import DashboardMeasurementsAddPage from "./features/views/components/DashboardMeasurementsAddPage";
+import AdminSupportTicketPage from "./features/views/components/AdminSupportTicketPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -143,6 +144,10 @@ function App() {
                 <Route
                   path="food_item/edit/:foodItemId"
                   element={<AdminFoodItemEditPage />}
+                />
+                <Route
+                  path="support_ticket"
+                  element={<AdminSupportTicketPage />}
                 />
               </Route>
               <Route path="/auth" element={<AuthLayout />}>
