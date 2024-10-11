@@ -22,12 +22,22 @@ jobs:
         with:
           node-version: '20.8.1'
 
+      # Restore node_modules cache before installing dependencies
+      - name: Restore node_modules from cache
+        uses: actions/cache@v3
+        with:
+          path: ./Fitness-v2-client/node_modules
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
       - name: Install pnpm 9.0.4
         run: npm install -g pnpm@9.0.4
 
       - name: Install dependencies
         run: pnpm install
 
+      # Save node_modules to cache after installing dependencies
       - name: Cache node_modules
         uses: actions/cache@v3
         with:
@@ -54,12 +64,22 @@ jobs:
         with:
           node-version: '20.8.1'
 
+      # Restore node_modules cache before installing dependencies
+      - name: Restore node_modules from cache
+        uses: actions/cache@v3
+        with:
+          path: ./Fitness-v2-client/node_modules
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
       - name: Install pnpm 9.0.4
         run: npm install -g pnpm@9.0.4
 
       - name: Install dependencies
         run: pnpm install
 
+      # Save node_modules to cache after installing dependencies
       - name: Cache node_modules
         uses: actions/cache@v3
         with:
@@ -89,12 +109,22 @@ jobs:
         with:
           node-version: '20.8.1'
 
+      # Restore node_modules cache before installing dependencies
+      - name: Restore node_modules from cache
+        uses: actions/cache@v3
+        with:
+          path: ./Fitness-v2-client/node_modules
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
       - name: Install pnpm 9.0.4
         run: npm install -g pnpm@9.0.4
 
       - name: Install dependencies
         run: pnpm install
 
+      # Save node_modules to cache after installing dependencies
       - name: Cache node_modules
         uses: actions/cache@v3
         with:
