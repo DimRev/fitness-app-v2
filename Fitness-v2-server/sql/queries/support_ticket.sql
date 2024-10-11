@@ -17,3 +17,7 @@ VALUES (
   $4
 )
 RETURNING *;
+
+-- name: GetSupportTicketsRowCount :one
+SELECT COUNT(*) AS total_rows
+FROM support_tickets;

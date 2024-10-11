@@ -16,7 +16,7 @@ export function useGetSupportTickets({
 }: GetSupportTicketsParams) {
   return useGetQuery<
     GetSupportTicketsParams,
-    SupportTicket[],
+    SupportTicketsWithPages,
     ErrorResponseBody
   >(
     {

@@ -99,3 +99,15 @@ func (q *Queries) GetSupportTickets(ctx context.Context, arg GetSupportTicketsPa
 	}
 	return items, nil
 }
+
+const getSupportTicketsRowCount = `-- name: GetSupportTicketsRowCount :one
+SELECT COUNT(*) AS total_rows
+FROM support_tickets
+`
+
+func (q *Queries) GetSupportTicketsRowCount(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getSupportTicketsRowCount)
+	var total_rows int64
+	err := row.Scan(&total_rows)
+	return total_rows, err
+}

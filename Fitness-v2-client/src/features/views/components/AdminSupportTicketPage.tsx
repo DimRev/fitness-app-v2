@@ -1,6 +1,7 @@
 import { Info } from "lucide-react";
 import { Helmet } from "react-helmet";
 import DashboardPageWrapper from "./DashboardPageWrapper";
+import SupportTicketAdminTable from "~/features/support/components/SupportTicketAdminTable";
 
 function AdminSupportTicketPage() {
   return (
@@ -13,7 +14,7 @@ function AdminSupportTicketPage() {
         LucideIcon={Info}
         to="/admin/support_ticket"
       >
-        <div>This is support ticket page</div>
+        <SupportTicketAdminTable />
       </DashboardPageWrapper>
     </>
   );

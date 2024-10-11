@@ -71,9 +71,21 @@ func GetSupportTickets(c echo.Context) error {
 		})
 	}
 
-	supportTicketsResp := make([]models.SupportTicket, len(supportTickets))
+	totalRows, err := config.Queries.GetSupportTicketsRowCount(c.Request().Context())
+	if err != nil {
+		utils.FmtLogError(
+			"support_ticket_controllers.go",
+			"CreateSupportTicket",
+			fmt.Errorf("failed to get support tickets row count: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to create support ticket, trouble with server",
+		})
+	}
+
+	supportTicketsModel := make([]models.SupportTicket, len(supportTickets))
 	for i, supportTicket := range supportTickets {
-		supportTicketsResp[i] = models.SupportTicket{
+		supportTicketsModel[i] = models.SupportTicket{
 			ID:          supportTicket.ID.String(),
 			SupportType: supportTicket.SupportTicketType,
 			Title:       supportTicket.Title,
@@ -86,6 +98,13 @@ func GetSupportTickets(c echo.Context) error {
 			Author: user.Email,
 		}
 	}
+
+	supportTicketsResp := models.SupportTicketsWithPages{
+		SupportTickets: supportTicketsModel,
+		TotalPages:     int64(math.Ceil(float64(totalRows) / float64(limit))),
+		TotalItems:     totalRows,
+	}
+
 	return c.JSON(http.StatusOK, supportTicketsResp)
 }
 

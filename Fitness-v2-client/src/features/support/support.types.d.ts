@@ -9,4 +9,11 @@ type SupportTicket = {
 
   created_at: string;
   author: string;
+  handler?: string;
+};
+
+type SupportTicketsWithPages = {
+  support_tickets: SupportTicket[];
+  total_pages: number;
+  total_items: number;
 };
