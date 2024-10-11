@@ -282,7 +282,8 @@ type SupportTicket struct {
 	IsClosed          sql.NullBool
 	CreatedAt         sql.NullTime
 	UpdatedAt         sql.NullTime
-	UserID            uuid.UUID
+	OwnerID           uuid.UUID
+	HandlerID         uuid.NullUUID
 }
 
 type User struct {

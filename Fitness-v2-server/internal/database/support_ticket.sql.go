@@ -16,7 +16,7 @@ INSERT INTO support_tickets (
   support_ticket_type,
   title,
   description,
-  user_id
+  owner_id
 ) 
 VALUES (
   $1,
@@ -24,14 +24,14 @@ VALUES (
   $3,
   $4
 )
-RETURNING id, support_ticket_type, title, description, is_closed, created_at, updated_at, user_id
+RETURNING id, support_ticket_type, title, description, is_closed, created_at, updated_at, owner_id, handler_id
 `
 
 type CreateSupportTicketParams struct {
 	SupportTicketType SupportTicketTypes
 	Title             string
 	Description       string
-	UserID            uuid.UUID
+	OwnerID           uuid.UUID
 }
 
 func (q *Queries) CreateSupportTicket(ctx context.Context, arg CreateSupportTicketParams) (SupportTicket, error) {
@@ -39,7 +39,7 @@ func (q *Queries) CreateSupportTicket(ctx context.Context, arg CreateSupportTick
 		arg.SupportTicketType,
 		arg.Title,
 		arg.Description,
-		arg.UserID,
+		arg.OwnerID,
 	)
 	var i SupportTicket
 	err := row.Scan(
@@ -50,13 +50,14 @@ func (q *Queries) CreateSupportTicket(ctx context.Context, arg CreateSupportTick
 		&i.IsClosed,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.UserID,
+		&i.OwnerID,
+		&i.HandlerID,
 	)
 	return i, err
 }
 
 const getSupportTickets = `-- name: GetSupportTickets :many
-SELECT id, support_ticket_type, title, description, is_closed, created_at, updated_at, user_id FROM support_tickets
+SELECT id, support_ticket_type, title, description, is_closed, created_at, updated_at, owner_id, handler_id FROM support_tickets
 LIMIT $1
 OFFSET $2
 `
@@ -83,7 +84,8 @@ func (q *Queries) GetSupportTickets(ctx context.Context, arg GetSupportTicketsPa
 			&i.IsClosed,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.UserID,
+			&i.OwnerID,
+			&i.HandlerID,
 		); err != nil {
 			return nil, err
 		}

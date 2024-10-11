@@ -133,7 +133,7 @@ func CreateSupportTicket(c echo.Context) error {
 		Title:             createSupportTickerReq.Title,
 		SupportTicketType: supportTicketType,
 		Description:       createSupportTickerReq.Description,
-		UserID:            user.ID,
+		OwnerID:           user.ID,
 	}
 
 	supportTicket, err := config.Queries.CreateSupportTicket(c.Request().Context(), createSupportTicketParams)

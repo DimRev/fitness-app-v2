@@ -8,7 +8,7 @@ INSERT INTO support_tickets (
   support_ticket_type,
   title,
   description,
-  user_id
+  owner_id
 ) 
 VALUES (
   $1,
