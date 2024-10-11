@@ -17,15 +17,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version: '1.22.2'  # Ensure you're specifying the correct Go version (1.22.2)
+          go-version: '1.22.2'
 
       - name: Install dependencies
         run: go mod tidy
 
-      # Run Go tests
       - name: Run tests
         run: go test -v ./...
 
@@ -39,10 +46,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version: '1.22.2'  # Ensure you're specifying the correct Go version (1.22.2)
+          go-version: '1.22.2'
 
       - name: Install gosec
         run: go install github.com/securego/gosec/v2/cmd/gosec@latest
@@ -60,10 +75,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version: '1.22.2'  # Ensure you're specifying the correct Go version (1.22.2)
+          go-version: '1.22.2'
 
       - name: Install golangci-lint
         run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.54.2
