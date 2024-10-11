@@ -78,10 +78,12 @@ func GetSupportTickets(c echo.Context) error {
 			SupportType: supportTicket.SupportTicketType,
 			Title:       supportTicket.Title,
 			Description: supportTicket.Description,
-			Author:      user.Email,
-			CreatedAt:   supportTicket.CreatedAt.Time,
-			UpdatedAt:   supportTicket.UpdatedAt.Time,
 			IsClosed:    supportTicket.IsClosed.Bool,
+
+			UpdatedAt: supportTicket.UpdatedAt.Time,
+			CreatedAt: supportTicket.CreatedAt.Time,
+
+			Author: user.Email,
 		}
 	}
 	return c.JSON(http.StatusOK, supportTicketsResp)

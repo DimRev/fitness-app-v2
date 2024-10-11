@@ -2,6 +2,7 @@ import {
   Apple,
   ChevronLeft,
   ChevronRight,
+  Info,
   LineChart,
   User,
 } from "lucide-react";
@@ -70,6 +71,12 @@ function SidebarAdmin() {
         LucideIcon={Apple}
         to="/admin/food_item"
         title="Food Items"
+        onlyIcon={!isSidebarOpen}
+      />
+      <SidebarNavLink
+        LucideIcon={Info}
+        to="/admin/support_ticket"
+        title="Support Tickets"
         onlyIcon={!isSidebarOpen}
       />
     </nav>

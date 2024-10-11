@@ -24,6 +24,8 @@ import {
   type SupportTicketAddFormSchema,
 } from "../support.schema";
 import { Button } from "~/features/shared/components/ui/button";
+import { useCreateSupportTicket } from "../hooks/useCreateSupportTicket";
+import { toast } from "sonner";
 
 function SupportTicketAddForm() {
   const form = useForm<SupportTicketAddFormSchema>({
@@ -35,7 +37,7 @@ function SupportTicketAddForm() {
     },
   });
 
-  const { isDarkMode } = useLayoutStore();
+  const { isDarkMode, setSupportTicketDialogOpen } = useLayoutStore();
 
   // const {
   //   mutateAsync: updateSettings,
@@ -45,9 +47,30 @@ function SupportTicketAddForm() {
   // } = useUpdateSettings();
   // const { setUser } = useAuthStore();
   // const { setSettingsDialogOpen } = useLayoutStore();
+  const {
+    mutateAsync: createSupportTicket,
+    isLoading: isCreateSupportTicketLoading,
+    isError,
+    error,
+  } = useCreateSupportTicket();
 
   async function onSubmit(data: SupportTicketAddFormSchema) {
-    console.log(data);
+    await createSupportTicket(data, {
+      onSuccess: (resp) => {
+        void form.reset();
+        toast.success("Successfully created support ticket", {
+          dismissible: true,
+          description: `Created: ${resp.title}`,
+        });
+        setSupportTicketDialogOpen(false);
+      },
+      onError: (err) => {
+        toast.error("Failed to create support ticket", {
+          dismissible: true,
+          description: `Error: ${err.message}`,
+        });
+      },
+    });
   }
 
   return (
@@ -113,11 +136,13 @@ function SupportTicketAddForm() {
           )}
         />
 
-        {/* {isError && (
+        {isError && (
           <div className="font-bold text-destructive">{error.message}</div>
-        )} */}
+        )}
         <div className="mt-4 flex justify-end">
-          <Button type="submit">Submit</Button>
+          <Button type="submit" disabled={isCreateSupportTicketLoading}>
+            {isCreateSupportTicketLoading ? "Creating..." : "Create"}
+          </Button>
         </div>
       </form>
     </Form>
