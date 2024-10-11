@@ -32,6 +32,9 @@ export const QUERY_KEYS = {
   CALENDAR_DATA: {
     GET_CALENDAR_DATA_BY_DATE: "get-calendar-data-by-date",
   },
+  SUPPORT: {
+    GET_SUPPORT_TICKETS: "get-support-tickets",
+  },
 } as const;
 
 type QueryKeyValues<T> =

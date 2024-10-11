@@ -4,6 +4,7 @@ type LayoutState = {
   isSidebarOpen: boolean;
   isDarkMode: boolean;
   settingsDialogOpen: boolean;
+  supportTicketDialogOpen: boolean;
   isConfirmationDialogOpen: boolean;
   confirmationQuestion: string | null;
   confirmationCallback: (() => void) | null;
@@ -13,6 +14,7 @@ type LayoutActions = {
   setIsSidebarOpen: () => void;
   setIsDarkMode: (newIsDarkMode: boolean) => void;
   setSettingsDialogOpen: (open: boolean) => void;
+  setSupportTicketDialogOpen: (open: boolean) => void;
   setIsConfirmationDialogOpen: (
     open: boolean,
     confirmationQuestion?: string,
@@ -23,12 +25,16 @@ type LayoutActions = {
 type LayoutStore = LayoutState & LayoutActions;
 
 const useLayoutStore = create<LayoutStore>((set) => ({
+  // INITIAL STATE
   isSidebarOpen: true,
   isDarkMode: false,
   settingsDialogOpen: false,
+  supportTicketDialogOpen: false,
   isConfirmationDialogOpen: false,
   confirmationCallback: null,
   confirmationQuestion: null,
+
+  // ACTIONS
   setIsSidebarOpen: () =>
     set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
   setIsDarkMode: (newIsDarkMode) => {
@@ -49,6 +55,9 @@ const useLayoutStore = create<LayoutStore>((set) => ({
   },
   setSettingsDialogOpen(open) {
     set(() => ({ settingsDialogOpen: open }));
+  },
+  setSupportTicketDialogOpen(open) {
+    set(() => ({ supportTicketDialogOpen: open }));
   },
   setIsConfirmationDialogOpen(
     open,
