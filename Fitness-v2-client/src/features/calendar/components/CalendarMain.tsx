@@ -4,6 +4,8 @@ import useGetCalendarDataByDate from "../hooks/useGetCalendarDataByDate";
 import CalendarMainDatePreview from "./CalendarMainDatePreview";
 import CalendarView, { type CalendarMatchers } from "./CalendarView";
 import useGetChartDataMealsConsumed from "~/features/chart/hooks/useGetChartDataMealsConsumed";
+import { useNavigate } from "react-router-dom";
+import { Button } from "~/features/shared/components/ui/button";
 
 const modifiersStyles = {
   "very-good": "bg-green-600 text-zinc-800",
@@ -24,6 +26,8 @@ function CalendarMain() {
     "very-good": [],
   });
   const [calDateMap, setCalDateMap] = useState<Record<string, number>>({});
+
+  const navigate = useNavigate();
 
   const formattedDate = useMemo(() => {
     if (!selectedDate) return;
@@ -120,10 +124,15 @@ function CalendarMain() {
     return filledData;
   }
 
+  function handleDateDetails() {
+    if (!selectedDate) return;
+    navigate(`/dashboard/calendar/${selectedDate.toISOString()}`);
+  }
+
   return (
     <DashboardContentCards title="Calendar">
-      <div className="flex">
-        <div className="flex-[5]">
+      <div className="lg:flex">
+        <div className="lg:flex-[5]">
           <CalendarView
             matchers={matchers}
             selectedDate={selectedDate}
@@ -132,13 +141,23 @@ function CalendarMain() {
             modifiersStyles={modifiersStyles}
             caloriesDateMap={calDateMap}
           />
+          <div className="flex justify-end px-3 max-lg:hidden">
+            <Button disabled={!selectedDate} onClick={handleDateDetails}>
+              {selectedDate ? "Details" : "Select"}
+            </Button>
+          </div>
         </div>
-        <div className="flex-[3]">
+        <div className="lg:flex-[3]">
           <CalendarMainDatePreview
             calendarData={calendarData}
             calendarDataLoading={isLoading}
             selectedDate={selectedDate}
           />
+          <div className="flex justify-end pt-4 lg:hidden">
+            <Button disabled={!selectedDate} onClick={handleDateDetails}>
+              {selectedDate ? "Details" : "Select"}
+            </Button>
+          </div>
         </div>
       </div>
     </DashboardContentCards>

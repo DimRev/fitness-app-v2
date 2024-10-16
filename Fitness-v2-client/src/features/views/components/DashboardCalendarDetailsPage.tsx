@@ -37,7 +37,7 @@ function DashboardCalendarDetailsPage() {
       <DashboardPageWrapper
         title="Calendar"
         LucideIcon={Calendar}
-        to="/dashboard/calendar"
+        to={`/dashboard/calendar/${fmtDateStr}`}
         iconClasses="fill-cyan-500 dark:fill-cyan-700"
       >
         <CalendarDetailsContent dateStr={dateStr} />

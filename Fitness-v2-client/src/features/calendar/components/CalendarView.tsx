@@ -1,5 +1,3 @@
-import { useNavigate } from "react-router-dom";
-import { Button } from "~/features/shared/components/ui/button";
 import { Calendar } from "~/features/shared/components/ui/calendar";
 import {
   HoverCard,
@@ -37,27 +35,14 @@ function CalendarView({
   modifiersStyles,
   caloriesDateMap,
 }: Props) {
-  const navigate = useNavigate();
   function onDayClick(day: Date) {
     setSelectedDate(day);
-  }
-
-  function handleDateDetails() {
-    if (!selectedDate) return;
-    navigate(`/dashboard/calendar/${selectedDate.toISOString()}`);
   }
 
   return (
     <Calendar
       mode="single"
       showOutsideDays={false}
-      footer={
-        <div className="flex justify-end py-2">
-          <Button disabled={!selectedDate} onClick={handleDateDetails}>
-            {selectedDate ? "Details" : "Select"}
-          </Button>
-        </div>
-      }
       initialFocus={false}
       onDayClick={onDayClick}
       className={cn()}
@@ -66,7 +51,7 @@ function CalendarView({
           "flex w-full flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0 flex-1 justify-center",
         month: "space-y-4 w-full flex flex-col",
         table:
-          "w-full h-[calc(100dvh-400px)] min-h-[400px] border-collapse space-y-1 rounded-[10px]",
+          "w-full h-[calc(100dvh-400px)] min-h-[300px] max-h-[400px] border-collapse space-y-1 rounded-[10px]",
         head_row: "",
         row: "w-full mt-2 border",
         cell: "border p-0.5 w-[calc(5dvw)] h-[calc(5dvh)]",
