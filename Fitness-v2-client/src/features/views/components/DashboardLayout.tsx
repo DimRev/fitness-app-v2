@@ -33,10 +33,9 @@ function DashboardLayout() {
             <div className="flex-1">
               <SidebarDashboard />
             </div>
-            <div className="flex justify-center py-4">
+            <div className="flex justify-center px-2 py-4">
               <Button
-                size="icon"
-                className="flex items-center gap-2 font-light"
+                className="grid w-full grid-cols-[auto_1fr] border-foreground text-start"
                 onClick={() => setSupportTicketDialogOpen(true)}
               >
                 <Info strokeWidth={2} />
@@ -58,13 +57,13 @@ function DashboardLayout() {
           <div className="flex-1">
             <SidebarDashboard />
           </div>
-          <div className="flex justify-center py-4">
+          <div className="flex justify-center px-2 py-4">
             <Button
-              className="flex items-center gap-2 font-light"
+              className="grid w-full grid-cols-[auto_1fr] border-foreground text-start"
               onClick={() => setSupportTicketDialogOpen(true)}
             >
-              <Info strokeWidth={2} />
-              <span>Open support ticket</span>
+              <Info strokeWidth={2} className="me-4 size-4" />
+              <span className="truncate">Support ticket</span>
             </Button>
           </div>
         </div>
