@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import useAuthStore from "../hooks/useAuthStore";
 import useLoginFromCookie from "../hooks/useLoginFromCookie";
 import useLoginFromSession from "../hooks/useLoginFromSession";
+import useLayoutStore from "~/features/layout/hooks/useLayoutStore";
 
 type Props = {
   children: React.ReactNode;
@@ -15,6 +16,7 @@ function AuthProvider({ children }: Props) {
   const [isAuthingUser, setIsAuthingUser] = useState(true);
   const { user, setUser } = useAuthStore();
   const navigate = useNavigate();
+  const { isDarkMode } = useLayoutStore();
 
   useEffect(() => {
     // Check if user is already authenticated
@@ -59,7 +61,9 @@ function AuthProvider({ children }: Props) {
   if (isAuthingUser) {
     // Show a consistent loading screen or skeleton component
     return (
-      <div className="flex h-dvh w-dvw items-center justify-center">
+      <div
+        className={`flex h-dvh w-dvw items-center justify-center ${isDarkMode && "dark"}`}
+      >
         <LoaderCircle className="size-24 animate-spin text-blue-700" />
       </div>
     );

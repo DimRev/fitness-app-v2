@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { Button } from "~/features/shared/components/ui/button";
 import { Calendar } from "~/features/shared/components/ui/calendar";
 import {
@@ -36,12 +37,14 @@ function CalendarView({
   modifiersStyles,
   caloriesDateMap,
 }: Props) {
+  const navigate = useNavigate();
   function onDayClick(day: Date) {
     setSelectedDate(day);
   }
 
   function handleDateDetails() {
     if (!selectedDate) return;
+    navigate(`/dashboard/calendar/${selectedDate.toISOString()}`);
   }
 
   return (

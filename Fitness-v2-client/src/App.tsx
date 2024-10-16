@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "~/features/shared/components/ui/sonner";
 import AuthProvider from "./features/auth/components/AuthProvider";
 import AppHeader from "./features/layout/components/AppHeader";
@@ -33,6 +33,7 @@ import { cn } from "./lib/utils";
 import DashboardMeasurementsPage from "./features/views/components/DashboardMeasurementsPage";
 import DashboardMeasurementsAddPage from "./features/views/components/DashboardMeasurementsAddPage";
 import AdminSupportTicketPage from "./features/views/components/AdminSupportTicketPage";
+import DashboardCalendarDetailsPage from "./features/views/components/DashboardCalendarDetailsPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -132,6 +133,10 @@ function App() {
                   element={<DashboardMeasurementsAddPage />}
                 />
                 <Route path="calendar" element={<DashboardCalendarPage />} />
+                <Route
+                  path="calendar/:dateStr"
+                  element={<DashboardCalendarDetailsPage />}
+                />
               </Route>
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminOverviewPage />} />
@@ -156,7 +161,8 @@ function App() {
               </Route>
               <Route path="/test" element={<TestPage />} />
 
-              <Route path="*" element={<PageNotFound />} />
+              <Route path="/not_found" element={<PageNotFound />} />
+              <Route path="*" element={<Navigate to="/not_found" />} />
             </Routes>
 
             <Toaster />
