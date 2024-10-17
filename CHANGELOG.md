@@ -1,3 +1,10 @@
+## [0.15.4](https://github.com/DimRev/fitness-app-v2/compare/v0.15.3...v0.15.4) (2024-10-17)
+
+
+### Bug Fixes
+
+* Create a demo-user and add the demo-user explenation to the project's README ([78ed0b2](https://github.com/DimRev/fitness-app-v2/commit/78ed0b255691fa8cff7b862bb263c5a15115b2ab))
+
 ## [0.15.3](https://github.com/DimRev/fitness-app-v2/compare/v0.15.2...v0.15.3) (2024-10-17)
 
 
