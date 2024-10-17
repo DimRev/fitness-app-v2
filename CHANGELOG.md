@@ -1,3 +1,14 @@
+## [0.15.3](https://github.com/DimRev/fitness-app-v2/compare/v0.15.2...v0.15.3) (2024-10-17)
+
+
+### Bug Fixes
+
+* Add websocket url to client .env examples ([89252da](https://github.com/DimRev/fitness-app-v2/commit/89252da91f0295bbd28cbb7b1b76dcf5f47c9968))
+* **client-calendar:** Add content to calendar details page, scaffold ([fd5e093](https://github.com/DimRev/fitness-app-v2/commit/fd5e0936a158c7757ac4be9e57d1c349e140ab92))
+* **client-calendar:** Rework style for calendar main view, Responsivity improved ([3c2b5e3](https://github.com/DimRev/fitness-app-v2/commit/3c2b5e3e93d35550fd67d1a9e0509fedbce0d803))
+* **client-calendar:** Setup route for calendar details, and fix route not found paths ([1dd51c0](https://github.com/DimRev/fitness-app-v2/commit/1dd51c085a6fe9baea1f4d6f4caa7aab1157af1f))
+* **client-general:** Small style fixes, ([45e1045](https://github.com/DimRev/fitness-app-v2/commit/45e104583910682f7d48e1b3be5ac2b28bfe45ed))
+
 ## [0.15.2](https://github.com/DimRev/fitness-app-v2/compare/v0.15.1...v0.15.2) (2024-10-11)
 
 

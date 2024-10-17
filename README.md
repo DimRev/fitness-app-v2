@@ -3,6 +3,22 @@
 ## Summery
 
 This is a monorepo for the Fitness App V2 project..
+The app is hosted on vercel and fly.io.
+
+[Live Demo](https://fitness-app-v2-rho.vercel.app)
+
+You can login with the following demo-user:
+username: `demo@demo.com`
+password: `demo`
+To see the app filled with some demo-content.
+
+--- or ---
+
+You can create your own user and login with it.
+
+The app doesn't use any analytics or tracking, there is no email verification, you can use a non-existing email to register(though you can not use one that was already registered), and the passwords are stored as hashed binary data, so you won't be exposing your password in any way.
+
+The app is also using a JWT token as cookie, so the token will be stored in your client for authentication, as stated before no other tracking or analytics are attached to that cookie.
 
 [Change Log](./CHANGELOG.md)
 
