@@ -29,8 +29,6 @@ function CalendarDetailsContent({ dateStr }: Props) {
     date: formattedDate,
   });
 
-  console.log(calendarData);
-
   if (isLoading) return <div>Loading...</div>;
 
   if (isError || !calendarData) return <div>Error: {error?.message}</div>;
