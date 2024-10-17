@@ -10,7 +10,7 @@ import {
 import { Skeleton } from "~/features/shared/components/ui/skeleton";
 
 function MeasurementLatest() {
-  const { data: measurements, isLoading } = useGetMeasurementsByUserID({});
+  const { data: measurements, isLoading } = useGetMeasurementsByUserID();
 
   if (isLoading) {
     return (
