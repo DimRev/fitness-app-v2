@@ -15,7 +15,7 @@ function DashboardMealDetailsPage() {
       <DashboardPageWrapper
         title="Meal Details"
         LucideIcon={Sandwich}
-        to="/dashboard/meal/details"
+        to={`/dashboard/meal/${mealId}`}
         iconClasses="fill-orange-500 dark:fill-orange-700"
       >
         {mealId ? <MealDetails mealId={mealId} /> : <div>No meal id</div>}
