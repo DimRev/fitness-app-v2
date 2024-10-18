@@ -44,17 +44,11 @@ func CronUpdateMeasurements(c echo.Context) error {
 		})
 	}
 
-	const batchSize = 100
-	for offset := 0; offset < int(userCountInt32); offset += batchSize {
-		if offset > math.MaxInt32 {
-			utils.FmtLogError("cron_controllers.go", "CronUpdateMeasurements", fmt.Errorf("offset exceeds int32 limit"))
-			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-				"message": "Offset exceeds int32 limit",
-			})
-		}
+	const batchSize = int32(100)
+	for offset := int32(0); offset < userCountInt32; offset += batchSize {
 		getUsersParams := database.GetUsersParams{
 			Limit:  batchSize,
-			Offset: int32(offset),
+			Offset: offset,
 		}
 
 		users, err := config.Queries.GetUsers(c.Request().Context(), getUsersParams)
@@ -99,5 +93,5 @@ func CronUpdateMeasurements(c echo.Context) error {
 		}
 	}
 
-	return c.JSON(http.StatusOK, map[string]string{"message": "Cron job executed"})
+	return c.JSON(http.StatusOK, map[string]string{"message": "Cron job executed "})
 }
