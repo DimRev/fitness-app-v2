@@ -2,6 +2,7 @@ import { type NextApiRequest, type NextApiResponse } from "next";
 import { fetchWithTimeout } from "./utils";
 import CustomApiError from "./CustomApiError";
 
+// The function handler stays the same
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
