@@ -181,7 +181,7 @@ function ChartMeasurements() {
                       "h-2.5 w-2.5 shrink-0 rounded-[2px] border-[--color-height] bg-[--color-height]",
                     )}
                   />
-                  <p className="text-muted-foreground">Height(m)</p>
+                  <p className="text-muted-foreground">Height(cm)</p>
                   <p className="text-end">{height}</p>
                   <div
                     className={cn(
