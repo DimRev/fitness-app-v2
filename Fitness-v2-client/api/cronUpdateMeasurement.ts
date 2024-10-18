@@ -15,13 +15,7 @@ export default async function handler(
 
   if (!API_URL || !API_KEY) {
     return res.status(500).json({
-      message: `Failed to execute cron job, missing ${
-        !API_KEY && !API_URL
-          ? "API KEY and URL"
-          : !API_URL
-            ? "API URL"
-            : "API KEY"
-      }`,
+      message: `Failed to execute cron job, missing variables`,
     });
   }
 
