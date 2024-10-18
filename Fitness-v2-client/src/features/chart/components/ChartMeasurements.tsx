@@ -156,7 +156,7 @@ function ChartMeasurements() {
           content={({ payload }) => {
             if (!payload || payload.length === 0) return null;
             const { date, weight, height, bmi } = payload[0].payload as {
-              date: string;
+              date: Date;
               weight: number;
               height: number;
               bmi: number;
