@@ -16,9 +16,7 @@ import {
   ChartTooltip,
 } from "~/features/shared/components/ui/chart";
 import useGetChartDataMealsConsumed from "../hooks/useGetChartDataMealsConsumed";
-import { Card } from "~/features/shared/components/ui/card";
-import { cn } from "~/lib/utils";
-import { Separator } from "~/features/shared/components/ui/separator";
+import ChartTooltipDate from "./ChartTooltipDate";
 
 const initChartData = [
   {
@@ -217,59 +215,13 @@ function ChartMealsConsumed() {
         )}
         <ChartTooltip
           content={({ payload }) => {
-            if (!payload || payload.length === 0) return null;
-            const {
-              date,
-              total_calories,
-              total_fat,
-              total_protein,
-              total_carbs,
-            } = payload[0].payload as {
-              date: string;
-              total_calories: number;
-              total_fat: number;
-              total_protein: number;
-              total_carbs: number;
-            };
-            return (
-              <Card className="w-44 border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl">
-                <div className="py-1">
-                  <p>{new Date(date).toDateString()}</p>
-                </div>
-                <Separator />
-
-                <div className="grid grid-cols-[auto_auto_1fr] items-center gap-1 pt-1">
-                  <div
-                    className={cn(
-                      "h-2.5 w-2.5 shrink-0 rounded-[2px] border-[--color-total_calories] bg-[--color-total_calories]",
-                    )}
-                  />
-                  <p className="text-muted-foreground">Total Calories(kCal)</p>
-                  <p className="text-end">{total_calories}</p>
-                  <div
-                    className={cn(
-                      "h-2.5 w-2.5 shrink-0 rounded-[2px] border-[--color-total_fat] bg-[--color-total_fat]",
-                    )}
-                  />
-                  <p className="text-muted-foreground">Total Fat(g)</p>
-                  <p className="text-end">{total_fat}</p>
-                  <div
-                    className={cn(
-                      "h-2.5 w-2.5 shrink-0 rounded-[2px] border-[--color-total_protein] bg-[--color-total_protein]",
-                    )}
-                  />
-                  <p className="text-muted-foreground">Total Protein(g)</p>
-                  <p className="text-end">{total_protein}</p>
-                  <div
-                    className={cn(
-                      "h-2.5 w-2.5 shrink-0 rounded-[2px] border-[--color-total_carbs] bg-[--color-total_carbs]",
-                    )}
-                  />
-                  <p className="text-muted-foreground">Total Carbs(g)</p>
-                  <p className="text-end">{total_carbs}</p>
-                </div>
-              </Card>
-            );
+            const KeyLabels = [
+              { key: "total_calories", label: "Total Calories(kCal)" },
+              { key: "total_fat", label: "Total Fat(g)" },
+              { key: "total_protein", label: "Total Protein(g)" },
+              { key: "total_carbs", label: "Total Carbs(g)" },
+            ];
+            return <ChartTooltipDate keyLabels={KeyLabels} payload={payload} />;
           }}
         />
 

@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
-import { Card } from "~/features/shared/components/ui/card";
 import {
   type ChartConfig,
   ChartContainer,
@@ -8,9 +7,8 @@ import {
   ChartLegendContent,
   ChartTooltip,
 } from "~/features/shared/components/ui/chart";
-import { Separator } from "~/features/shared/components/ui/separator";
-import { cn } from "~/lib/utils";
 import useGetChartDataMeasurements from "../hooks/useGetChartDataMeasurements";
+import ChartTooltipDate from "./ChartTooltipDate";
 
 const initChartData = [
   {
@@ -154,45 +152,13 @@ function ChartMeasurements() {
         /> */}
         <ChartTooltip
           content={({ payload }) => {
-            if (!payload || payload.length === 0) return null;
-            const { date, weight, height, bmi } = payload[0].payload as {
-              date: Date;
-              weight: number;
-              height: number;
-              bmi: number;
-            };
-            return (
-              <Card className="w-44 border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl">
-                <div className="py-1">
-                  <p>{new Date(date).toDateString()}</p>
-                </div>
-                <Separator />
+            const KeyLabels = [
+              { key: "weight", label: "Weight(kg)" },
+              { key: "height", label: "Height(cm)" },
+              { key: "bmi", label: "BMI" },
+            ];
 
-                <div className="grid grid-cols-[auto_auto_1fr] items-center gap-1 pt-1">
-                  <div
-                    className={cn(
-                      "h-2.5 w-2.5 shrink-0 rounded-[2px] border-[--color-weight] bg-[--color-weight]",
-                    )}
-                  />
-                  <p className="text-muted-foreground">Weight(kg)</p>
-                  <p className="text-end">{weight}</p>
-                  <div
-                    className={cn(
-                      "h-2.5 w-2.5 shrink-0 rounded-[2px] border-[--color-height] bg-[--color-height]",
-                    )}
-                  />
-                  <p className="text-muted-foreground">Height(cm)</p>
-                  <p className="text-end">{height}</p>
-                  <div
-                    className={cn(
-                      "h-2.5 w-2.5 shrink-0 rounded-[2px] border-[--color-bmi] bg-[--color-bmi]",
-                    )}
-                  />
-                  <p className="text-muted-foreground">BMI</p>
-                  <p className="text-end">{bmi}</p>
-                </div>
-              </Card>
-            );
+            return <ChartTooltipDate keyLabels={KeyLabels} payload={payload} />;
           }}
         />
         <ChartLegend content={<ChartLegendContent />} />
