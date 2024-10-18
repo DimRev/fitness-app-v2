@@ -8,6 +8,8 @@ import {
   CardHeader,
 } from "~/features/shared/components/ui/card";
 import { Separator } from "~/features/shared/components/ui/separator";
+import { buttonVariants } from "~/features/shared/components/ui/button";
+import { Link } from "react-router-dom";
 
 type Props = {
   dateStr: string;
@@ -50,7 +52,13 @@ function CalendarDetailsContent({ dateStr }: Props) {
         <CardContent>
           {calendarData.meals.length > 0 ? (
             calendarData.meals.map((meal) => (
-              <div key={meal.meal_id}>{meal.name}</div>
+              <Link
+                to={`/dashboard/meal/details/${meal.meal_id}`}
+                key={meal.meal_id}
+                className={buttonVariants({ variant: "outline" })}
+              >
+                {meal.name}
+              </Link>
             ))
           ) : (
             <div>No meals</div>
