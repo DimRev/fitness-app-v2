@@ -60,11 +60,28 @@ func CronUpdateMeasurements(c echo.Context) error {
 		}
 
 		for _, user := range users {
+			// Check if today's measurement exists
+			_, err := config.Queries.CheckTodayMeasurement(c.Request().Context(), user.ID)
+			if err != nil {
+				if err == sql.ErrNoRows {
+					utils.FmtLogInfo(
+						"cron_controllers.go",
+						"CronUpdateMeasurements",
+						fmt.Sprintf("no measurement found for today for user %s", user.Email),
+					)
+				} else {
+					utils.FmtLogError("cron_controllers.go", "CronUpdateMeasurements", fmt.Errorf("failed to get today's measurement for user %d: %s", user.ID, err))
+					continue
+				}
+			}
+
+			// Reach here only if today's measurement doesn't exist
+			// Check if yesterday's measurement exists
 			yesterdayMeasurement, err := config.Queries.CheckYesterdayMeasurement(c.Request().Context(), user.ID)
 			var createMeasurementParams database.CreateMeasurementParams
-
 			if err != nil {
-				if err == sql.ErrNoRows { // No measurement found for yesterday, create with "0"
+				if err == sql.ErrNoRows {
+					// If doesn't exist, create with 0 measurement
 					createMeasurementParams = database.CreateMeasurementParams{
 						UserID: user.ID,
 						Weight: "0",
@@ -72,12 +89,11 @@ func CronUpdateMeasurements(c echo.Context) error {
 						Bmi:    "0",
 					}
 				} else {
-					// Log other types of errors but continue the loop
 					utils.FmtLogError("cron_controllers.go", "CronUpdateMeasurements", fmt.Errorf("failed to get yesterday's measurement for user %d: %s", user.ID, err))
 					continue
 				}
 			} else {
-				// Use the existing measurement if no error occurred
+				// If yesterday's measurement exists, use the existing measurement
 				createMeasurementParams = database.CreateMeasurementParams{
 					UserID: user.ID,
 					Weight: yesterdayMeasurement.Weight,
@@ -86,6 +102,7 @@ func CronUpdateMeasurements(c echo.Context) error {
 				}
 			}
 
+			// Create measurement for user for today, using the data above.
 			_, err = config.Queries.CreateMeasurement(c.Request().Context(), createMeasurementParams)
 			if err != nil {
 				utils.FmtLogError("cron_controllers.go", "CronUpdateMeasurements", fmt.Errorf("failed to create measurement for user %d: %s", user.ID, err))
