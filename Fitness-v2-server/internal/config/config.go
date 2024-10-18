@@ -22,6 +22,7 @@ var (
 	Queries               *database.Queries
 	Port                  string
 	JwtSecret             string
+	CronApiKey            string
 	DB                    *sql.DB
 	CORS                  []string
 	ENV                   string
@@ -53,6 +54,11 @@ func New() error {
 	JwtSecret = os.Getenv("JWT_SECRET")
 	if JwtSecret == "" {
 		return fmt.Errorf("JWT_SECRET environment variable not set")
+	}
+
+	CronApiKey = os.Getenv("CRON_API_KEY")
+	if CronApiKey == "" {
+		return fmt.Errorf("CRON_API_KEY environment variable not set")
 	}
 
 	corsStr := os.Getenv("CORS")

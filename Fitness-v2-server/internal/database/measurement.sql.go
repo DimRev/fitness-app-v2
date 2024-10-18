@@ -32,6 +32,27 @@ func (q *Queries) CheckTodayMeasurement(ctx context.Context, userID uuid.UUID) (
 	return i, err
 }
 
+const checkYesterdayMeasurement = `-- name: CheckYesterdayMeasurement :one
+SELECT user_id, weight, height, bmi, date, created_at, updated_at FROM measurements
+WHERE user_id = $1
+AND date = CURRENT_DATE - 1
+`
+
+func (q *Queries) CheckYesterdayMeasurement(ctx context.Context, userID uuid.UUID) (Measurement, error) {
+	row := q.db.QueryRowContext(ctx, checkYesterdayMeasurement, userID)
+	var i Measurement
+	err := row.Scan(
+		&i.UserID,
+		&i.Weight,
+		&i.Height,
+		&i.Bmi,
+		&i.Date,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const createMeasurement = `-- name: CreateMeasurement :one
 INSERT INTO measurements (
   user_id, 
