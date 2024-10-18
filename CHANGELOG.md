@@ -1,3 +1,10 @@
+# [0.16.0](https://github.com/DimRev/fitness-app-v2/compare/v0.15.4...v0.16.0) (2024-10-18)
+
+
+### Features
+
+* Add CodeRabbit config ([7959c16](https://github.com/DimRev/fitness-app-v2/commit/7959c1619723e63e178b2e9f635b4f9fa8847620))
+
 ## [0.15.4](https://github.com/DimRev/fitness-app-v2/compare/v0.15.3...v0.15.4) (2024-10-17)
 
 
