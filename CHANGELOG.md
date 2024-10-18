@@ -1,3 +1,10 @@
+## [0.16.2](https://github.com/DimRev/fitness-app-v2/compare/v0.16.1...v0.16.2) (2024-10-18)
+
+
+### Bug Fixes
+
+* FChart tooltip color fix ([83803a9](https://github.com/DimRev/fitness-app-v2/commit/83803a91ed1b9e97d54463b33e3c0d8dfbc036b9))
+
 ## [0.16.1](https://github.com/DimRev/fitness-app-v2/compare/v0.16.0...v0.16.1) (2024-10-18)
 
 
