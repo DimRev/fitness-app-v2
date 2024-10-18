@@ -66,3 +66,15 @@ func SafeParseIntToInt32(n int, min int, max int) (int32, error) {
 	}
 	return int32(n), nil
 }
+
+func SafeParseInt64ToInt32(n int64, min int64, max int64) (int32, error) {
+	if n < min || n > max || n < math.MinInt32 || n > math.MaxInt32 {
+		return 0, &OutOfRangeError{
+			Value:     fmt.Sprintf("%d", n),
+			Min:       int64(min),
+			Max:       int64(max),
+			RangeType: "int32",
+		}
+	}
+	return int32(n), nil
+}
