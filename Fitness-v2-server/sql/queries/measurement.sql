@@ -9,6 +9,11 @@ SELECT * FROM measurements
 WHERE user_id = $1
 AND date = CURRENT_DATE;
 
+-- name: CheckYesterdayMeasurement :one
+SELECT * FROM measurements
+WHERE user_id = $1
+AND date = CURRENT_DATE - 1;
+
 -- name: CreateMeasurement :one
 INSERT INTO measurements (
   user_id, 
