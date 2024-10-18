@@ -7,8 +7,8 @@ import {
 import useGetMealByID from "../hooks/useGetMealByID";
 import { H2, H3 } from "~/features/shared/components/Typography";
 import { Separator } from "~/features/shared/components/ui/separator";
-import { Button } from "~/features/shared/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { Button, buttonVariants } from "~/features/shared/components/ui/button";
+import { Link, useNavigate } from "react-router-dom";
 import { Textarea } from "~/features/shared/components/ui/textarea";
 import { Apple } from "lucide-react";
 import useGetConsumedMealsByMealID from "../hooks/useGetConsumedMealsByMealID";
@@ -128,14 +128,15 @@ function MealDetails({ mealId }: Props) {
         </div>
         <Separator className="mt-2" />
         <H2>Dates Consumed:</H2>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 py-2">
           {consumedMeals.map((consumedMeal) => (
-            <div
+            <Link
+              to={`/dashboard/calendar/${new Date(consumedMeal.date).toDateString()}`}
+              className={buttonVariants({ variant: "outline" })}
               key={consumedMeal.meal_id + consumedMeal.date}
-              className="rounded-md border px-4 py-2"
             >
               <div>{new Date(consumedMeal.date).toDateString()}</div>
-            </div>
+            </Link>
           ))}
         </div>
         <Separator className="mt-2" />
