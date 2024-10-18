@@ -34,6 +34,7 @@ import DashboardMeasurementsPage from "./features/views/components/DashboardMeas
 import DashboardMeasurementsAddPage from "./features/views/components/DashboardMeasurementsAddPage";
 import AdminSupportTicketPage from "./features/views/components/AdminSupportTicketPage";
 import DashboardCalendarDetailsPage from "./features/views/components/DashboardCalendarDetailsPage";
+import DashboardScorePage from "./features/views/components/DashboardScorePage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -137,6 +138,7 @@ function App() {
                   path="calendar/:dateStr"
                   element={<DashboardCalendarDetailsPage />}
                 />
+                <Route path="score" element={<DashboardScorePage />} />
               </Route>
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminOverviewPage />} />
