@@ -6,9 +6,9 @@ import {
   ChartLegend,
   ChartLegendContent,
   ChartTooltip,
-  ChartTooltipContent,
 } from "~/features/shared/components/ui/chart";
 import useGetChartDataMeasurements from "../hooks/useGetChartDataMeasurements";
+import ChartTooltipDate from "./ChartTooltipDate";
 
 const initChartData = [
   {
@@ -147,8 +147,19 @@ function ChartMeasurements() {
           domain={[0, maxValue]}
           tickFormatter={(value: number) => `${value}`}
         />
-        <ChartTooltip
+        {/* <ChartTooltip
           content={<ChartTooltipContent hideLabel className="w-40" />}
+        /> */}
+        <ChartTooltip
+          content={({ payload }) => {
+            const KeyLabels = [
+              { key: "weight", label: "Weight(kg)" },
+              { key: "height", label: "Height(cm)" },
+              { key: "bmi", label: "BMI" },
+            ];
+
+            return <ChartTooltipDate keyLabels={KeyLabels} payload={payload} />;
+          }}
         />
         <ChartLegend content={<ChartLegendContent />} />
         <Line
@@ -156,6 +167,7 @@ function ChartMeasurements() {
           stroke="var(--color-weight)"
           fill="var(--color-weight)"
           type="monotone"
+          dot={false}
           radius={2}
         />
         <Line
@@ -163,6 +175,7 @@ function ChartMeasurements() {
           stroke="var(--color-height)"
           fill="var(--color-height)"
           type="monotone"
+          dot={false}
           radius={2}
         />
         <Line
@@ -170,6 +183,7 @@ function ChartMeasurements() {
           stroke="var(--color-bmi)"
           fill="var(--color-bmi)"
           type="monotone"
+          dot={false}
           radius={2}
         />
       </LineChart>

@@ -7,16 +7,16 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import useGetCheckTodayMeasurement from "~/features/measurement/hooks/useGetCheckTodayMeasurement";
 import {
   type ChartConfig,
   ChartContainer,
   ChartLegend,
   ChartLegendContent,
   ChartTooltip,
-  ChartTooltipContent,
 } from "~/features/shared/components/ui/chart";
 import useGetChartDataMealsConsumed from "../hooks/useGetChartDataMealsConsumed";
-import useGetCheckTodayMeasurement from "~/features/measurement/hooks/useGetCheckTodayMeasurement";
+import ChartTooltipDate from "./ChartTooltipDate";
 
 const initChartData = [
   {
@@ -214,14 +214,24 @@ function ChartMealsConsumed() {
           />
         )}
         <ChartTooltip
-          content={<ChartTooltipContent hideLabel className="w-48" />}
+          content={({ payload }) => {
+            const KeyLabels = [
+              { key: "total_calories", label: "Total Calories(kCal)" },
+              { key: "total_fat", label: "Total Fat(g)" },
+              { key: "total_protein", label: "Total Protein(g)" },
+              { key: "total_carbs", label: "Total Carbs(g)" },
+            ];
+            return <ChartTooltipDate keyLabels={KeyLabels} payload={payload} />;
+          }}
         />
+
         <ChartLegend content={<ChartLegendContent />} />
         <Line
           dataKey="total_calories"
           stroke="var(--color-total_calories)"
           fill="var(--color-total_calories)"
           type="monotone"
+          dot={false}
           radius={2}
         />
         <Line
@@ -229,6 +239,7 @@ function ChartMealsConsumed() {
           stroke="var(--color-total_fat)"
           fill="var(--color-total_fat)"
           type="monotone"
+          dot={false}
           radius={2}
         />
         <Line
@@ -236,6 +247,7 @@ function ChartMealsConsumed() {
           stroke="var(--color-total_protein)"
           fill="var(--color-total_protein)"
           type="monotone"
+          dot={false}
           radius={2}
         />
         <Line
@@ -243,6 +255,7 @@ function ChartMealsConsumed() {
           stroke="var(--color-total_carbs)"
           fill="var(--color-total_carbs)"
           type="monotone"
+          dot={false}
           radius={2}
         />
       </LineChart>
