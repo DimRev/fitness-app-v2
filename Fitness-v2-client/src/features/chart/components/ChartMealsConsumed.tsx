@@ -16,7 +16,7 @@ import {
   ChartTooltip,
 } from "~/features/shared/components/ui/chart";
 import useGetChartDataMealsConsumed from "../hooks/useGetChartDataMealsConsumed";
-import ChartTooltipDate from "./ChartTooltipDate";
+import ChartTooltipDate, { type CustomChartKeyLabel } from "./ChartTooltipDate";
 
 const initChartData = [
   {
@@ -215,11 +215,27 @@ function ChartMealsConsumed() {
         )}
         <ChartTooltip
           content={({ payload }) => {
-            const KeyLabels = [
-              { key: "total_calories", label: "Total Calories(kCal)" },
-              { key: "total_fat", label: "Total Fat(g)" },
-              { key: "total_protein", label: "Total Protein(g)" },
-              { key: "total_carbs", label: "Total Carbs(g)" },
+            const KeyLabels: CustomChartKeyLabel[] = [
+              {
+                key: "total_calories",
+                label: "Total Calories(kCal)",
+                color: chartConfig.total_calories.color,
+              },
+              {
+                key: "total_fat",
+                label: "Total Fat(g)",
+                color: chartConfig.total_fat.color,
+              },
+              {
+                key: "total_protein",
+                label: "Total Protein(g)",
+                color: chartConfig.total_protein.color,
+              },
+              {
+                key: "total_carbs",
+                label: "Total Carbs(g)",
+                color: chartConfig.total_carbs.color,
+              },
             ];
             return <ChartTooltipDate keyLabels={KeyLabels} payload={payload} />;
           }}

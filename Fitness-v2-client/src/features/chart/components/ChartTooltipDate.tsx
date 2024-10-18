@@ -13,8 +13,14 @@ interface TooltipPayload {
   [key: string]: number | string | Date;
 }
 
+export interface CustomChartKeyLabel {
+  key: string;
+  label: string;
+  color: string;
+}
+
 type Props = {
-  keyLabels: { key: string; label: string }[];
+  keyLabels: CustomChartKeyLabel[];
   payload: Payload<ValueType, NameType>[] | undefined;
 };
 
@@ -30,12 +36,11 @@ function ChartTooltipDate({ keyLabels, payload }: Props) {
       <Separator />
 
       <div className="grid grid-cols-[auto_auto_1fr] items-center gap-1 pt-1">
-        {keyLabels.map(({ key, label }) => (
+        {keyLabels.map(({ key, label, color }) => (
           <React.Fragment key={key}>
             <div
-              className={cn(
-                `h-2.5 w-2.5 shrink-0 rounded-[2px] border-[--color-${key}] bg-[--color-${key}]`,
-              )}
+              className={cn(`h-2.5 w-2.5 shrink-0 rounded-[2px]`)}
+              style={{ backgroundColor: color, borderColor: color }}
             />
             <p className="text-muted-foreground">{label}</p>
             <p className="text-end">{data[key] as string | number}</p>

@@ -100,6 +100,16 @@ const config = {
         "@typescript-eslint/consistent-type-imports": "off",
       },
     },
+    {
+      files: ["api/**/*.ts"],
+      env: {
+        node: true,
+      },
+      parserOptions: {
+        project: path.resolve(__dirname, "tsconfig.api.json"),
+      },
+      rules: {},
+    },
   ],
 };
 

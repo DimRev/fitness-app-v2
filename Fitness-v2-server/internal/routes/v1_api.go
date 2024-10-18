@@ -16,5 +16,6 @@ func V1ApiRoutes(e *echo.Echo) {
 		MeasurementRoutesV1(v1)
 		NotificationRoutesV1(v1)
 		SupportTicketRoutesV1(v1)
+		CronRoutesV1(v1)
 	}
 }

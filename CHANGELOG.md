@@ -1,3 +1,20 @@
+## [0.16.2](https://github.com/DimRev/fitness-app-v2/compare/v0.16.1...v0.16.2) (2024-10-18)
+
+
+### Bug Fixes
+
+* FChart tooltip color fix ([83803a9](https://github.com/DimRev/fitness-app-v2/commit/83803a91ed1b9e97d54463b33e3c0d8dfbc036b9))
+
+## [0.16.1](https://github.com/DimRev/fitness-app-v2/compare/v0.16.0...v0.16.1) (2024-10-18)
+
+
+### Bug Fixes
+
+* **ci:** Add setup step before CI executions to pull/push cache ([3b21f6b](https://github.com/DimRev/fitness-app-v2/commit/3b21f6b39dc8d5fa233a9d3316ca3ac6eb74e63d))
+* **client-calendar&meal:** Stylize and impl link between the Calendar and Meal details ([b938081](https://github.com/DimRev/fitness-app-v2/commit/b9380814b71d74a24d3dee860723eb21dfc60ee6))
+* **client-chart:** Extract chart tooltip into it's own cmp ([f50ad72](https://github.com/DimRev/fitness-app-v2/commit/f50ad72967dc9b9b9d803d3df047416afcac2361))
+* **client-charts:** Stylize chart toolbars ([4a587d4](https://github.com/DimRev/fitness-app-v2/commit/4a587d46821efad41f29f83f49120ae56c49ad19))
+
 # [0.16.0](https://github.com/DimRev/fitness-app-v2/compare/v0.15.4...v0.16.0) (2024-10-18)
 
 
