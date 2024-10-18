@@ -1,3 +1,10 @@
+## [0.16.4](https://github.com/DimRev/fitness-app-v2/compare/v0.16.3...v0.16.4) (2024-10-18)
+
+
+### Bug Fixes
+
+* Add favicon ([713375a](https://github.com/DimRev/fitness-app-v2/commit/713375a4307e10c00e51ae68b85008d7e8c4e1ae))
+
 ## [0.16.3](https://github.com/DimRev/fitness-app-v2/compare/v0.16.2...v0.16.3) (2024-10-18)
 
 
