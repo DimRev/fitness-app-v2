@@ -1,13 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
+import { Card } from "~/features/shared/components/ui/card";
 import {
   type ChartConfig,
   ChartContainer,
   ChartLegend,
   ChartLegendContent,
   ChartTooltip,
-  ChartTooltipContent,
 } from "~/features/shared/components/ui/chart";
+import { Separator } from "~/features/shared/components/ui/separator";
+import { cn } from "~/lib/utils";
 import useGetChartDataMeasurements from "../hooks/useGetChartDataMeasurements";
 
 const initChartData = [
@@ -147,8 +149,51 @@ function ChartMeasurements() {
           domain={[0, maxValue]}
           tickFormatter={(value: number) => `${value}`}
         />
-        <ChartTooltip
+        {/* <ChartTooltip
           content={<ChartTooltipContent hideLabel className="w-40" />}
+        /> */}
+        <ChartTooltip
+          content={({ payload }) => {
+            if (!payload || payload.length === 0) return null;
+            const { date, weight, height, bmi } = payload[0].payload as {
+              date: string;
+              weight: number;
+              height: number;
+              bmi: number;
+            };
+            return (
+              <Card className="w-44 border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl">
+                <div className="py-1">
+                  <p>{new Date(date).toDateString()}</p>
+                </div>
+                <Separator />
+
+                <div className="grid grid-cols-[auto_auto_1fr] items-center gap-1 pt-1">
+                  <div
+                    className={cn(
+                      "h-2.5 w-2.5 shrink-0 rounded-[2px] border-[--color-weight] bg-[--color-weight]",
+                    )}
+                  />
+                  <p className="text-muted-foreground">Weight(kg)</p>
+                  <p className="text-end">{weight}</p>
+                  <div
+                    className={cn(
+                      "h-2.5 w-2.5 shrink-0 rounded-[2px] border-[--color-height] bg-[--color-height]",
+                    )}
+                  />
+                  <p className="text-muted-foreground">Height(m)</p>
+                  <p className="text-end">{height}</p>
+                  <div
+                    className={cn(
+                      "h-2.5 w-2.5 shrink-0 rounded-[2px] border-[--color-bmi] bg-[--color-bmi]",
+                    )}
+                  />
+                  <p className="text-muted-foreground">BMI</p>
+                  <p className="text-end">{bmi}</p>
+                </div>
+              </Card>
+            );
+          }}
         />
         <ChartLegend content={<ChartLegendContent />} />
         <Line
@@ -156,6 +201,7 @@ function ChartMeasurements() {
           stroke="var(--color-weight)"
           fill="var(--color-weight)"
           type="monotone"
+          dot={false}
           radius={2}
         />
         <Line
@@ -163,6 +209,7 @@ function ChartMeasurements() {
           stroke="var(--color-height)"
           fill="var(--color-height)"
           type="monotone"
+          dot={false}
           radius={2}
         />
         <Line
@@ -170,6 +217,7 @@ function ChartMeasurements() {
           stroke="var(--color-bmi)"
           fill="var(--color-bmi)"
           type="monotone"
+          dot={false}
           radius={2}
         />
       </LineChart>
