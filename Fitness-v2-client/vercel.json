@@ -1,14 +1,14 @@
 {
   "rewrites": [{ "source": "/(.*)", "destination": "/" }],
   "functions": {
-    "api/CronUpdateMeasurement.ts": {
+    "api/cronUpdateMeasurement.ts": {
       "memory": 128,
       "maxDuration": 10
     }
   },
   "crons": [
     {
-      "path": "/api/CronUpdateMeasurement",
+      "path": "/api/cronUpdateMeasurement",
       "schedule": "0 23 * * *"
     }
   ]

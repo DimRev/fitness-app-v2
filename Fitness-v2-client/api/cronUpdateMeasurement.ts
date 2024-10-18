@@ -23,6 +23,7 @@ export default async function handler(
     const apiRes = await fetchWithTimeout(
       `${API_URL}/v1/cron/update_measurements`,
       {
+        method: "POST",
         headers: {
           Authorization: `Bearer ${API_KEY}`,
         },

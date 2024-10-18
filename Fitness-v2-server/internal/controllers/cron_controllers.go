@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"crypto/subtle"
 	"fmt"
 	"net/http"
 	"strings"
@@ -11,13 +12,13 @@ import (
 )
 
 func CronUpdateMeasurements(c echo.Context) error {
-	apiKey := strings.Split(c.Request().Header.Get("Authorization"), "bearer ")
+	apiKey := strings.Split(c.Request().Header.Get("Authorization"), "Bearer ")
 	if len(apiKey) != 2 {
 		utils.FmtLogError("cron_controllers.go", "CronUpdateMeasurements", fmt.Errorf("malformed api key"))
 		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
 			"message": "Invalid api key",
 		})
-	} else if apiKey[1] != config.CronApiKey {
+	} else if subtle.ConstantTimeCompare([]byte(apiKey[1]), []byte(config.CronApiKey)) != 1 {
 		utils.FmtLogError("cron_controllers.go", "CronUpdateMeasurements", fmt.Errorf("invalid api key"))
 		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
 			"message": "Invalid api key",
