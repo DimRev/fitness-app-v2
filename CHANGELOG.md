@@ -1,3 +1,10 @@
+## [0.16.5](https://github.com/DimRev/fitness-app-v2/compare/v0.16.4...v0.16.5) (2024-10-18)
+
+
+### Bug Fixes
+
+* **cron:** attempt fixing cronjob ([7ad90cc](https://github.com/DimRev/fitness-app-v2/commit/7ad90cca5232dd1f5ebd88f91a261675273bcc7c))
+
 ## [0.16.4](https://github.com/DimRev/fitness-app-v2/compare/v0.16.3...v0.16.4) (2024-10-18)
 
 
