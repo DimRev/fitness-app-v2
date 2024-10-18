@@ -8,7 +8,7 @@ import {
   ChartTooltip,
 } from "~/features/shared/components/ui/chart";
 import useGetChartDataMeasurements from "../hooks/useGetChartDataMeasurements";
-import ChartTooltipDate from "./ChartTooltipDate";
+import ChartTooltipDate, { type CustomChartKeyLabel } from "./ChartTooltipDate";
 
 const initChartData = [
   {
@@ -152,10 +152,18 @@ function ChartMeasurements() {
         /> */}
         <ChartTooltip
           content={({ payload }) => {
-            const KeyLabels = [
-              { key: "weight", label: "Weight(kg)" },
-              { key: "height", label: "Height(cm)" },
-              { key: "bmi", label: "BMI" },
+            const KeyLabels: CustomChartKeyLabel[] = [
+              {
+                key: "weight",
+                label: "Weight(kg)",
+                color: chartConfig.weight.color,
+              },
+              {
+                key: "height",
+                label: "Height(cm)",
+                color: chartConfig.height.color,
+              },
+              { key: "bmi", label: "BMI", color: chartConfig.bmi.color },
             ];
 
             return <ChartTooltipDate keyLabels={KeyLabels} payload={payload} />;
