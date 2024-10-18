@@ -35,7 +35,7 @@ The app is also using a JWT token as cookie, so the token will be stored in your
 
 - Language: Javascript(Typescript)
 - Framework: React
-- Libraries: React Query, React Router, React Hook Form, Tailwind CSS, Vite
+- Libraries: ReactQuery, react-router-dom, React Hook Form, TailwindCSS, Shadcn:ui, Vite, Vitest
 - Deploy: Vercel
 
 ## Prerequisites
@@ -50,21 +50,15 @@ The app is also using a JWT token as cookie, so the token will be stored in your
 2. Create a `.env` file in the server directory:
 
 ```bash
-# local database url
 DATABASE_URL="postgres://postgres:postgres@localhost:5432/fitness_app"
-# port to run the server on
 PORT="1323"
-# jwt secret for your local server
 JWT_SECRET="This_is_my_secret"
-# cors for your local clients
 CORS="http://localhost:5173,http://127.0.0.1t:5173"
-# Optional
 ENV="development"
+CRON_API_KEY="cron_api_ket"
 
-# AWS Bucket envs
 AWS_BUCKET_NAME="your-bucket-name"
 AWS_REGION="your-region"
-# AWS IAM user
 AWS_ACCESS_KEY_ID="your-access-key-id"
 AWS_SECRET_ACCESS_KEY="your-secret-access-key"
 ```
@@ -75,16 +69,20 @@ AWS_SECRET_ACCESS_KEY="your-secret-access-key"
 
 ```bash
 VITE_API_URL="http://localhost:1323/api/v1"
-
 VITE_WS_URL="ws://localhost:1323/ws"
+
+CRON_SECRET="cron_secret"
+CRON_API_KEY="cron_api_key"
 ```
 
 `.env.production.local`:
 
 ```bash
 VITE_API_URL="https://fitness-v2-server.fly.dev/api/v1"
-
 VITE_WS_URL="wss://fitness-v2-server.fly.dev/ws"
+
+CRON_SECRET="cron_secret"
+CRON_API_KEY="cron_api_key"
 ```
 
 4. Install dependencies:
