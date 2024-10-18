@@ -90,3 +90,11 @@ jobs:
 
       - name: Run tests
         run: pnpm run test:ci
+
+  cleanup:
+    name: Cleanup After All Jobs
+    runs-on: ubuntu-latest
+    needs: [lint, prettier, test]  # Cleanup happens after lint, prettier, and test jobs
+    steps:
+      - name: Perform cleanup
+        run: echo "Performing cleanup after all jobs are done"

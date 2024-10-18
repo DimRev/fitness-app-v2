@@ -2,14 +2,16 @@
 language: "en-US"
 early_access: false
 enable_free_tier: true
+
 reviews:
-  profile: "chill"
-  request_changes_workflow: false
-  high_level_summary: true
-  review_status: true
-  collapse_walkthrough: false
+  profile: "thorough"              # Set to "thorough" for more detailed reviews
+  request_changes_workflow: true   # Enable automatic request changes if issues are found
+  high_level_summary: true         # Keep high-level summary for quick overviews
+  review_status: true              # Keep review status notifications
+  collapse_walkthrough: false      # Ensure walkthrough comments are not collapsed
   auto_review:
-    enabled: true
-    drafts: false
+    enabled: true                  # Keep auto reviews enabled
+    drafts: false                  # Do not review draft PRs
+
 chat:
-  auto_reply: true
+  auto_reply: true                 # Enable auto replies to questions or comments
