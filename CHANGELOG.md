@@ -1,3 +1,10 @@
+## [0.16.3](https://github.com/DimRev/fitness-app-v2/compare/v0.16.2...v0.16.3) (2024-10-18)
+
+
+### Bug Fixes
+
+* Add next as dev-dependacy and setup vercel serverless function ([f51ebf7](https://github.com/DimRev/fitness-app-v2/commit/f51ebf7f5ae79d2058667e4b6006640ebad9d994))
+
 ## [0.16.2](https://github.com/DimRev/fitness-app-v2/compare/v0.16.1...v0.16.2) (2024-10-18)
 
 
