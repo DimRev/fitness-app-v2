@@ -7,8 +7,8 @@ on:
       - staging
 
 jobs:
-  test:
-    name: Run Server Tests
+  setup:
+    name: Install and Cache Dependencies
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -22,7 +22,7 @@ jobs:
         with:
           go-version: '1.22.2'
 
-      # Restore cache before installing dependencies
+      # Restore Go modules cache before installing dependencies
       - name: Restore Go modules from cache
         uses: actions/cache@v3
         with:
@@ -35,7 +35,7 @@ jobs:
       - name: Install dependencies
         run: go mod tidy
 
-      # Save cache after installing dependencies
+      # Save Go modules cache after installing dependencies
       - name: Cache Go modules
         uses: actions/cache@v3
         with:
@@ -43,52 +43,11 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
-
-      - name: Run tests
-        run: go test -v ./...
-
-  security:
-    name: Run Go Security Check (gosec)
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./Fitness-v2-server
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Go
-        uses: actions/setup-go@v3
-        with:
-          go-version: '1.22.2'
-
-      # Restore cache before running security check
-      - name: Restore Go modules from cache
-        uses: actions/cache@v3
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
-
-      - name: Install gosec
-        run: go install github.com/securego/gosec/v2/cmd/gosec@latest
-
-      # Save cache after gosec installation
-      - name: Cache Go modules
-        uses: actions/cache@v3
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
-
-      - name: Run security check (gosec)
-        run: gosec -exclude-generated ./...
 
   lint:
     name: Run Go Linting (golangci-lint)
     runs-on: ubuntu-latest
+    needs: setup  # Run after the setup job
     defaults:
       run:
         working-directory: ./Fitness-v2-server
@@ -101,7 +60,7 @@ jobs:
         with:
           go-version: '1.22.2'
 
-      # Restore cache before linting
+      # Restore Go modules cache before linting
       - name: Restore Go modules from cache
         uses: actions/cache@v3
         with:
@@ -113,8 +72,27 @@ jobs:
       - name: Install golangci-lint
         run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.54.2
 
-      # Save cache after golangci-lint installation
-      - name: Cache Go modules
+      - name: Run golangci-lint
+        run: golangci-lint run ./...
+
+  security:
+    name: Run Go Security Check (gosec)
+    runs-on: ubuntu-latest
+    needs: setup  # Run after the setup job
+    defaults:
+      run:
+        working-directory: ./Fitness-v2-server
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.22.2'
+
+      # Restore Go modules cache before running security check
+      - name: Restore Go modules from cache
         uses: actions/cache@v3
         with:
           path: ~/go/pkg/mod
@@ -122,5 +100,36 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
-      - name: Run golangci-lint
-        run: golangci-lint run ./...
+      - name: Install gosec
+        run: go install github.com/securego/gosec/v2/cmd/gosec@latest
+
+      - name: Run security check (gosec)
+        run: gosec -exclude-generated ./...
+
+  test:
+    name: Run Server Tests
+    runs-on: ubuntu-latest
+    needs: setup  # Run after the setup job
+    defaults:
+      run:
+        working-directory: ./Fitness-v2-server
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.22.2'
+
+      # Restore Go modules cache before running tests
+      - name: Restore Go modules from cache
+        uses: actions/cache@v3
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Run tests
+        run: go test -v ./...
