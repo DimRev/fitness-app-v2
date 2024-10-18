@@ -51,15 +51,17 @@ function CalendarDetailsContent({ dateStr }: Props) {
         </CardHeader>
         <CardContent>
           {calendarData.meals.length > 0 ? (
-            calendarData.meals.map((meal) => (
-              <Link
-                to={`/dashboard/meal/details/${meal.meal_id}`}
-                key={meal.meal_id}
-                className={buttonVariants({ variant: "outline" })}
-              >
-                {meal.name}
-              </Link>
-            ))
+            <div className="flex flex-wrap gap-2">
+              {calendarData.meals.map((meal) => (
+                <Link
+                  to={`/dashboard/meal/details/${meal.meal_id}`}
+                  key={meal.meal_id}
+                  className={buttonVariants({ variant: "outline" })}
+                >
+                  {meal.name}
+                </Link>
+              ))}
+            </div>
           ) : (
             <div>No meals</div>
           )}
