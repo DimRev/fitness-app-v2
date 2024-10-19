@@ -2,11 +2,16 @@ import { BadgeCheckIcon, BadgeHelp, BadgePlus } from "lucide-react";
 import { DashboardContentCards } from "~/features/shared/components/CustomCards";
 import ScoreBadge from "./ScoreBadge";
 import { useGetScoreByUserID } from "../hooks/useGetScoreByUserID";
+import { Card } from "~/features/shared/components/ui/card";
 
 function ScoreSummery() {
-  const { data: score, isLoading, error, isError } = useGetScoreByUserID();
-
-  console.log(score);
+  const {
+    data: score,
+    isLoading,
+    error,
+    isError,
+    refetch,
+  } = useGetScoreByUserID();
 
   if (isLoading) {
     return (
@@ -45,7 +50,22 @@ function ScoreSummery() {
   }
 
   if (isError || !score) {
-    return <DashboardContentCards>{error?.message}</DashboardContentCards>;
+    return (
+      <DashboardContentCards>
+        <Card className="py-2 text-center">
+          <h3 className="text-lg font-semibold">Unable to load score data</h3>
+          <p className="text-muted-foreground">
+            {error?.message ?? "An unknown error occurred"}
+          </p>
+          <button
+            onClick={() => refetch()}
+            className="mt-4 rounded-md bg-primary px-4 py-2 text-primary-foreground"
+          >
+            Retry
+          </button>
+        </Card>
+      </DashboardContentCards>
+    );
   }
 
   return (

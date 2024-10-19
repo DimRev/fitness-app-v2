@@ -236,6 +236,19 @@ func CreateMeasurement(c echo.Context) error {
 		})
 	}
 
+	tx, err := config.DB.BeginTx(c.Request().Context(), nil)
+	if err != nil {
+		utils.FmtLogError(
+			"measurement_controller.go",
+			"CreateMeasurement",
+			fmt.Errorf("failed to begin transaction: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to create measurement, trouble with server",
+		})
+	}
+	defer tx.Rollback()
+
 	createMeasurementParams := database.CreateMeasurementParams{
 		UserID: user.ID,
 		Weight: createMeasurementReq.Weight,
@@ -243,7 +256,7 @@ func CreateMeasurement(c echo.Context) error {
 		Bmi:    fmt.Sprint(bmi),
 	}
 
-	todayMeasurement, err := config.Queries.CreateMeasurement(c.Request().Context(), createMeasurementParams)
+	todayMeasurement, err := config.Queries.WithTx(tx).CreateMeasurement(c.Request().Context(), createMeasurementParams)
 	if err != nil {
 		utils.FmtLogError(
 			"measurement_controller.go",
@@ -262,7 +275,7 @@ func CreateMeasurement(c echo.Context) error {
 		Details:    sql.NullString{String: fmt.Sprintf("Measurement for day %s", todayMeasurement.Date), Valid: true},
 	}
 
-	_, err = config.Queries.CreateScore(c.Request().Context(), createScoreParams)
+	_, err = config.Queries.WithTx(tx).CreateScore(c.Request().Context(), createScoreParams)
 	if err != nil {
 		utils.FmtLogError(
 			"measurement_controller.go",
@@ -271,6 +284,17 @@ func CreateMeasurement(c echo.Context) error {
 		)
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 			"message": "Failed to create score, trouble with server",
+		})
+	}
+
+	if err := tx.Commit(); err != nil {
+		utils.FmtLogError(
+			"measurement_controller.go",
+			"CreateMeasurement",
+			fmt.Errorf("failed to commit transaction: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to create measurement, trouble with server",
 		})
 	}
 
