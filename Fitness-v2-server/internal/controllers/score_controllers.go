@@ -13,7 +13,7 @@ import (
 
 func GetScoreByUserID(c echo.Context) error {
 	user, ok := c.Get("user").(database.User)
-	if !ok || user.Role != "admin" {
+	if !ok {
 		return echo.NewHTTPError(http.StatusUnauthorized, map[string]string{
 			"message": "Failed to get score, unauthorized",
 		})
