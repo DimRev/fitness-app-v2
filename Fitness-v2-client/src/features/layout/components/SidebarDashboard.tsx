@@ -3,6 +3,7 @@ import {
   Calendar,
   ChevronLeft,
   ChevronRight,
+  Coins,
   LineChart,
   Sandwich,
   Scale,
@@ -78,6 +79,12 @@ function SidebarDashboard() {
         LucideIcon={Calendar}
         to="/dashboard/calendar"
         title="Calendar"
+        onlyIcon={!isSidebarOpen}
+      />
+      <SidebarNavLink
+        LucideIcon={Coins}
+        to="/dashboard/score"
+        title="Score"
         onlyIcon={!isSidebarOpen}
       />
     </nav>

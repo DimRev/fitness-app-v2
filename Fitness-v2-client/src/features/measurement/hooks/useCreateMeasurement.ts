@@ -29,6 +29,10 @@ function useCreateMeasurement() {
         queryKey: QUERY_KEYS.CHART_DATA.GET_CHART_DATA_MEASUREMENTS,
         isBroadcast: false,
       },
+      {
+        queryKey: QUERY_KEYS.SCORE.GET_SCORE_BY_USER_ID,
+        isBroadcast: false,
+      },
     ],
     () => "/measurements",
     "post",

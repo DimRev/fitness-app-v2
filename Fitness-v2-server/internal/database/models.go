@@ -264,6 +264,16 @@ type RelUserLikeFoodItemPending struct {
 	FoodItemID uuid.UUID
 }
 
+type Score struct {
+	ID         uuid.UUID
+	Score      int32
+	IsApproved sql.NullBool
+	Details    sql.NullString
+	CreatedAt  sql.NullTime
+	UpdatedAt  sql.NullTime
+	UserID     uuid.UUID
+}
+
 type Session struct {
 	ID           uuid.UUID
 	UserID       uuid.UUID
