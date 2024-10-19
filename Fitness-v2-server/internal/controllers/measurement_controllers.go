@@ -247,7 +247,15 @@ func CreateMeasurement(c echo.Context) error {
 			"message": "Failed to create measurement, trouble with server",
 		})
 	}
-	defer tx.Rollback()
+	defer func() {
+		if err := tx.Rollback(); err != nil && err != sql.ErrTxDone {
+			utils.FmtLogError(
+				"measurement_controller.go",
+				"CreateMeasurement",
+				fmt.Errorf("failed to rollback transaction: %s", err),
+			)
+		}
+	}()
 
 	createMeasurementParams := database.CreateMeasurementParams{
 		UserID: user.ID,
