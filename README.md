@@ -100,3 +100,5 @@ After the feature is complete squash your commit and give your commit a prefix w
 Create a pull request to the staging branch.
 
 After the staging branch will be tested and merged into the main branch, a release will be triggered - a version will be assigned and a changelog will be generated, the app will also be built and deployed to fly.io and vercel.
+
+fix
