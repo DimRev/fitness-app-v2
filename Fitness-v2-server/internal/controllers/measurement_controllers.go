@@ -255,5 +255,34 @@ func CreateMeasurement(c echo.Context) error {
 		})
 	}
 
-	return c.JSON(http.StatusOK, todayMeasurement)
+	createScoreParams := database.CreateScoreParams{
+		UserID:     user.ID,
+		Score:      10,
+		IsApproved: sql.NullBool{Bool: true, Valid: true},
+		Details:    sql.NullString{String: fmt.Sprintf("Measurement for day %s", todayMeasurement.Date), Valid: true},
+	}
+
+	_, err = config.Queries.CreateScore(c.Request().Context(), createScoreParams)
+	if err != nil {
+		utils.FmtLogError(
+			"measurement_controller.go",
+			"CreateMeasurement",
+			fmt.Errorf("failed to create score: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to create score, trouble with server",
+		})
+	}
+
+	measurementResp := models.Measurement{
+		UserID:    user.ID.String(),
+		Weight:    weight,
+		Height:    height,
+		Bmi:       bmi,
+		Date:      todayMeasurement.Date,
+		CreatedAt: todayMeasurement.CreatedAt,
+		UpdatedAt: todayMeasurement.UpdatedAt,
+	}
+
+	return c.JSON(http.StatusOK, measurementResp)
 }
