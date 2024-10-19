@@ -4,6 +4,17 @@
 ### Bug Fixes
 
 * **client-calendar:** Style meals links flex-wrap ([b2907f5](https://github.com/DimRev/fitness-app-v2/commit/b2907f50252adc9c9b1c1e41f697ed7e5b891190))
+* fixing problem with tag ([4e5604e](https://github.com/DimRev/fitness-app-v2/commit/4e5604e3a3bb13b531793bdf52624b719b99ee1a))
+* **README:** Update README ([8ab22be](https://github.com/DimRev/fitness-app-v2/commit/8ab22beadbc32803f0393071e87fea40fd4efbe8))
+* **score:** Add transaction to measurement query, add refatch to ui err state ([469d188](https://github.com/DimRev/fitness-app-v2/commit/469d1883c9a0e5db412f66998ae201aec69b9676))
+* **server-score:** Get score by ID requires user, not admin ([02645f5](https://github.com/DimRev/fitness-app-v2/commit/02645f52e9520fb0f98748416969858877600aef))
+
+## [0.16.5](https://github.com/DimRev/fitness-app-v2/compare/v0.16.4...v0.16.5) (2024-10-19)
+
+
+### Bug Fixes
+
+* **client-calendar:** Style meals links flex-wrap ([b2907f5](https://github.com/DimRev/fitness-app-v2/commit/b2907f50252adc9c9b1c1e41f697ed7e5b891190))
 * **README:** Update README ([8ab22be](https://github.com/DimRev/fitness-app-v2/commit/8ab22beadbc32803f0393071e87fea40fd4efbe8))
 * **score:** Add transaction to measurement query, add refatch to ui err state ([469d188](https://github.com/DimRev/fitness-app-v2/commit/469d1883c9a0e5db412f66998ae201aec69b9676))
 
