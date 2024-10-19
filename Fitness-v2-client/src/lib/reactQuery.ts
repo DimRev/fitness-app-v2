@@ -35,6 +35,9 @@ export const QUERY_KEYS = {
   SUPPORT: {
     GET_SUPPORT_TICKETS: "get-support-tickets",
   },
+  SCORE: {
+    GET_SCORE_BY_USER_ID: "get-score-by-user-id",
+  },
 } as const;
 
 type QueryKeyValues<T> =

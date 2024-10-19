@@ -5,7 +5,7 @@ import useLayoutStore from "~/features/layout/hooks/useLayoutStore";
 import { cn } from "~/lib/utils";
 
 type Props = {
-  title: string;
+  title?: string;
   children?: ReactNode;
   footerChildren?: ReactNode;
 };
@@ -24,11 +24,14 @@ export function DashboardContentCards({
         isSidebarOpen
           ? "w-dashboard-card-md md:w-dashboard-card-lg"
           : "w-dashboard-card-sm",
+        !title && "pt-5",
       )}
     >
-      <CardHeader>
-        <H2 className="border-b">{title}</H2>
-      </CardHeader>
+      {title && (
+        <CardHeader>
+          <H2 className="border-b">{title}</H2>
+        </CardHeader>
+      )}
       {children && <CardContent>{children}</CardContent>}
       {footerChildren && <CardFooter>{footerChildren}</CardFooter>}
     </Card>

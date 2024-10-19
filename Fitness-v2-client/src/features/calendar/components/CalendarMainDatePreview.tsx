@@ -79,7 +79,7 @@ function CalendarMainDatePreview({
         <div className="border-b py-2">
           <H3>Meals</H3>
         </div>
-        <div className="flex flex-col items-start px-2 py-2">
+        <div className="flex flex-wrap gap-2 py-2">
           {calendarData?.meals?.map((meals) => (
             <Link
               to={`/dashboard/meal/details/${meals.meal_id}`}

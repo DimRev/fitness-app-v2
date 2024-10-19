@@ -236,6 +236,27 @@ func CreateMeasurement(c echo.Context) error {
 		})
 	}
 
+	tx, err := config.DB.BeginTx(c.Request().Context(), nil)
+	if err != nil {
+		utils.FmtLogError(
+			"measurement_controller.go",
+			"CreateMeasurement",
+			fmt.Errorf("failed to begin transaction: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to create measurement, trouble with server",
+		})
+	}
+	defer func() {
+		if err := tx.Rollback(); err != nil && err != sql.ErrTxDone {
+			utils.FmtLogError(
+				"measurement_controller.go",
+				"CreateMeasurement",
+				fmt.Errorf("failed to rollback transaction: %s", err),
+			)
+		}
+	}()
+
 	createMeasurementParams := database.CreateMeasurementParams{
 		UserID: user.ID,
 		Weight: createMeasurementReq.Weight,
@@ -243,7 +264,7 @@ func CreateMeasurement(c echo.Context) error {
 		Bmi:    fmt.Sprint(bmi),
 	}
 
-	todayMeasurement, err := config.Queries.CreateMeasurement(c.Request().Context(), createMeasurementParams)
+	todayMeasurement, err := config.Queries.WithTx(tx).CreateMeasurement(c.Request().Context(), createMeasurementParams)
 	if err != nil {
 		utils.FmtLogError(
 			"measurement_controller.go",
@@ -255,5 +276,45 @@ func CreateMeasurement(c echo.Context) error {
 		})
 	}
 
-	return c.JSON(http.StatusOK, todayMeasurement)
+	createScoreParams := database.CreateScoreParams{
+		UserID:     user.ID,
+		Score:      10,
+		IsApproved: sql.NullBool{Bool: true, Valid: true},
+		Details:    sql.NullString{String: fmt.Sprintf("Measurement for day %s", todayMeasurement.Date), Valid: true},
+	}
+
+	_, err = config.Queries.WithTx(tx).CreateScore(c.Request().Context(), createScoreParams)
+	if err != nil {
+		utils.FmtLogError(
+			"measurement_controller.go",
+			"CreateMeasurement",
+			fmt.Errorf("failed to create score: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to create score, trouble with server",
+		})
+	}
+
+	if err := tx.Commit(); err != nil {
+		utils.FmtLogError(
+			"measurement_controller.go",
+			"CreateMeasurement",
+			fmt.Errorf("failed to commit transaction: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to create measurement, trouble with server",
+		})
+	}
+
+	measurementResp := models.Measurement{
+		UserID:    user.ID.String(),
+		Weight:    weight,
+		Height:    height,
+		Bmi:       bmi,
+		Date:      todayMeasurement.Date,
+		CreatedAt: todayMeasurement.CreatedAt,
+		UpdatedAt: todayMeasurement.UpdatedAt,
+	}
+
+	return c.JSON(http.StatusOK, measurementResp)
 }
