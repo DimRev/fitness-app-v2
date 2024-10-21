@@ -67,10 +67,16 @@ func (n *NotificationDataUserScoreApprovedJSONData) Print() {
 	fmt.Printf("Score: %d\n", n.Score)
 }
 
-type NotificationDataUserScoreRejected struct {
+type NotificationDataUserScoreRejectedJSONData struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	Score       int    `json:"score"`
+}
+
+func (n *NotificationDataUserScoreRejectedJSONData) Print() {
+	fmt.Printf("Title: %s\n", n.Title)
+	fmt.Printf("Description: %s\n", n.Description)
+	fmt.Printf("Score: %d\n", n.Score)
 }
 
 type NotificationNewFoodItemLikes struct {
