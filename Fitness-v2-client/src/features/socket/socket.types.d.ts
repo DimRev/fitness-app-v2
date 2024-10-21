@@ -39,4 +39,6 @@ type UserNotificationBroadcastData = {
   };
 };
 
-type UserNotificationDataAction = "food-item-pending-got-like";
+type UserNotificationDataAction =
+  | "food-item-pending-got-like"
+  | "score-pending-added";

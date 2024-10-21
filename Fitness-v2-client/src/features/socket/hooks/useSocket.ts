@@ -212,6 +212,15 @@ function handleUserNotification(
         dismissible: true,
       });
       break;
+    case "score-pending-added":
+      void queryClient.invalidateQueries([
+        QUERY_KEYS.NOTIFICATION.GET_NEW_USER_NOTIFICATIONS,
+      ]);
+      toast.info(broadcastData.data.title, {
+        description: broadcastData.data.description,
+        dismissible: true,
+      });
+      break;
   }
 }
 

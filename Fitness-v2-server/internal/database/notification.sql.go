@@ -90,3 +90,14 @@ func (q *Queries) MarkNotificationAsReadByFoodItemPendingID(ctx context.Context,
 	_, err := q.db.ExecContext(ctx, markNotificationAsReadByFoodItemPendingID, arg.UserID, arg.Column2)
 	return err
 }
+
+const markNotificationAsReadByNotificationID = `-- name: MarkNotificationAsReadByNotificationID :exec
+UPDATE notifications
+SET is_new = FALSE
+WHERE id = $1
+`
+
+func (q *Queries) MarkNotificationAsReadByNotificationID(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, markNotificationAsReadByNotificationID, id)
+	return err
+}

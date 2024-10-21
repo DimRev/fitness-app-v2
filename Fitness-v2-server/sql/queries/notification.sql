@@ -16,8 +16,14 @@ WHERE user_id = $1
 AND is_new = TRUE
 ORDER BY created_at DESC;
 
+-- name: MarkNotificationAsReadByNotificationID :exec
+UPDATE notifications
+SET is_new = FALSE
+WHERE id = $1;
+
 -- name: MarkNotificationAsReadByFoodItemPendingID :exec
 UPDATE notifications
 SET is_new = FALSE
 WHERE user_id = $1
 AND data->>'food_item_id' = $2::text;
+

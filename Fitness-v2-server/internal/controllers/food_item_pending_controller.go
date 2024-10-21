@@ -357,6 +357,38 @@ func CreateFoodItemPending(c echo.Context) error {
 		})
 	}
 
+	if err := config.DB.Ping(); err != nil {
+		utils.FmtLogError(
+			"food_item_pending_controller.go",
+			"CreateFoodItemPending",
+			fmt.Errorf("connection to database failed : %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to create food item pending, trouble with server",
+		})
+	}
+
+	tx, err := config.DB.BeginTx(c.Request().Context(), nil)
+	if err != nil {
+		utils.FmtLogError(
+			"food_item_pending_controller.go",
+			"CreateFoodItemPending",
+			fmt.Errorf("failed to begin transaction: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to create measurement, trouble with server",
+		})
+	}
+	defer func() {
+		if err := tx.Rollback(); err != nil && err != sql.ErrTxDone {
+			utils.FmtLogError(
+				"food_item_pending_controller.go",
+				"CreateFoodItemPending",
+				fmt.Errorf("failed to rollback transaction: %s", err),
+			)
+		}
+	}()
+
 	createFoodItemPendingReq := CreateFoodItemPendingRequest{}
 	if err := c.Bind(&createFoodItemPendingReq); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
@@ -386,18 +418,7 @@ func CreateFoodItemPending(c echo.Context) error {
 		UserID:      user.ID,
 	}
 
-	if err := config.DB.Ping(); err != nil {
-		utils.FmtLogError(
-			"food_item_pending_controller.go",
-			"CreateFoodItemPending",
-			fmt.Errorf("connection to database failed : %s", err),
-		)
-		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-			"message": "Failed to create food item pending, trouble with server",
-		})
-	}
-
-	foodItemPending, err := config.Queries.CreateFoodItemPending(c.Request().Context(), createFoodItemPendingParams)
+	foodItemPending, err := config.Queries.WithTx(tx).CreateFoodItemPending(c.Request().Context(), createFoodItemPendingParams)
 	if err != nil {
 		utils.FmtLogError(
 			"food_item_pending_controller.go",
@@ -406,6 +427,78 @@ func CreateFoodItemPending(c echo.Context) error {
 		)
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
 			"message": "Failed to create food item pending, trouble with server",
+		})
+	}
+
+	createScoreParams := database.CreateScoreParams{
+		UserID:     user.ID,
+		Score:      20,
+		IsApproved: sql.NullBool{Bool: false, Valid: true},
+		Details:    sql.NullString{String: fmt.Sprintf("Food Item Pending added %s", foodItemPending.Name), Valid: false},
+	}
+
+	notificationData := models.NotificationDataUserScorePendingJSONData{
+		Title:       "Added food item pending",
+		Description: fmt.Sprintf("Your food item %s has been added to the pending list!", foodItemPending.Name),
+		Score:       20,
+	}
+
+	notificationDataJSON, err := json.Marshal(notificationData)
+	if err != nil {
+		utils.FmtLogError(
+			"food_item_pending_controller.go",
+			"CreateFoodItemPending",
+			fmt.Errorf("failed to marshal notification data: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to create food item pending, trouble with server",
+		})
+	}
+
+	createNotificationParams := database.CreateNotificationParams{
+		Type:   database.NotificationTypeUserScorePending,
+		Data:   notificationDataJSON,
+		UserID: user.ID,
+	}
+
+	err = config.Queries.WithTx(tx).CreateNotification(c.Request().Context(), createNotificationParams)
+	if err != nil {
+		utils.FmtLogError(
+			"food_item_pending_controller.go",
+			"CreateFoodItemPending",
+			fmt.Errorf("failed to create notification: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to create food item pending, trouble with server",
+		})
+	}
+
+	score, err := config.Queries.WithTx(tx).CreateScore(c.Request().Context(), createScoreParams)
+	if err != nil {
+		utils.FmtLogError(
+			"food_item_pending_controller.go",
+			"CreateFoodItemPending",
+			fmt.Errorf("failed to create score: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to create score, trouble with server",
+		})
+	}
+
+	socket.Hub.BroadcastToUser(
+		foodItemPending.UserID,
+		socket.UserNotification,
+		fmt.Sprintf(`{"action": "score-pending-added", "data": {"title": "Score pending added", "description": "Added food to pending food item, to food pending list, got %d score added!"}}`, score.Score),
+	)
+
+	if err := tx.Commit(); err != nil {
+		utils.FmtLogError(
+			"food_item_pending_controller.go",
+			"CreateFoodItemPending",
+			fmt.Errorf("failed to commit transaction: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to create measurement, trouble with server",
 		})
 	}
 
@@ -502,7 +595,7 @@ func ToggleFoodItemPending(c echo.Context) error {
 
 			// Only sends notification to owner if the user liking is not the owner
 			if user.ID != foodItemPending.OwnerID {
-				notificationData := models.NotificationDataUserLikeFoodItemPending{
+				notificationData := models.NotificationDataUserLikeFoodItemPendingJSONData{
 					Title:        "Food item pending liked",
 					Description:  "Your food item %s gained a like!",
 					FoodItemName: foodItemPending.FoodItemPendingName,

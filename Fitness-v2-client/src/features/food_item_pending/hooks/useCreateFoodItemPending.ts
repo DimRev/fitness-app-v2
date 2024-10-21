@@ -12,6 +12,10 @@ function useCreateFoodItemPending() {
         queryKey: QUERY_KEYS.FOOD_ITEMS_PENDING.GET_FOOD_ITEMS_PENDING,
         isBroadcast: true,
       },
+      {
+        queryKey: QUERY_KEYS.SCORE.GET_SCORE_BY_USER_ID,
+        isBroadcast: false,
+      },
     ],
     () => `/food_items_pending`,
     "post",
