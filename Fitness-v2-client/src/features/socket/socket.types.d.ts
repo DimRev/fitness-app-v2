@@ -41,4 +41,5 @@ type UserNotificationBroadcastData = {
 
 type UserNotificationDataAction =
   | "food-item-pending-got-like"
-  | "score-pending-added";
+  | "score-pending-added"
+  | "score-approved-added";

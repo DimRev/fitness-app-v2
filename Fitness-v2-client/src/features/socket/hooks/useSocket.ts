@@ -218,6 +218,7 @@ function handleUserNotification(
   switch (broadcastData.action) {
     case "food-item-pending-got-like":
     case "score-pending-added":
+    case "score-approved-added":
       handleCommonNotification(broadcastData, queryClient);
       break;
   }

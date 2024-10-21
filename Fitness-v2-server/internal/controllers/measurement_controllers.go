@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -9,6 +10,7 @@ import (
 	"github.com/DimRev/Fitness-v2-server/internal/config"
 	"github.com/DimRev/Fitness-v2-server/internal/database"
 	"github.com/DimRev/Fitness-v2-server/internal/models"
+	"github.com/DimRev/Fitness-v2-server/internal/socket"
 	"github.com/DimRev/Fitness-v2-server/internal/utils"
 	"github.com/labstack/echo"
 )
@@ -292,7 +294,43 @@ func CreateMeasurement(c echo.Context) error {
 		Details:    sql.NullString{String: fmt.Sprintf("Measurement for day %s", todayMeasurement.Date), Valid: true},
 	}
 
-	_, err = config.Queries.WithTx(tx).CreateScore(c.Request().Context(), createScoreParams)
+	notificationData := models.NotificationDataUserScoreApprovedJSONData{
+		Title:       "Added today's measurement",
+		Description: "Added a measurement for today",
+		Score:       10,
+	}
+
+	notificationDataJSON, err := json.Marshal(notificationData)
+	if err != nil {
+		utils.FmtLogError(
+			"measurement_controller.go",
+			"CreateMeasurement",
+			fmt.Errorf("failed to marshal notification data: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to create score, trouble with server",
+		})
+	}
+
+	createNotificationParams := database.CreateNotificationParams{
+		Type:   database.NotificationTypeUserScoreApproved,
+		Data:   notificationDataJSON,
+		UserID: user.ID,
+	}
+
+	err = config.Queries.WithTx(tx).CreateNotification(c.Request().Context(), createNotificationParams)
+	if err != nil {
+		utils.FmtLogError(
+			"measurement_controller.go",
+			"CreateMeasurement",
+			fmt.Errorf("failed to create notification: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to create score, trouble with server",
+		})
+	}
+
+	score, err := config.Queries.WithTx(tx).CreateScore(c.Request().Context(), createScoreParams)
 	if err != nil {
 		utils.FmtLogError(
 			"measurement_controller.go",
@@ -303,6 +341,12 @@ func CreateMeasurement(c echo.Context) error {
 			"message": "Failed to create score, trouble with server",
 		})
 	}
+
+	socket.Hub.BroadcastToUser(
+		user.ID,
+		socket.UserNotification,
+		fmt.Sprintf(`{"action": "score-approved-added", "data": {"title": "Score Approved", "description": "Added a measurement for today, got %d points!"}}`, score.Score),
+	)
 
 	if err := tx.Commit(); err != nil {
 		utils.FmtLogError(
