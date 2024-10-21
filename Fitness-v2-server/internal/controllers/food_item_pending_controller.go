@@ -345,6 +345,7 @@ type CreateFoodItemPendingRequest struct {
 }
 
 func CreateFoodItemPending(c echo.Context) error {
+	var err error
 	user, ok := c.Get("user").(database.User)
 	if !ok {
 		utils.FmtLogError(
@@ -388,15 +389,15 @@ func CreateFoodItemPending(c echo.Context) error {
 				fmt.Errorf("panic occurred: %v", r),
 			)
 			panic(r)
-		} else if err != nil {
+		}
+		if err != nil {
 			_ = tx.Rollback()
 			utils.FmtLogError(
 				"food_item_pending_controller.go",
 				"CreateFoodItemPending",
-				fmt.Errorf("failed to rollback transaction: %s", err),
+				fmt.Errorf("transaction error occurred: %v", err),
 			)
 		}
-
 	}()
 
 	createFoodItemPendingReq := CreateFoodItemPendingRequest{}
