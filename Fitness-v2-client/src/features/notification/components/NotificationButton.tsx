@@ -12,8 +12,10 @@ import { cn } from "~/lib/utils";
 import useGetNewUserNotifications from "../hooks/useGetNewUserNotifications";
 import useMarkNotificationAsRead from "../hooks/useMarkNotificationAsRead";
 import { useMemo } from "react";
-import NotificationFoodItem from "./NotificationFoodItem";
-import NotificationScorePending from "./NotificationScore";
+import NotificationNewFoodItem from "./NotificationNewFoodItem";
+import NotificationScorePending from "./NotificationScorePending";
+import NotificationScoreApproved from "./NotificationScoreApproved";
+import NotificationScoreRejected from "./NotificationScoreRejected";
 
 function NotificationButton() {
   const { isDarkMode } = useLayoutStore();
@@ -99,7 +101,7 @@ function NotificationButton() {
           {totalNotificationLength > 0 ? (
             <>
               {notifications.food_item_likes.map((notificationFoodItem) => (
-                <NotificationFoodItem
+                <NotificationNewFoodItem
                   key={notificationFoodItem.id + notificationFoodItem.type}
                   notificationFoodItem={notificationFoodItem}
                   handleClick={handleClick}
@@ -107,6 +109,20 @@ function NotificationButton() {
               ))}
               {notifications.pending_score.map((notificationScore) => (
                 <NotificationScorePending
+                  notificationScore={notificationScore}
+                  key={notificationScore.id + notificationScore.type}
+                  handleClick={handleClick}
+                />
+              ))}
+              {notifications.approved_score.map((notificationScore) => (
+                <NotificationScoreApproved
+                  notificationScore={notificationScore}
+                  key={notificationScore.id + notificationScore.type}
+                  handleClick={handleClick}
+                />
+              ))}
+              {notifications.rejected_score.map((notificationScore) => (
+                <NotificationScoreRejected
                   notificationScore={notificationScore}
                   key={notificationScore.id + notificationScore.type}
                   handleClick={handleClick}

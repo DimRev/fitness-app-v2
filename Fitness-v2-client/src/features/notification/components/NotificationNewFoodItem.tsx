@@ -3,7 +3,7 @@ type Props = {
   handleClick: (type: NotificationTypes, id: string) => void;
 };
 
-function NotificationFoodItem({ notificationFoodItem, handleClick }: Props) {
+function NotificationNewFoodItem({ notificationFoodItem, handleClick }: Props) {
   return (
     <div
       className="text-xs font-bold hover:cursor-pointer"
@@ -16,4 +16,4 @@ function NotificationFoodItem({ notificationFoodItem, handleClick }: Props) {
   );
 }
 
-export default NotificationFoodItem;
+export default NotificationNewFoodItem;

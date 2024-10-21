@@ -3,15 +3,15 @@ type Props = {
   handleClick: (type: NotificationTypes, id: string) => void;
 };
 
-function NotificationScorePending({ notificationScore, handleClick }: Props) {
+function NotificationScoreApproved({ notificationScore, handleClick }: Props) {
   return (
     <div
       className="text-xs font-bold hover:cursor-pointer"
       onClick={() => handleClick(notificationScore.type, notificationScore.id)}
     >
-      {`${notificationScore.title} got ${notificationScore.score} points (pending) !`}
+      {`${notificationScore.title} got approved, added ${notificationScore.score} points!`}
     </div>
   );
 }
 
-export default NotificationScorePending;
+export default NotificationScoreApproved;
