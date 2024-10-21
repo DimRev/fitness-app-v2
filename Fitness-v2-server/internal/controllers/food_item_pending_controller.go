@@ -496,10 +496,32 @@ func CreateFoodItemPending(c echo.Context) error {
 		})
 	}
 
+	socketData, err := socket.JsonStringifyNotificationData(socket.NotificationSocketDataStruct{
+		Action: socket.NotificationActionTypesScorePendingAdded,
+		Data: struct {
+			Title       string "json:\"title\""
+			Description string "json:\"description\""
+		}{
+			Title:       "Score Pending Added",
+			Description: fmt.Sprintf("Your food item has been added to the pending list and you've received %d points!", score.Score),
+		},
+	})
+
+	if err != nil {
+		utils.FmtLogError(
+			"food_item_pending_controller.go",
+			"CreateFoodItemPending",
+			fmt.Errorf("failed to stringify socket data: %s", err),
+		)
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to create score, trouble with server",
+		})
+	}
+
 	socket.Hub.BroadcastToUser(
 		foodItemPending.UserID,
 		socket.UserNotification,
-		fmt.Sprintf(`{"action": "score-pending-added", "data": {"title": "Score Pending Added", "description": "Your food item has been added to the pending list and you've received %d points!"}}`, score.Score),
+		socketData,
 	)
 
 	if err := tx.Commit(); err != nil {
@@ -644,11 +666,33 @@ func ToggleFoodItemPending(c echo.Context) error {
 				}
 			}
 
-			// Notify owner if connected | May be changed later on
+			socketData, err := socket.JsonStringifyNotificationData(socket.NotificationSocketDataStruct{
+				Action: socket.NotificationActionTypesFoodItemLike,
+				Data: struct {
+					Title       string "json:\"title\""
+					Description string "json:\"description\""
+				}{
+					Title:       "Food item pending liked",
+					Description: fmt.Sprintf("Your food item %s gained a like!", foodItemPending.FoodItemPendingName),
+				},
+			})
+
+			if err != nil {
+				utils.FmtLogError(
+					"food_item_pending_controller.go",
+					"ToggleFoodItemPending",
+					fmt.Errorf("failed to stringify socket data: %s", err),
+				)
+
+				return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+					"message": "Failed toggle food item like, trouble with server",
+				})
+			}
+
 			socket.Hub.BroadcastToUser(
 				foodItemPending.OwnerID,
 				socket.UserNotification,
-				fmt.Sprintf(`{"action": "food-item-pending-got-like", "data": {"title": "Food item pending liked", "description": "Your food item %s gained a like!"}}`, foodItemPending.FoodItemPendingName),
+				socketData,
 			)
 
 			return c.JSON(http.StatusOK, map[string]string{

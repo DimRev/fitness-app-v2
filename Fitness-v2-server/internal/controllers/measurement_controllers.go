@@ -345,10 +345,33 @@ func CreateMeasurement(c echo.Context) error {
 		})
 	}
 
+	socketData, err := socket.JsonStringifyNotificationData(socket.NotificationSocketDataStruct{
+		Action: socket.NotificationActionTypesScoreApprovedAdded,
+		Data: struct {
+			Title       string "json:\"title\""
+			Description string "json:\"description\""
+		}{
+			Title:       "Score Approved",
+			Description: fmt.Sprintf("Added a measurement for today, got %d points!", score.Score),
+		},
+	})
+
+	if err != nil {
+		utils.FmtLogError(
+			"measurement_controller.go",
+			"CreateMeasurement",
+			fmt.Errorf("failed to stringify socket data: %s", err),
+		)
+
+		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to create score, trouble with server",
+		})
+	}
+
 	socket.Hub.BroadcastToUser(
 		user.ID,
 		socket.UserNotification,
-		fmt.Sprintf(`{"action": "score-approved-added", "data": {"title": "Score Approved", "description": "Added a measurement for today, got %d points!"}}`, score.Score),
+		socketData,
 	)
 
 	if err := tx.Commit(); err != nil {
