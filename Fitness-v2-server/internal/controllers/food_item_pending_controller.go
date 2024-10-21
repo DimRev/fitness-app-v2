@@ -498,7 +498,7 @@ func CreateFoodItemPending(c echo.Context) error {
 			fmt.Errorf("failed to commit transaction: %s", err),
 		)
 		return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
-			"message": "Failed to create measurement, trouble with server",
+			"message": "Failed to create food item pending, trouble with server",
 		})
 	}
 
