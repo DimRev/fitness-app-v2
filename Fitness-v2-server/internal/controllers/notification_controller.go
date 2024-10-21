@@ -39,11 +39,12 @@ func GetNewUserNotifications(c echo.Context) error {
 	}
 
 	notificationFoodItemPendingLikeCount := make(map[uuid.UUID]models.NotificationNewFoodItemLikes)
+	notificationNewScorePending := make(map[uuid.UUID]models.NotificationNewScore)
 
 	for _, notification := range newNotifications {
 		switch notification.Type {
 		case database.NotificationTypeUserLikeFoodItemPending:
-			var notificationData models.NotificationDataUserLikeFoodItemPending
+			var notificationData models.NotificationDataUserLikeFoodItemPendingJSONData
 
 			err := json.Unmarshal(notification.Data, &notificationData)
 			if err != nil {
@@ -63,13 +64,45 @@ func GetNewUserNotifications(c echo.Context) error {
 				Type:       models.NotificationTypeUserLikeFoodItemPending,
 				Count:      notificationFoodItemPendingLikeCount[notificationData.FoodItemID].Count + 1,
 			}
+		case database.NotificationTypeUserScorePending:
+			var notificationData models.NotificationDataUserScorePendingJSONData
+
+			err := json.Unmarshal(notification.Data, &notificationData)
+			if err != nil {
+				utils.FmtLogError(
+					"notification_controller.go",
+					"GetUserNotifications",
+					fmt.Errorf("failed to unmarshal notification data: %s", err),
+				)
+				return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+					"message": "Failed to get user notifications, trouble with server",
+				})
+			}
+			notificationNewScorePending[notification.ID] = models.NewNotificationNewScore(
+				notification.ID,
+				notificationData.Score,
+				notificationData.Title,
+				models.NotificationTypeUserScorePending,
+			)
 		}
 	}
 
-	respNotifications := make([]models.NotificationNewFoodItemLikes, len(notificationFoodItemPendingLikeCount))
+	respNotifications := models.NotificationsResponse{
+		Notifications: make([]models.NotificationNewFoodItemLikes, len(notificationFoodItemPendingLikeCount)),
+		PendingScore:  make([]models.NotificationNewScore, len(notificationNewScorePending)),
+		ApprovedScore: make([]models.NotificationNewScore, 0),
+		RejectedScore: make([]models.NotificationNewScore, 0),
+	}
+
 	i := 0
 	for _, notification := range notificationFoodItemPendingLikeCount {
-		respNotifications[i] = notification
+		respNotifications.Notifications[i] = notification
+		i++
+	}
+	i = 0
+	for _, notification := range notificationNewScorePending {
+		respNotifications.PendingScore[i] = notification
+		i++
 	}
 
 	return c.JSON(http.StatusOK, respNotifications)
@@ -77,6 +110,7 @@ func GetNewUserNotifications(c echo.Context) error {
 
 type MarkNotificationAsReadRequest struct {
 	FoodItemPendingID string                   `json:"food_item_pending_id,omitempty"`
+	ID                uuid.UUID                `json:"id,omitempty"`
 	Type              models.NotificationTypes `json:"type,omitempty"`
 }
 
@@ -122,9 +156,35 @@ func MarkNotificationAsRead(c echo.Context) error {
 		return c.JSON(http.StatusOK, map[string]string{
 			"message": "Notification marked as read",
 		})
+
+	case models.NotificationTypeUserScoreApproved:
+	case models.NotificationTypeUserScoreRejected:
+	case models.NotificationTypeUserScorePending:
+		markNotificationAsReadByNotificationIdParams := database.MarkNotificationAsReadByNotificationIDParams{
+			ID:     markNotificationAsReadReq.ID,
+			UserID: user.ID,
+		}
+		err := config.Queries.MarkNotificationAsReadByNotificationID(c.Request().Context(), markNotificationAsReadByNotificationIdParams)
+		if err != nil {
+			utils.FmtLogError(
+				"notification_controller.go",
+				"MarkNotificationAsRead",
+				fmt.Errorf("failed to mark notification as read: %s", err),
+			)
+			return echo.NewHTTPError(http.StatusInternalServerError, map[string]string{
+				"message": "Failed to mark notification as read, trouble with server",
+			})
+		}
+
+		return c.JSON(http.StatusOK, map[string]string{
+			"message": "Notification marked as read",
+		})
+
 	default:
 		return echo.NewHTTPError(http.StatusBadRequest, map[string]string{
 			"message": "Failed to mark notification as read, invalid type",
 		})
 	}
+
+	return nil
 }

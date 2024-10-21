@@ -63,6 +63,9 @@ type NotificationType string
 
 const (
 	NotificationTypeUserLikeFoodItemPending NotificationType = "user-like-food-item-pending"
+	NotificationTypeUserScorePending        NotificationType = "user-score-pending"
+	NotificationTypeUserScoreApproved       NotificationType = "user-score-approved"
+	NotificationTypeUserScoreRejected       NotificationType = "user-score-rejected"
 )
 
 func (e *NotificationType) Scan(src interface{}) error {

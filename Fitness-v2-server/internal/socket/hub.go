@@ -230,3 +230,28 @@ func (h *SocketHub) BroadcastToUser(userID uuid.UUID, action MessageActions, dat
 		}
 	}
 }
+
+type NotificationSocketActionTypes string
+
+const (
+	NotificationActionTypesScorePendingAdded  NotificationSocketActionTypes = "score-pending-added"
+	NotificationActionTypesScoreApprovedAdded NotificationSocketActionTypes = "score-approved-added"
+	NotificationActionTypesFoodItemLike       NotificationSocketActionTypes = "food-item-pending-got-like"
+)
+
+type NotificationSocketDataStruct struct {
+	Action NotificationSocketActionTypes `json:"action"`
+	Data   struct {
+		Title       string `json:"title"`
+		Description string `json:"description"`
+	} `json:"data"`
+}
+
+func JsonStringifyNotificationData(nds NotificationSocketDataStruct) (string, error) {
+	jsonData, err := json.Marshal(nds)
+	if err != nil {
+		return "", err
+	}
+
+	return string(jsonData), nil
+}
