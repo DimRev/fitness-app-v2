@@ -11,17 +11,67 @@ import { Separator } from "~/features/shared/components/ui/separator";
 import { cn } from "~/lib/utils";
 import useGetNewUserNotifications from "../hooks/useGetNewUserNotifications";
 import useMarkNotificationAsRead from "../hooks/useMarkNotificationAsRead";
+import { useMemo } from "react";
+import NotificationNewFoodItem from "./NotificationNewFoodItem";
+import NotificationScorePending from "./NotificationScorePending";
+import NotificationScoreApproved from "./NotificationScoreApproved";
+import NotificationScoreRejected from "./NotificationScoreRejected";
 
 function NotificationButton() {
   const { isDarkMode } = useLayoutStore();
   const { data: notifications, isLoading } = useGetNewUserNotifications();
   const { mutateAsync: markNotificationAsRead } = useMarkNotificationAsRead();
 
-  function handleClickNotification(notification: NotificationNewFoodItemLikes) {
-    void markNotificationAsRead({
-      type: notification.type,
-      food_item_pending_id: notification.food_item_id,
-    });
+  const totalNotificationLength = useMemo(() => {
+    if (!notifications) {
+      return 0;
+    }
+
+    return (
+      notifications.food_item_likes.length +
+      notifications.pending_score.length +
+      notifications.approved_score.length +
+      notifications.rejected_score.length
+    );
+  }, [notifications]);
+
+  function handleClick(type: NotificationTypes, id: string) {
+    switch (type) {
+      case "user-like-food-item-pending":
+        void markNotificationAsRead({
+          type,
+          food_item_pending_id: id,
+        });
+        break;
+      case "user-score-pending":
+      case "user-score-approved":
+      case "user-score-rejected":
+        void markNotificationAsRead({
+          type,
+          id,
+        });
+        break;
+      default:
+        /**
+         * Catch all for unhandled notification types, shouldn't reach this point in any case.
+         * Implemented only as a future proofing protection.
+         */
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        console.warn(`Unhandled notification type, ${type}`);
+        break;
+    }
+  }
+
+  if (isLoading || !notifications) {
+    return (
+      <Button
+        variant="outline"
+        size="icon"
+        className="relative me-4 border-none bg-header"
+      >
+        <Bell />
+      </Button>
+    );
   }
 
   return (
@@ -33,17 +83,12 @@ function NotificationButton() {
           className="relative me-4 border-none bg-header"
         >
           <Bell
-            className={cn(
-              !isLoading &&
-                notifications &&
-                notifications.length > 0 &&
-                "fill-orange-500",
-            )}
+            className={cn(totalNotificationLength > 0 && "fill-orange-500")}
           />
-          {!isLoading && notifications && notifications.length > 0 && (
+          {totalNotificationLength > 0 && (
             <div className="absolute -end-1 -top-1 flex size-4 items-center justify-center rounded-full border border-foreground bg-orange-500 dark:bg-orange-800">
               <span className="text-xs font-extrabold text-foreground">
-                {notifications.length}
+                {totalNotificationLength}
               </span>
             </div>
           )}
@@ -53,18 +98,37 @@ function NotificationButton() {
         <H4 className="mb-2">Notifications</H4>
         <Separator />
         <div>
-          {notifications && notifications.length > 0 ? (
-            notifications.map((notification) => (
-              <div
-                key={notification.type + notification.food_item_id}
-                className="hover:cursor-pointer"
-                onClick={() => handleClickNotification(notification)}
-              >
-                <p>
-                  {`${notification.food_item_name} gained ${notification.count} likes!`}
-                </p>
-              </div>
-            ))
+          {totalNotificationLength > 0 ? (
+            <>
+              {notifications.food_item_likes.map((notificationFoodItem) => (
+                <NotificationNewFoodItem
+                  key={notificationFoodItem.id + notificationFoodItem.type}
+                  notificationFoodItem={notificationFoodItem}
+                  handleClick={handleClick}
+                />
+              ))}
+              {notifications.pending_score.map((notificationScore) => (
+                <NotificationScorePending
+                  notificationScore={notificationScore}
+                  key={notificationScore.id + notificationScore.type}
+                  handleClick={handleClick}
+                />
+              ))}
+              {notifications.approved_score.map((notificationScore) => (
+                <NotificationScoreApproved
+                  notificationScore={notificationScore}
+                  key={notificationScore.id + notificationScore.type}
+                  handleClick={handleClick}
+                />
+              ))}
+              {notifications.rejected_score.map((notificationScore) => (
+                <NotificationScoreRejected
+                  notificationScore={notificationScore}
+                  key={notificationScore.id + notificationScore.type}
+                  handleClick={handleClick}
+                />
+              ))}
+            </>
           ) : (
             <p>You have no notifications.</p>
           )}

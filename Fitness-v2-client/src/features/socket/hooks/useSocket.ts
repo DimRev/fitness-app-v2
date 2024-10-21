@@ -195,6 +195,19 @@ function handleBroadcasts(
   }
 }
 
+function handleCommonNotification(
+  broadcastData: UserNotificationBroadcastData,
+  queryClient: QueryClient,
+) {
+  void queryClient.invalidateQueries([
+    QUERY_KEYS.NOTIFICATION.GET_NEW_USER_NOTIFICATIONS,
+  ]);
+  toast.info(broadcastData.data.title, {
+    description: broadcastData.data.description,
+    dismissible: true,
+  });
+}
+
 function handleUserNotification(
   broadcastData: UserNotificationBroadcastData,
   queryClient: QueryClient,
@@ -204,13 +217,9 @@ function handleUserNotification(
   }
   switch (broadcastData.action) {
     case "food-item-pending-got-like":
-      void queryClient.invalidateQueries([
-        QUERY_KEYS.NOTIFICATION.GET_NEW_USER_NOTIFICATIONS,
-      ]);
-      toast.info(broadcastData.data.title, {
-        description: broadcastData.data.description,
-        dismissible: true,
-      });
+    case "score-pending-added":
+    case "score-approved-added":
+      handleCommonNotification(broadcastData, queryClient);
       break;
   }
 }

@@ -1,10 +1,18 @@
 import useMutateQuery from "~/features/shared/hooks/useMutateQuery";
 import { QUERY_KEYS } from "~/lib/reactQuery";
 
-type MarkNotificationAsReadBody = {
-  type: string;
-  food_item_pending_id?: string;
-};
+type MarkNotificationAsReadBody =
+  | {
+      type: "user-like-food-item-pending";
+      food_item_pending_id?: string;
+    }
+  | {
+      type:
+        | "user-score-pending"
+        | "user-score-approved"
+        | "user-score-rejected";
+      id: string;
+    };
 
 type MarkNotificationAsReadResponseBody = {
   message: string;
