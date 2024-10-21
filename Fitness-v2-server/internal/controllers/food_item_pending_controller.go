@@ -380,13 +380,23 @@ func CreateFoodItemPending(c echo.Context) error {
 		})
 	}
 	defer func() {
-		if err := tx.Rollback(); err != nil && err != sql.ErrTxDone {
+		if r := recover(); r != nil {
+			_ = tx.Rollback()
+			utils.FmtLogError(
+				"food_item_pending_controller.go",
+				"CreateFoodItemPending",
+				fmt.Errorf("panic occurred: %v", r),
+			)
+			panic(r)
+		} else if err != nil {
+			_ = tx.Rollback()
 			utils.FmtLogError(
 				"food_item_pending_controller.go",
 				"CreateFoodItemPending",
 				fmt.Errorf("failed to rollback transaction: %s", err),
 			)
 		}
+
 	}()
 
 	createFoodItemPendingReq := CreateFoodItemPendingRequest{}

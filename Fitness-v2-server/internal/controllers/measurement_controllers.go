@@ -248,7 +248,16 @@ func CreateMeasurement(c echo.Context) error {
 		})
 	}
 	defer func() {
-		if err := tx.Rollback(); err != nil && err != sql.ErrTxDone {
+		if r := recover(); r != nil {
+			_ = tx.Rollback()
+			utils.FmtLogError(
+				"measurement_controller.go",
+				"CreateMeasurement",
+				fmt.Errorf("panic occurred: %v", r),
+			)
+			panic(r)
+		} else if err != nil {
+			_ = tx.Rollback()
 			utils.FmtLogError(
 				"measurement_controller.go",
 				"CreateMeasurement",
