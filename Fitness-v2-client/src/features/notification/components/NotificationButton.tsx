@@ -49,6 +49,14 @@ function NotificationButton() {
           id,
         });
         break;
+      default:
+        /**
+         * Catch all for unhandled notification types, shouldn't reach this point in any case.
+         * Implemented only as a future proofing protection.
+         */
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        console.warn(`Unhandled notification type, ${type}`);
+        break;
     }
   }
 
