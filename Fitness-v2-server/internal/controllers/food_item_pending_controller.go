@@ -488,7 +488,7 @@ func CreateFoodItemPending(c echo.Context) error {
 	socket.Hub.BroadcastToUser(
 		foodItemPending.UserID,
 		socket.UserNotification,
-		fmt.Sprintf(`{"action": "score-pending-added", "data": {"title": "Score pending added", "description": "Added food to pending food item, to food pending list, got %d score added!"}}`, score.Score),
+		fmt.Sprintf(`{"action": "score-pending-added", "data": {"title": "Score Pending Added", "description": "Your food item has been added to the pending list and you've received %d points!"}}`, score.Score),
 	)
 
 	if err := tx.Commit(); err != nil {
