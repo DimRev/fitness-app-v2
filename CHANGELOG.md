@@ -1,3 +1,10 @@
+# [0.17.0](https://github.com/DimRev/fitness-app-v2/compare/v0.16.5...v0.17.0) (2024-10-21)
+
+
+### Features
+
+* **client&server-score&notification:** Add score notifications, server and client rooutes, cmps, hooks ([c68ab70](https://github.com/DimRev/fitness-app-v2/commit/c68ab70724a88b5dcd272a8d096699d15f58e013))
+
 ## [0.16.5](https://github.com/DimRev/fitness-app-v2/compare/v0.16.4...v0.16.5) (2024-10-19)
 
 
