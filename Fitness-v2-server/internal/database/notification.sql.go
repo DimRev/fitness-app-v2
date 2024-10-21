@@ -94,10 +94,16 @@ func (q *Queries) MarkNotificationAsReadByFoodItemPendingID(ctx context.Context,
 const markNotificationAsReadByNotificationID = `-- name: MarkNotificationAsReadByNotificationID :exec
 UPDATE notifications
 SET is_new = FALSE
-WHERE id = $1
+WHERE user_id = $1
+AND id = $2
 `
 
-func (q *Queries) MarkNotificationAsReadByNotificationID(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.ExecContext(ctx, markNotificationAsReadByNotificationID, id)
+type MarkNotificationAsReadByNotificationIDParams struct {
+	UserID uuid.UUID
+	ID     uuid.UUID
+}
+
+func (q *Queries) MarkNotificationAsReadByNotificationID(ctx context.Context, arg MarkNotificationAsReadByNotificationIDParams) error {
+	_, err := q.db.ExecContext(ctx, markNotificationAsReadByNotificationID, arg.UserID, arg.ID)
 	return err
 }

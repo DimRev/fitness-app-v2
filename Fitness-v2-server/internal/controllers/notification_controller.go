@@ -160,7 +160,11 @@ func MarkNotificationAsRead(c echo.Context) error {
 	case models.NotificationTypeUserScoreApproved:
 	case models.NotificationTypeUserScoreRejected:
 	case models.NotificationTypeUserScorePending:
-		err := config.Queries.MarkNotificationAsReadByNotificationID(c.Request().Context(), markNotificationAsReadReq.ID)
+		markNotificationAsReadByNotificationIdParams := database.MarkNotificationAsReadByNotificationIDParams{
+			ID:     markNotificationAsReadReq.ID,
+			UserID: user.ID,
+		}
+		err := config.Queries.MarkNotificationAsReadByNotificationID(c.Request().Context(), markNotificationAsReadByNotificationIdParams)
 		if err != nil {
 			utils.FmtLogError(
 				"notification_controller.go",

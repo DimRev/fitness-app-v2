@@ -19,7 +19,8 @@ ORDER BY created_at DESC;
 -- name: MarkNotificationAsReadByNotificationID :exec
 UPDATE notifications
 SET is_new = FALSE
-WHERE id = $1;
+WHERE user_id = $1
+AND id = $2;
 
 -- name: MarkNotificationAsReadByFoodItemPendingID :exec
 UPDATE notifications
