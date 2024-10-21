@@ -78,10 +78,11 @@ func GetNewUserNotifications(c echo.Context) error {
 					"message": "Failed to get user notifications, trouble with server",
 				})
 			}
-			notificationNewScorePending[notification.ID] = models.NewNotificationNewPendingScore(
+			notificationNewScorePending[notification.ID] = models.NewNotificationNewScore(
 				notification.ID,
 				notificationData.Score,
 				notificationData.Title,
+				models.NotificationTypeUserScorePending,
 			)
 		}
 	}

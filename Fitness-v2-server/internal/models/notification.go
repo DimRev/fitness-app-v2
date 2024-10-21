@@ -96,27 +96,9 @@ type NotificationNewScore struct {
 	ID    string            `json:"id"`
 }
 
-func NewNotificationNewPendingScore(ID uuid.UUID, score int, title string) NotificationNewScore {
+func NewNotificationNewScore(ID uuid.UUID, score int, title string, notificationType NotificationTypes) NotificationNewScore {
 	return NotificationNewScore{
-		Type:  NotificationTypeUserScorePending,
-		Title: title,
-		Score: score,
-		ID:    ID.String(),
-	}
-}
-
-func NewNotificationNewApprovedScore(ID uuid.UUID, score int, title string) NotificationNewScore {
-	return NotificationNewScore{
-		Type:  NotificationTypeUserScoreApproved,
-		Title: title,
-		Score: score,
-		ID:    ID.String(),
-	}
-}
-
-func NewNotificationNewRejectedScore(ID uuid.UUID, score int, title string) NotificationNewScore {
-	return NotificationNewScore{
-		Type:  NotificationTypeUserScoreRejected,
+		Type:  notificationType,
 		Title: title,
 		Score: score,
 		ID:    ID.String(),
